@@ -122,7 +122,7 @@ entry:
         to: open
     # match: 可作为确定性快路径/逃生口（可选）；默认仍以 agent 语义分类为主
 
-nodes:                        # 每个 node 只绑定一个 skill（1 node = 1 skill）
+nodes:                        # 1 node = 1 skill（原子单位）；一个"阶段"由多个同 phase 的 node 组成
   open:
     phase: open               # 阶段标签（仅用于分组展示/统计，不改变执行语义）
     skill: openspec/opsx-new  # 触发的 skill 标识（交给 adapter 解析为 invoke 指令）
@@ -142,7 +142,8 @@ nodes:                        # 每个 node 只绑定一个 skill（1 node = 1 s
     hitl: { when: before_advance, question: "确认设计方案？", options: [继续, 调整] }
     produces: [design_doc]
 
-  # build 是一个多 skill 阶段：同一 phase 的多个连续 node，每个绑定一个 skill
+  # build 是一个多 skill 阶段：下面 4 个 node 共享 phase: build（每个 node 仍只绑一个 skill）
+  # 即“阶段调用多个 skill” = “多个 node 挂同一 phase 标签”，而非某个 node 绑多个 skill
   build_plan:
     phase: build
     skill: superpowers/writing-plans
