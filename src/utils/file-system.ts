@@ -2,18 +2,54 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 /**
+ * Resolve symlinks in a path, handling broken symlinks by following their
+ * readlink target. Falls back to the original path if resolution fails.
+ */
+async function resolveSymlinkPath(filePath: string): Promise<string> {
+  try {
+    return await fs.realpath(filePath);
+  } catch {
+    // Path doesn't fully exist — walk up to find the deepest existing ancestor
+    const dir = path.dirname(filePath);
+    if (dir === filePath) return filePath; // filesystem root
+
+    const resolvedDir = await resolveSymlinkPath(dir);
+    const base = path.basename(filePath);
+
+    // Check if this segment is a broken symlink and follow its target
+    try {
+      const stat = await fs.lstat(path.join(resolvedDir, base));
+      if (stat.isSymbolicLink()) {
+        const target = await fs.readlink(path.join(resolvedDir, base));
+        return path.resolve(resolvedDir, target);
+      }
+    } catch {
+      // Segment doesn't exist — return as-is
+    }
+
+    return path.join(resolvedDir, base);
+  }
+}
+
+/**
  * Ensure a directory exists, creating it recursively if needed.
+ * Resolves symlinks so that broken symlink targets are created correctly.
  */
 export async function ensureDir(dir: string): Promise<void> {
-  await fs.mkdir(dir, { recursive: true });
+  const resolved = await resolveSymlinkPath(dir);
+  await fs.mkdir(resolved, { recursive: true });
 }
 
 /**
  * Copy a file from src to dest, creating parent directories if needed.
+ * Resolves symlinks in the destination path so files are written to the
+ * actual target location when dest contains symlinks (e.g., skill dirs
+ * symlinked from ~/.claude/skills/ to ~/.agents/skills/).
  */
 export async function copyFile(src: string, dest: string): Promise<void> {
-  await ensureDir(path.dirname(dest));
-  await fs.copyFile(src, dest);
+  const resolvedDest = await resolveSymlinkPath(dest);
+  await ensureDir(path.dirname(resolvedDest));
+  await fs.copyFile(src, resolvedDest);
 }
 
 /**
@@ -38,10 +74,12 @@ export async function readJson<T = unknown>(filePath: string): Promise<T> {
 
 /**
  * Write content to a file, creating parent directories if needed.
+ * Resolves symlinks so files are written to the actual target location.
  */
 export async function writeFile(filePath: string, content: string): Promise<void> {
-  await ensureDir(path.dirname(filePath));
-  await fs.writeFile(filePath, content, 'utf-8');
+  const resolved = await resolveSymlinkPath(filePath);
+  await ensureDir(path.dirname(resolved));
+  await fs.writeFile(resolved, content, 'utf-8');
 }
 
 /**
