@@ -427,7 +427,10 @@ describe('skills', () => {
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
       expect(zhCometRule).toContain('active compaction gate');
-      expect(zhCometRule).toContain('立即读取 `comet/reference/subagent-dispatch.md`');
+      expect(zhCometRule).toContain(
+        '使用 Skill 工具重新加载 Superpowers `subagent-driven-development` 技能',
+      );
+      expect(zhCometRule).toContain('读取 `comet/reference/subagent-dispatch.md` 获取 Comet 专属扩展');
       expect(zhCometRule).toContain('禁止在主会话中直接执行 task');
       for (const [content] of [
         [zhOpen, '/comet-design'],
@@ -696,7 +699,12 @@ describe('skills', () => {
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
       expect(enCometRule).toContain('active compaction gate');
-      expect(enCometRule).toContain('immediately re-read `comet/reference/subagent-dispatch.md`');
+      expect(enCometRule).toContain(
+        'Use the Skill tool to reload the Superpowers `subagent-driven-development` skill',
+      );
+      expect(enCometRule).toContain(
+        're-read `comet/reference/subagent-dispatch.md` for Comet-specific extensions',
+      );
       expect(enCometRule).toContain('Do not execute the pending task directly in the main window');
       for (const [content] of [
         [enOpen, '/comet-design'],
@@ -809,26 +817,51 @@ describe('skills', () => {
   });
 
   describe('Comet build subagent dispatch safeguards', () => {
-    it('requires isolated roles and review-before-checkoff persistence', async () => {
+    it('composes the Superpowers loop with the Chinese Comet dispatch contract', async () => {
       const zhBuild = await fs.readFile(
         path.resolve('assets', 'skills-zh', 'comet-build', 'SKILL.md'),
-        'utf-8',
-      );
-      const enBuild = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-build', 'SKILL.md'),
         'utf-8',
       );
       const zhDispatch = await fs.readFile(
         path.resolve('assets', 'skills-zh', 'comet', 'reference', 'subagent-dispatch.md'),
         'utf-8',
       );
+      const zhRecovery = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'comet', 'reference', 'context-recovery.md'),
+        'utf-8',
+      );
+      const zhGuard = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.md'),
+        'utf-8',
+      );
 
-      expect(zhBuild).toContain('立即读取 `comet/reference/subagent-dispatch.md`');
+      expect(zhBuild).toContain(
+        '使用 Skill 工具加载 Superpowers `subagent-driven-development` 技能',
+      );
+      expect(zhBuild).toContain('读取 `comet/reference/subagent-dispatch.md` 获取 Comet 专属扩展');
       expect(zhBuild).not.toContain('#### Subagent 调度协议');
-      expect(zhDispatch).toContain('每个 task 派发一个全新的 implementer agent');
+      expect(zhDispatch).toContain('发生冲突时，以本文档中更具体的 Comet 约束为准');
+      expect(zhDispatch).toContain('不得把多个 task 打包给同一个 agent');
+      expect(zhDispatch).toContain('每个 task 派发一个全新的后台 implementer agent');
+      expect(zhDispatch).toContain('修复 agent 和 final reviewer');
+      expect(zhDispatch).toContain('Language: 使用触发本次工作流的用户请求语言输出');
+      expect(zhDispatch).toContain('允许修改的文件范围');
+      expect(zhDispatch).toContain('必须执行的测试命令');
+      expect(zhDispatch).toContain('提交哈希');
+      expect(zhDispatch).toContain('确认提交和文件在当前工作树可见');
+      expect(zhDispatch).toContain('实现提交或差异以及 RED/GREEN 证据');
       expect(zhDispatch).toContain('implementer 不得勾选 plan 或 OpenSpec task');
+      expect(zhDispatch).toContain('协调者唯一允许的文件修改');
+      expect(zhDispatch).toContain('plan、OpenSpec task 和 subagent 进度检查点');
+      expect(zhDispatch).toContain(
+        'openspec/changes/<name>/.comet/subagent-progress.md',
+      );
+      expect(zhDispatch).toContain('final-review | final-fix');
+      expect(zhDispatch).toContain('当前审查-修复轮次');
+      expect(zhDispatch).toContain('已通过的审查阶段');
+      expect(zhDispatch).toContain('所有 task 已勾选且检查点处于 `final-review` 或 `final-fix`');
+      expect(zhDispatch).toContain('使用 Skill 工具加载 Superpowers `test-driven-development` 技能');
       expect(zhDispatch).toContain('两个审查都通过后');
-      expect(zhDispatch).toContain('按保存的任务唯一文本调用状态脚本验证');
       expect(zhDispatch).toContain(
         '"$COMET_BASH" "$COMET_STATE" task-checkoff "$PLAN_FILE" "$PLAN_TASK_TEXT"',
       );
@@ -836,12 +869,106 @@ describe('skills', () => {
       expect(zhDispatch).toContain('RED 失败命令与失败摘要');
       expect(zhDispatch).toContain('GREEN 通过命令与通过摘要');
       expect(zhDispatch).not.toContain("grep -n '\\- \\[ \\]' openspec/changes/<name>/tasks.md");
+      expect(zhDispatch).toContain('禁止总结、禁止询问用户是否继续、禁止在任务之间等待用户输入');
+      expect(zhDispatch).toContain('存在无法从仓库、计划或既有上下文消除的真实歧义');
+      expect(zhDispatch).toContain('平台没有真实后台 agent 调度能力');
+      expect(zhDispatch).toContain('不得加载 `finishing-a-development-branch`');
+      expect(zhDispatch).toContain('返回 `comet-build` 继续执行退出条件、阶段守卫和后续阶段衔接');
+      expect(zhRecovery).toContain('重新加载 Superpowers `subagent-driven-development` 技能');
+      expect(zhRecovery).toContain('重新阅读 `comet/reference/subagent-dispatch.md`');
+      expect(zhRecovery).toContain(
+        '读取 `openspec/changes/<name>/.comet/subagent-progress.md`',
+      );
+      expect(zhGuard).toContain('重新加载 Superpowers `subagent-driven-development` 技能');
+      expect(zhGuard).toContain('读取 `comet/reference/subagent-dispatch.md` 获取 Comet 专属扩展');
+      expect(zhGuard).toContain(
+        '读取 `openspec/changes/<name>/.comet/subagent-progress.md`',
+      );
+    });
+
+    it('keeps the English dispatch contract behaviorally aligned', async () => {
+      const enBuild = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet-build', 'SKILL.md'),
+        'utf-8',
+      );
+      const enDispatch = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'reference', 'subagent-dispatch.md'),
+        'utf-8',
+      );
+      const enRecovery = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'reference', 'context-recovery.md'),
+        'utf-8',
+      );
+      const enGuard = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.en.md'),
+        'utf-8',
+      );
+
       expect(enBuild).toContain(
-        'Immediately read `comet/reference/subagent-dispatch.md` and fully execute the protocol therein',
+        'Use the Skill tool to load the Superpowers `subagent-driven-development` skill',
+      );
+      expect(enBuild).toContain(
+        'read `comet/reference/subagent-dispatch.md` for Comet-specific extensions',
       );
       expect(enBuild).toContain(
         'TDD constraints and evidence thresholds are defined in `comet/reference/subagent-dispatch.md`',
       );
+      expect(enDispatch).toContain(
+        'If the Superpowers skill conflicts with this document, the more specific Comet constraints here take precedence',
+      );
+      expect(enDispatch).toContain('Never bundle multiple tasks into one agent');
+      expect(enDispatch).toContain('fresh background implementer agent for every task');
+      expect(enDispatch).toContain('fix agents, and the final reviewer');
+      expect(enDispatch).toContain(
+        'Language: Use the language of the user request that triggered this workflow',
+      );
+      expect(enDispatch).toContain('allowed file scope');
+      expect(enDispatch).toContain('required test commands');
+      expect(enDispatch).toContain('commit hash');
+      expect(enDispatch).toContain('verify that the commit and changed files are visible');
+      expect(enDispatch).toContain('implementation commit or diff and the RED/GREEN evidence');
+      expect(enDispatch).toContain('The coordinator may modify only');
+      expect(enDispatch).toContain('plan, OpenSpec task, and subagent progress checkpoint');
+      expect(enDispatch).toContain(
+        'openspec/changes/<name>/.comet/subagent-progress.md',
+      );
+      expect(enDispatch).toContain('final-review | final-fix');
+      expect(enDispatch).toContain('current review-fix round');
+      expect(enDispatch).toContain('review stages already passed');
+      expect(enDispatch).toContain(
+        'all tasks are checked and the checkpoint stage is `final-review` or `final-fix`',
+      );
+      expect(enDispatch).toContain(
+        'use the Skill tool to load the Superpowers `test-driven-development` skill',
+      );
+      expect(enDispatch).toContain('Do NOT summarize');
+      expect(enDispatch).toContain('irreducible ambiguity');
+      expect(enDispatch).toContain('real background agent dispatch capability');
+      expect(enDispatch).toContain('must not load `finishing-a-development-branch`');
+      expect(enDispatch).toContain(
+        'return control to `comet-build` for exit checks, the phase guard, and phase handoff',
+      );
+      expect(enRecovery).toContain('reload the Superpowers `subagent-driven-development` skill');
+      expect(enRecovery).toContain('Re-read `comet/reference/subagent-dispatch.md`');
+      expect(enRecovery).toContain(
+        'Read `openspec/changes/<name>/.comet/subagent-progress.md`',
+      );
+      expect(enGuard).toContain('reload the Superpowers `subagent-driven-development` skill');
+      expect(enGuard).toContain(
+        'Re-read `comet/reference/subagent-dispatch.md` for Comet-specific extensions',
+      );
+      expect(enGuard).toContain(
+        'Read `openspec/changes/<name>/.comet/subagent-progress.md`',
+      );
+    });
+
+    it('does not install a Stop hook for task continuity', async () => {
+      const manifest = await readManifest();
+      const hooks = Object.values(manifest.hooks ?? {});
+
+      expect(hooks.length).toBeGreaterThan(0);
+      expect(hooks.every((hook) => hook.matcher === 'Write|Edit')).toBe(true);
+      expect(hooks.some((hook) => /stop/i.test(hook.matcher))).toBe(false);
     });
   });
 

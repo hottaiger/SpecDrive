@@ -27,7 +27,7 @@ The following operations must be loaded through the Skill tool. When Skill is un
 - **brainstorming** — design phase, build phase medium-scale spec changes
 - **writing-plans** — build phase creating implementation plans
 - **executing-plans** / **subagent-driven-development** — build phase execution
-- **test-driven-development** — build phase `tdd_mode: tdd`, before first task
+- **test-driven-development** — in `executing-plans`, the main session loads it before the first task; in `subagent-driven-development`, each background implementer and fix agent loads it
 - **systematic-debugging** — when encountering crashes/test failures/build failures
 - **verification-before-completion** — verify phase
 - **using-git-worktrees** — build phase when selecting worktree isolation
@@ -81,11 +81,13 @@ If context compression is suspected (previous conversation was summarized, previ
 Decide next step according to the script's **Recovery action** output.
 
 **Special attention to `build_mode`**: If recovery script outputs `build_mode: subagent-driven-development`, you are the coordinator, not the executor. Must:
-1. immediately re-read `comet/reference/subagent-dispatch.md`
-2. Do not load the `subagent-driven-development` skill
-3. Do not execute tasks directly in the main session
-4. Resume from the first unchecked task and dispatch new background agents for implementer, reviewer, and fixes separately
-5. Already committed but not yet passed both reviews tasks remain unchecked; continue review/fix loop
+1. Use the Skill tool to reload the Superpowers `subagent-driven-development` skill
+2. Re-read `comet/reference/subagent-dispatch.md` for Comet-specific extensions
+3. Read `openspec/changes/<name>/.comet/subagent-progress.md` to recover the exact stage, evidence, and review-fix round
+4. Do not execute tasks directly in the main session
+5. Resume from the checkpoint; start from the first unchecked task only when it is missing or mismatched
+6. Already committed but not yet passed both reviews tasks remain unchecked; continue review/fix loop
+7. After dual review and targeted checkoff verification pass, immediately continue to the next task without summarizing or asking whether to continue
 
 ## Automatic Transition After Phase Exit
 

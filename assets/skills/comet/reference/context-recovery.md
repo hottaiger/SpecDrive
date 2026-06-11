@@ -16,10 +16,12 @@ The script outputs structured recovery context (phase, completed fields, pending
 
 If the recovery script outputs `build_mode: subagent-driven-development`:
 
-1. Re-read `comet/reference/subagent-dispatch.md` for the dispatch workflow
-2. Do not load the `subagent-driven-development` skill
-3. Do not execute tasks directly in the main session
-4. Resume from the first unchecked task, dispatching fresh background agents per the protocol
+1. Use the Skill tool to reload the Superpowers `subagent-driven-development` skill
+2. Re-read `comet/reference/subagent-dispatch.md` for Comet-specific extensions
+3. Read `openspec/changes/<name>/.comet/subagent-progress.md` to recover the current task or final review, implementation commit, RED/GREEN evidence, passed reviews, unresolved feedback, and review-fix round
+4. Do not execute tasks directly in the main session
+5. Resume from the checkpoint's exact stage; begin implementer dispatch for the first unchecked task only when the checkpoint is missing or mismatched
+6. After dual review and targeted checkoff verification pass, immediately continue to the next task without summarizing or asking whether to continue
 
 ## Design Phase Special Recovery
 

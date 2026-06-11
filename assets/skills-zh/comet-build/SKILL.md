@@ -201,19 +201,14 @@ git commit -m "chore: add implementation plan"
 **执行计划**：必须按 `build_mode` 的真实运行位置处理。
 
 - `build_mode: executing-plans`：**立即执行：** 使用 Skill 工具加载 Superpowers `executing-plans` 技能。禁止跳过此步骤。若该技能不可用，停止流程并提示安装或启用对应技能，不要用普通对话替代该步骤。技能加载后，ARGUMENTS 必须包含与 Step 1 相同的 Language 约束：`Language: 使用触发本次工作流的用户请求语言输出`。按计划执行。
-- `build_mode: subagent-driven-development`：主会话只负责协调，禁止直接编写实现代码。**立即读取 `comet/reference/subagent-dispatch.md` 并完整执行其中协议**；不要在主会话或后台 agent 中加载 `subagent-driven-development` 技能。
+- `build_mode: subagent-driven-development`：主会话只负责协调，禁止直接编写实现代码。**立即执行：** 使用 Skill 工具加载 Superpowers `subagent-driven-development` 技能。技能加载后，读取 `comet/reference/subagent-dispatch.md` 获取 Comet 专属扩展（真实后台调度、任务隔离、勾选验证、TDD 约束、连续执行、上下文恢复），与技能工作流配合应用。若两者发生冲突，以更具体的 Comet 扩展为准。
 - 如果当前平台没有真实后台 agent 调度能力，必须暂停并等待用户选择改用主窗口执行。用户选择改用主窗口执行后，必须先运行 `"$COMET_BASH" "$COMET_STATE" set <name> build_mode executing-plans`，再按 `build_mode: executing-plans` 分支加载 Superpowers `executing-plans` 技能。用户未明确选择前，不得继续执行任务。
-
-执行开始后，按所选分支完成：
-- 按计划执行任务
-- 每个任务完成后提交代码
-- `executing-plans` 在任务完成后勾选对应 plan/OpenSpec task；`subagent-driven-development` 严格按 `comet/reference/subagent-dispatch.md` 在两个审查都通过后勾选
 
 **TDD 模式执行约束**：
 
 若 `tdd_mode: tdd`：
 - `build_mode: executing-plans`：加载执行技能后、执行第一个任务前，**立即执行：** 使用 Skill 工具加载 Superpowers `test-driven-development` 技能一次。禁止跳过此步骤。技能加载后，从第一个未勾选任务开始，对每个任务遵循已加载的 TDD Red-Green-Refactor 循环执行。不得跳过失败测试验证阶段。后续任务不再重新加载该技能，直接遵循已加载流程。若上下文压缩后恢复，重新运行本步骤加载 TDD 技能一次，然后从第一个未勾选任务继续。
-- `build_mode: subagent-driven-development`：TDD 约束和证据门槛已在 `comet/reference/subagent-dispatch.md` 中定义，不额外加载 TDD skill。
+- `build_mode: subagent-driven-development`：主会话不加载 TDD skill；TDD 约束和证据门槛已在 `comet/reference/subagent-dispatch.md` 中定义，每个后台 implementer 和修复 agent 必须自行使用 Skill 工具加载 Superpowers `test-driven-development` 技能，并遵循 Comet 注入的 TDD 硬约束。
 
 若 `tdd_mode: direct`：按正常流程执行，不强制 TDD。
 

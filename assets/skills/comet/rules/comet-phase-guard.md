@@ -27,7 +27,7 @@
 - **brainstorming** — design 阶段、build 阶段中等规模 spec 变更
 - **writing-plans** — build 阶段创建实现计划
 - **executing-plans** / **subagent-driven-development** — build 阶段执行
-- **test-driven-development** — build 阶段 `tdd_mode: tdd` 时，第一个 task 前
+- **test-driven-development** — `executing-plans` 由主会话在第一个 task 前加载；`subagent-driven-development` 由每个后台 implementer 和修复 agent 加载
 - **systematic-debugging** — 遇到崩溃/测试失败/构建失败时
 - **verification-before-completion** — verify 阶段
 - **using-git-worktrees** — build 阶段选择 worktree 隔离时
@@ -81,11 +81,13 @@
 按脚本输出的 **Recovery action** 决定下一步。
 
 **特别注意 `build_mode`**：若恢复脚本输出 `build_mode: subagent-driven-development`，你是协调者，不是执行者。必须：
-1. 立即读取 `comet/reference/subagent-dispatch.md` (immediately re-read `comet/reference/subagent-dispatch.md`)
-2. 禁止加载 `subagent-driven-development` 技能
-3. 禁止在主会话中直接执行 task (Do not execute the pending task directly in the main window)
-4. 从第一个未勾选 task 恢复，并为 implementer、reviewer 和修复分别派发新的后台 agent
-5. 已提交但未通过双审查的 task 保持未勾选，继续审查/修复循环
+1. 使用 Skill 工具重新加载 Superpowers `subagent-driven-development` 技能 (Use the Skill tool to reload the Superpowers `subagent-driven-development` skill)
+2. 读取 `comet/reference/subagent-dispatch.md` 获取 Comet 专属扩展 (re-read `comet/reference/subagent-dispatch.md` for Comet-specific extensions)
+3. 读取 `openspec/changes/<name>/.comet/subagent-progress.md` 恢复精确阶段、证据和审查-修复轮次 (Read `openspec/changes/<name>/.comet/subagent-progress.md` to recover the exact stage, evidence, and review-fix round)
+4. 禁止在主会话中直接执行 task (Do not execute the pending task directly in the main window)
+5. 按检查点恢复；缺失或不匹配时才从第一个未勾选 task 开始
+6. 已提交但未通过双审查的 task 保持未勾选，继续审查/修复循环
+7. task 通过双审查和定向勾选验证后立即继续下一个 task，不得总结或询问是否继续
 
 ## 阶段退出后自动过渡
 

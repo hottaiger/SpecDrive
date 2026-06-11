@@ -201,19 +201,14 @@ git commit -m "chore: add implementation plan"
 **Execute plan**: Must handle execution according to the actual runtime of `build_mode`.
 
 - `build_mode: executing-plans`: **Immediately execute:** Use the Skill tool to load the Superpowers `executing-plans` skill. Skipping this step is prohibited. If the skill is unavailable, stop the process and prompt to install or enable the corresponding skill; do not substitute with normal conversation. After the skill loads, ARGUMENTS must include the same Language constraint as Step 1: `Language: Use the language of the user request that triggered this workflow`. Execute according to plan.
-- `build_mode: subagent-driven-development`: The main session only coordinates; it must not write implementation code directly. **Immediately read `comet/reference/subagent-dispatch.md` and fully execute the protocol therein**; do not load the `subagent-driven-development` skill in the main session or background agents.
+- `build_mode: subagent-driven-development`: The main session only coordinates and must not write implementation code directly. **Immediately execute:** Use the Skill tool to load the Superpowers `subagent-driven-development` skill. After the skill loads, read `comet/reference/subagent-dispatch.md` for Comet-specific extensions (real background dispatch, task isolation, checkoff verification, TDD constraints, continuous execution, context recovery) and apply them alongside the skill's workflow. If they conflict, the more specific Comet extensions take precedence.
 - If the current platform has no real background agent dispatch capability, must pause and wait for the user to choose main window execution instead. After the user chooses, must run `"$COMET_BASH" "$COMET_STATE" set <name> build_mode executing-plans`, then follow the `build_mode: executing-plans` branch to load the Superpowers `executing-plans` skill. Must not continue executing tasks before the user explicitly chooses.
-
-After execution begins, follow the chosen branch to completion:
-- Execute tasks according to plan
-- Commit code after each task completion
-- `executing-plans` checks off the corresponding plan/OpenSpec task after task completion; `subagent-driven-development` strictly follows `comet/reference/subagent-dispatch.md` and checks off only after both reviews pass
 
 **TDD Mode Execution Constraints**:
 
 If `tdd_mode: tdd`:
 - `build_mode: executing-plans`: After loading the execution skill and before executing the first task, **Immediately execute:** Use the Skill tool to load the Superpowers `test-driven-development` skill once. Skipping this step is prohibited. After the skill loads, start from the first unchecked task and follow the loaded TDD Red-Green-Refactor cycle for each task. Must not skip the failing test verification phase. Do not reload this skill for subsequent tasks; follow the already-loaded flow. If resuming after context compaction, re-run this step to load the TDD skill once, then continue from the first unchecked task.
-- `build_mode: subagent-driven-development`: TDD constraints and evidence thresholds are defined in `comet/reference/subagent-dispatch.md`; do not load the TDD skill additionally.
+- `build_mode: subagent-driven-development`: The main session does not load the TDD skill. TDD constraints and evidence thresholds are defined in `comet/reference/subagent-dispatch.md`; every background implementer and fix agent must use the Skill tool to load the Superpowers `test-driven-development` skill and follow the Comet-injected TDD hard constraint.
 
 If `tdd_mode: direct`: Follow normal flow, no enforced TDD.
 
