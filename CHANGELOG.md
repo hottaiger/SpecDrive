@@ -2,6 +2,14 @@
 
 All notable changes to @rpamis/comet will be documented in this file.
 
+## What's Changed [0.3.8] - 2026-06-11
+
+### Fixed
+
+- **npm shebang line ending issue on macOS**: When npm packed the project on Windows, `bin/comet.js` shebang line got CRLF line endings, causing macOS to interpret `#!/usr/bin/env node\r` instead of `#!/usr/bin/env node`, resulting in "command not found" after `npm install -g @rpamis/comet`. Added explicit `eol=lf` rules for all text file extensions (`.js`, `.mjs`, `.ts`, `.json`, `.md`, `.yaml`, `.yml`) and binary markers for image files in `.gitattributes` ([#82](https://github.com/rpamis/comet/issues/82)).
+- **OpenSpec CLI upgrade and --profile fallback**: `ensureOpenSpecCli` now always installs/upgrades openspec to the latest version, even if an older version is already present, ensuring users get `--profile` support and other improvements. Added fallback logic: if `openspec init` fails with "unknown option --profile" in stderr, retries without the flag for edge cases where the upgrade fails but an older openspec remains ([#84](https://github.com/rpamis/comet/issues/84)).
+- **Symlink resolution for skill file copies**: When skill directories are symlinks (e.g. `~/.claude/skills/comet -> ~/.agents/skills/comet`), `copyFile` and `ensureDir` wrote to the literal path instead of following the symlink target. Broken symlinks caused silent copy failures. Added `resolveSymlinkPath()` to `file-system.ts` that walks up the path tree and follows `readlink` targets for broken symlinks. Applied to `ensureDir`, `copyFile`, and `writeFile` ([#85](https://github.com/rpamis/comet/issues/85)).
+
 ## What's Changed [0.3.7] - 2026-06-07
 
 ### Added
