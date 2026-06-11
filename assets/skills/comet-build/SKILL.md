@@ -201,19 +201,19 @@ git commit -m "chore: add implementation plan"
 **Execute plan**: Must handle execution according to the actual runtime of `build_mode`.
 
 - `build_mode: executing-plans`: **Immediately execute:** Use the Skill tool to load the Superpowers `executing-plans` skill. Skipping this step is prohibited. If the skill is unavailable, stop the process and prompt to install or enable the corresponding skill; do not substitute with normal conversation. After the skill loads, ARGUMENTS must include the same Language constraint as Step 1: `Language: Use the language of the user request that triggered this workflow`. Execute according to plan.
-- `build_mode: subagent-driven-development`: The main window only coordinates; must not run `subagent-driven-development` as the main window execution skill directly. Must use the confirmed real background subagent / Task / multi-agent dispatch capability to dispatch the next unchecked task to a background subagent. When dispatching each subagent, the prompt must explicitly require: after the skill loads, ARGUMENTS must include the same Language constraint as Step 1: `Language: Use the language of the user request that triggered this workflow`; after the task is complete and validated, immediately check off the corresponding plan task in `docs/superpowers/plans/<plan-file>.md`; if that plan task maps to an item in `openspec/changes/<name>/tasks.md`, also change that OpenSpec task from `- [ ]` to `- [x]`; if the plan added a step that does not exist in OpenSpec, only the corresponding plan task needs to be checked off. Do not only update the built-in Todo or an in-chat checklist. The background subagent loads the Superpowers `subagent-driven-development` execution flow on its own and follows its guidance for implementation, review, and commit.
-- If the current platform has no real background subagent / Task / multi-agent dispatch capability, must pause and wait for the user to choose main window execution instead. After the user chooses, must run `"$COMET_BASH" "$COMET_STATE" set <name> build_mode executing-plans`, then follow the `build_mode: executing-plans` branch to load the Superpowers `executing-plans` skill. Must not continue executing tasks before the user explicitly chooses.
+- `build_mode: subagent-driven-development`: The main session only coordinates; it must not write implementation code directly. **Immediately read `comet/reference/subagent-dispatch.md` and fully execute the protocol therein**; do not load the `subagent-driven-development` skill in the main session or background agents.
+- If the current platform has no real background agent dispatch capability, must pause and wait for the user to choose main window execution instead. After the user chooses, must run `"$COMET_BASH" "$COMET_STATE" set <name> build_mode executing-plans`, then follow the `build_mode: executing-plans` branch to load the Superpowers `executing-plans` skill. Must not continue executing tasks before the user explicitly chooses.
 
 After execution begins, follow the chosen branch to completion:
 - Execute tasks according to plan
-- Check off the corresponding Superpowers plan task; if the task maps to OpenSpec tasks.md, also check off the corresponding OpenSpec task (`- [ ]` → `- [x]`)
 - Commit code after each task completion
+- `executing-plans` checks off the corresponding plan/OpenSpec task after task completion; `subagent-driven-development` strictly follows `comet/reference/subagent-dispatch.md` and checks off only after both reviews pass
 
 **TDD Mode Execution Constraints**:
 
 If `tdd_mode: tdd`:
 - `build_mode: executing-plans`: After loading the execution skill and before executing the first task, **Immediately execute:** Use the Skill tool to load the Superpowers `test-driven-development` skill once. Skipping this step is prohibited. After the skill loads, start from the first unchecked task and follow the loaded TDD Red-Green-Refactor cycle for each task. Must not skip the failing test verification phase. Do not reload this skill for subsequent tasks; follow the already-loaded flow. If resuming after context compaction, re-run this step to load the TDD skill once, then continue from the first unchecked task.
-- `build_mode: subagent-driven-development`: When dispatching each subagent, must inject the TDD hard constraint into the prompt: **"You MUST follow TDD: for each task, write a failing test first, watch it fail, then write minimal code to pass. No production code without a failing test first."**. The same prompt must also include the OpenSpec tasks.md and Superpowers plan persistent check-off requirement above. Must not rely on implementer-prompt.md's conditional trigger; must explicitly write it in the dispatch prompt.
+- `build_mode: subagent-driven-development`: TDD constraints and evidence thresholds are defined in `comet/reference/subagent-dispatch.md`; do not load the TDD skill additionally.
 
 If `tdd_mode: direct`: Follow normal flow, no enforced TDD.
 
@@ -265,8 +265,9 @@ When creating an independent change, must invoke `/comet-open`, not `/opsx:new` 
 
 Build is the longest phase and may span many tasks. To support resume after context compaction:
 
-- **After each task**: immediately check off the corresponding task in the Superpowers plan; if the task maps to OpenSpec tasks.md, also check off the corresponding OpenSpec task; then commit code so `.comet.yaml` and file state are durable. Use `grep -c '\- \[ \]' tasks.md` to check remaining unchecked count; no need to re-read the entire file
+- **After each task**: complete acceptance per the current execution branch before checking off and committing. `subagent-driven-development` must wait for both reviews to pass and perform targeted verification by unique task text. Use `grep -c '\- \[ \]' tasks.md` to check remaining unchecked count; no need to re-read the entire file
 - **After context compaction**: first run `"$COMET_BASH" "$COMET_STATE" check <change-name> build --recover` — the script outputs structured recovery context (isolation/build_mode status, plan path, task progress, recovery action). Follow the Recovery action to determine next step.
+  - **If `build_mode: subagent-driven-development`**: immediately re-read `comet/reference/subagent-dispatch.md`, resume from the first unchecked task, and fully execute the protocol.
 - **User manual-change resume**: handle uncommitted changes through `comet/reference/dirty-worktree.md`. That protocol defines checks, attribution, and prohibitions. Build-specific handling:
   1. After attribution, if the diff implies plan or spec changes, handle it through Step 4 "Spec Incremental Updates"
 - **Long task split**: if a single task exceeds 200 lines of code changes, consider splitting it into multiple subtasks and commits

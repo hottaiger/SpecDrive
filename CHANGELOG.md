@@ -4,6 +4,16 @@ All notable changes to @rpamis/comet will be documented in this file.
 
 ## What's Changed [0.3.8] - 2026-06-11
 
+### Added
+
+- **Subagent dispatch protocol reference doc**: Extracted the inline subagent-driven-development dispatch protocol from `comet-build/SKILL.md` into a standalone `comet/reference/subagent-dispatch.md` (Chinese and English), covering role isolation, per-task execution cycle, dual-review gates, TDD evidence requirements, and context recovery. Both SKILL.md versions now reference the protocol doc instead of embedding it inline.
+- **`task-checkoff` subcommand**: Added `comet-state task-checkoff <file> <task-text>` to verify a specific task is uniquely checked in a markdown file. Used by the subagent dispatch protocol for targeted completion verification after dual review passes. Includes path traversal prevention, CRLF handling, and exact-match validation.
+
+### Changed
+
+- **English skill sync**: Synced English `comet-build/SKILL.md` with Chinese version optimizations — simplified subagent-driven-development instructions to reference the protocol doc, updated TDD constraints to point to `subagent-dispatch.md`, and added context compaction recovery guidance for subagent build mode.
+- **Phase guard subagent recovery**: `comet-phase-guard.md` now includes explicit recovery steps when `build_mode: subagent-driven-development` is detected after context compaction — re-read the dispatch protocol, do not execute tasks directly in the main session, and resume from the first unchecked task with fresh agents.
+
 ### Fixed
 
 - **npm shebang line ending issue on macOS**: When npm packed the project on Windows, `bin/comet.js` shebang line got CRLF line endings, causing macOS to interpret `#!/usr/bin/env node\r` instead of `#!/usr/bin/env node`, resulting in "command not found" after `npm install -g @rpamis/comet`. Added explicit `eol=lf` rules for all text file extensions (`.js`, `.mjs`, `.ts`, `.json`, `.md`, `.yaml`, `.yml`) and binary markers for image files in `.gitattributes` ([#82](https://github.com/rpamis/comet/issues/82)).

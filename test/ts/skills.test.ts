@@ -376,10 +376,8 @@ describe('skills', () => {
       expect(zhComet).toContain(
         '若 `build_mode: subagent-driven-development`，不得在主窗口直接执行任务',
       );
-      expect(zhBuild).toContain(
-        '主窗口只负责协调，不得把 `subagent-driven-development` 当作当前主窗口的执行技能直接运行',
-      );
-      expect(zhBuild).toContain('如果当前平台没有真实后台 subagent / Task / multi-agent 调度能力');
+      expect(zhBuild).toContain('主会话只负责协调，禁止直接编写实现代码');
+      expect(zhBuild).toContain('如果当前平台没有真实后台 agent 调度能力');
       expect(zhBuild).toContain(
         '先确认当前平台存在可调用的真实后台 subagent / Task / multi-agent 调度能力',
       );
@@ -393,7 +391,9 @@ describe('skills', () => {
       expect(zhBuild).toContain('tdd_mode');
       expect(zhBuild).toContain('`"$COMET_BASH" "$COMET_STATE" set <name> tdd_mode <tdd|direct>`');
       expect(zhBuild).toContain('若 `tdd_mode: tdd`');
-      expect(zhBuild).toContain('必须在 prompt 中注入 TDD 硬约束');
+      expect(zhBuild).toContain(
+        'TDD 约束和证据门槛已在 `comet/reference/subagent-dispatch.md` 中定义',
+      );
       expect(zhComet).toContain('`tdd_mode`');
       expect(zhComet).toContain('full workflow 离开 build 阶段前 `tdd_mode` 必须已选择');
       expect(zhHotfix).toContain('立即使用 Skill 工具加载 `comet-design` skill');
@@ -427,6 +427,8 @@ describe('skills', () => {
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
       expect(zhCometRule).toContain('active compaction gate');
+      expect(zhCometRule).toContain('立即读取 `comet/reference/subagent-dispatch.md`');
+      expect(zhCometRule).toContain('禁止在主会话中直接执行 task');
       for (const [content] of [
         [zhOpen, '/comet-design'],
         [zhDesign, '/comet-build'],
@@ -694,6 +696,8 @@ describe('skills', () => {
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
       expect(enCometRule).toContain('active compaction gate');
+      expect(enCometRule).toContain('immediately re-read `comet/reference/subagent-dispatch.md`');
+      expect(enCometRule).toContain('Do not execute the pending task directly in the main window');
       for (const [content] of [
         [enOpen, '/comet-design'],
         [enDesign, '/comet-build'],
@@ -804,8 +808,8 @@ describe('skills', () => {
     });
   });
 
-  describe('Comet build subagent persistence safeguards', () => {
-    it('requires subagent prompts to persist task completion in durable task files', async () => {
+  describe('Comet build subagent dispatch safeguards', () => {
+    it('requires isolated roles and review-before-checkoff persistence', async () => {
       const zhBuild = await fs.readFile(
         path.resolve('assets', 'skills-zh', 'comet-build', 'SKILL.md'),
         'utf-8',
@@ -814,12 +818,29 @@ describe('skills', () => {
         path.resolve('assets', 'skills', 'comet-build', 'SKILL.md'),
         'utf-8',
       );
+      const zhDispatch = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'comet', 'reference', 'subagent-dispatch.md'),
+        'utf-8',
+      );
 
-      expect(zhBuild).toContain(
-        '派发每个 subagent 时，必须在 prompt 中明确要求：技能加载后 ARGUMENTS 必须包含与 Step 1 相同的 Language 约束：`Language: 使用触发本次工作流的用户请求语言输出`；任务完成并通过验证后，立即勾选 `docs/superpowers/plans/<plan-file>.md` 中对应的计划任务；若该计划任务映射到 `openspec/changes/<name>/tasks.md` 中的任务，也同步将该 OpenSpec 任务从 `- [ ]` 改为 `- [x]`；若 plan 新增了 OpenSpec 中没有的一步，只勾选 plan 中对应任务即可。不得只更新内置 Todo 或对话内 checklist。',
+      expect(zhBuild).toContain('立即读取 `comet/reference/subagent-dispatch.md`');
+      expect(zhBuild).not.toContain('#### Subagent 调度协议');
+      expect(zhDispatch).toContain('每个 task 派发一个全新的 implementer agent');
+      expect(zhDispatch).toContain('implementer 不得勾选 plan 或 OpenSpec task');
+      expect(zhDispatch).toContain('两个审查都通过后');
+      expect(zhDispatch).toContain('按保存的任务唯一文本调用状态脚本验证');
+      expect(zhDispatch).toContain(
+        '"$COMET_BASH" "$COMET_STATE" task-checkoff "$PLAN_FILE" "$PLAN_TASK_TEXT"',
+      );
+      expect(zhDispatch).not.toContain('PLAN_MATCHES="$(grep -cF');
+      expect(zhDispatch).toContain('RED 失败命令与失败摘要');
+      expect(zhDispatch).toContain('GREEN 通过命令与通过摘要');
+      expect(zhDispatch).not.toContain("grep -n '\\- \\[ \\]' openspec/changes/<name>/tasks.md");
+      expect(enBuild).toContain(
+        'Immediately read `comet/reference/subagent-dispatch.md` and fully execute the protocol therein',
       );
       expect(enBuild).toContain(
-        'When dispatching each subagent, the prompt must explicitly require: after the skill loads, ARGUMENTS must include the same Language constraint as Step 1: `Language: Use the language of the user request that triggered this workflow`; after the task is complete and validated, immediately check off the corresponding plan task in `docs/superpowers/plans/<plan-file>.md`; if that plan task maps to an item in `openspec/changes/<name>/tasks.md`, also change that OpenSpec task from `- [ ]` to `- [x]`; if the plan added a step that does not exist in OpenSpec, only the corresponding plan task needs to be checked off. Do not only update the built-in Todo or an in-chat checklist.',
+        'TDD constraints and evidence thresholds are defined in `comet/reference/subagent-dispatch.md`',
       );
     });
   });

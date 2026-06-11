@@ -60,7 +60,7 @@
 ## Build 阶段专项
 
 1. plan 创建后必须询问用户选择继续或暂停（`build_pause` 机制）
-2. 每个 task 完成后必须: tasks.md 打勾 → git commit（不得积攒）
+2. 每个 task 验收后必须: tasks.md 打勾 → git commit（不得积攒）。`subagent-driven-development` 必须等 spec compliance 与 code quality 两个审查都通过，再由协调者按任务唯一文本定向勾选和验证；不得用未完成任务总表代替当前任务验证
 3. 遇到失败必须加载 **systematic-debugging** skill，根因未定位前不得提出源码修复
 4. spec 变更分级: 小改直接编辑 | 中改加载 brainstorming | 大改暂停等用户确认拆分
 
@@ -79,6 +79,13 @@
 ```
 
 按脚本输出的 **Recovery action** 决定下一步。
+
+**特别注意 `build_mode`**：若恢复脚本输出 `build_mode: subagent-driven-development`，你是协调者，不是执行者。必须：
+1. 立即读取 `comet/reference/subagent-dispatch.md`
+2. 禁止加载 `subagent-driven-development` 技能
+3. 禁止在主会话中直接执行 task
+4. 从第一个未勾选 task 恢复，并为 implementer、reviewer 和修复分别派发新的后台 agent
+5. 已提交但未通过双审查的 task 保持未勾选，继续审查/修复循环
 
 ## 阶段退出后自动过渡
 
