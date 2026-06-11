@@ -14,7 +14,7 @@ import {
   getManifestSkills,
 } from '../core/skills.js';
 import { PLATFORMS, getPlatformSkillsDir, type Platform } from '../core/platforms.js';
-import { installCodegraph, filterSupportedPlatforms } from '../core/codegraph.js';
+import { installCodegraph } from '../core/codegraph.js';
 import type { InstallScope } from '../core/types.js';
 
 const require = createRequire(import.meta.url);
@@ -311,11 +311,9 @@ export async function updateCommand(
 
   // CodeGraph optional step
   let codegraphStatus: 'installed' | 'failed' | 'skipped' = 'skipped';
-  const detectedPlatformIds = [...new Set(targets.map((t) => t.platform.id))];
-  const { supported: cgSupported } = filterSupportedPlatforms(detectedPlatformIds);
   const primaryScope = targets[0]?.scope ?? 'project';
 
-  if (cgSupported.length > 0 && !options.json) {
+  if (!options.json) {
     const shouldInstallCodegraph = await select({
       message: 'Install/update CodeGraph for semantic code intelligence?',
       choices: [
@@ -326,7 +324,7 @@ export async function updateCommand(
 
     if (shouldInstallCodegraph) {
       log('\n  Installing CodeGraph...');
-      codegraphStatus = await installCodegraph(projectPath, detectedPlatformIds, primaryScope);
+      codegraphStatus = await installCodegraph(projectPath, primaryScope);
       log(`  CodeGraph: ${codegraphStatus}`);
     } else {
       log('\n  CodeGraph: skipped');
