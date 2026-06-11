@@ -193,15 +193,12 @@ Hotfix 流程默认 **一次性连续执行**。调用 `/comet-hotfix` 后，age
 
 ## 自动衔接下一阶段
 
-> **术语区分**：阶段守卫 `--apply` 推进 `.comet.yaml` 的 `phase` 字段——这一步**始终发生**，与 `auto_transition` 无关。本节的「自动衔接」只决定**是否自动调用下一个 skill**。
-
-每次阶段守卫或状态转换推进 phase 后，运行：
+按 `comet/reference/auto-transition.md` 执行。关键命令：
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <name>
 ```
 
-脚本根据 `phase`、`workflow`、`auto_transition` 输出确定性的下一步：
 - `NEXT: auto` → 调用 `SKILL` 指向的 skill 继续 hotfix 流程（`phase: build` 返回 `comet-hotfix`，`verify` 返回 `comet-verify`，`archive` 返回 `comet-archive`）
 - `NEXT: manual` → 不要调用下一 skill，按 `HINT` 提示用户手动运行 `/<SKILL>`
 - `NEXT: done` → 流程已完成，无需继续

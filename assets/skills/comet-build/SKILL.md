@@ -266,8 +266,7 @@ When creating an independent change, must invoke `/comet-open`, not `/opsx:new` 
 Build is the longest phase and may span many tasks. To support resume after context compaction:
 
 - **After each task**: complete acceptance per the current execution branch before checking off and committing. `subagent-driven-development` must wait for both reviews to pass and perform targeted verification by unique task text. Use `grep -c '\- \[ \]' tasks.md` to check remaining unchecked count; no need to re-read the entire file
-- **After context compaction**: first run `"$COMET_BASH" "$COMET_STATE" check <change-name> build --recover` — the script outputs structured recovery context (isolation/build_mode status, plan path, task progress, recovery action). Follow the Recovery action to determine next step.
-  - **If `build_mode: subagent-driven-development`**: immediately re-read `comet/reference/subagent-dispatch.md`, resume from the first unchecked task, and fully execute the protocol.
+- **Context compression recovery**: Follow `comet/reference/context-recovery.md` with phase set to `build`.
 - **User manual-change resume**: handle uncommitted changes through `comet/reference/dirty-worktree.md`. That protocol defines checks, attribution, and prohibitions. Build-specific handling:
   1. After attribution, if the diff implies plan or spec changes, handle it through Step 4 "Spec Incremental Updates"
 - **Long task split**: if a single task exceeds 200 lines of code changes, consider splitting it into multiple subtasks and commits
@@ -303,15 +302,12 @@ State file is automatically updated to `phase: verify`, `verify_result: pending`
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: the "phase advancement" above is performed by guard `--apply`, which updates the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After exit conditions are met and guard-based phase advancement has completed, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue to the next phase
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to enter the next phase
+- `NEXT: manual` → do not invoke the next skill; prompt user to run `/<SKILL>` manually
+- `NEXT: done` → workflow is complete, no further action needed

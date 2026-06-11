@@ -214,27 +214,18 @@ State file auto-updates to `phase: archive`, `verify_result: pass`, `verified_at
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: the "phase advancement" above is performed by guard `--apply`, which updates the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After verification and branch handling are complete, and guard-based phase advancement has completed, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue to the next phase
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to enter the next phase
+- `NEXT: manual` → do not invoke the next skill; prompt user to run `/<SKILL>` manually
+- `NEXT: done` → workflow is complete, no further action needed
 
 Note: after `comet-archive` starts, it must first execute the final archive confirmation blocking point and wait for the user to explicitly choose "Confirm archive" before running the archive script. Must not automatically archive just because verification passed.
 
-## Context Compaction Recovery
+## Context Compression Recovery
 
-The verify phase may trigger context compaction. To recover, first run:
-
-```bash
-"$COMET_BASH" "$COMET_STATE" check <change-name> verify --recover
-```
-
-The script outputs structured recovery context (phase, verification status, branch status, recovery action). Follow the Recovery action to determine next step.
+Follow `comet/reference/context-recovery.md` with phase set to `verify`.

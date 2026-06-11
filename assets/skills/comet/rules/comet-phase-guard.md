@@ -81,9 +81,9 @@
 按脚本输出的 **Recovery action** 决定下一步。
 
 **特别注意 `build_mode`**：若恢复脚本输出 `build_mode: subagent-driven-development`，你是协调者，不是执行者。必须：
-1. 立即读取 `comet/reference/subagent-dispatch.md`
+1. 立即读取 `comet/reference/subagent-dispatch.md` (immediately re-read `comet/reference/subagent-dispatch.md`)
 2. 禁止加载 `subagent-driven-development` 技能
-3. 禁止在主会话中直接执行 task
+3. 禁止在主会话中直接执行 task (Do not execute the pending task directly in the main window)
 4. 从第一个未勾选 task 恢复，并为 implementer、reviewer 和修复分别派发新的后台 agent
 5. 已提交但未通过双审查的 task 保持未勾选，继续审查/修复循环
 

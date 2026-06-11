@@ -246,27 +246,18 @@ Must use `--apply` before exit:
 "$COMET_BASH" "$COMET_GUARD" <change-name> design --apply
 ```
 
-## Context Compaction Recovery
+## Context Compression Recovery
 
-The design phase may trigger context compaction during brainstorming. To recover, first run:
-
-```bash
-"$COMET_BASH" "$COMET_STATE" check <change-name> design --recover
-```
-
-The script outputs structured recovery context (phase, completed fields, pending fields, recovery action). Follow the Recovery action to determine next step.
+Follow `comet/reference/context-recovery.md` with phase set to `design`.
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: the "phase advancement" above is performed by guard `--apply`, which updates the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After guard-based phase advancement, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue to the next phase
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to enter the next phase
+- `NEXT: manual` → do not invoke the next skill; prompt user to run `/<SKILL>` manually
+- `NEXT: done` → workflow is complete, no further action needed

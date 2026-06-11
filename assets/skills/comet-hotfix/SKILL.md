@@ -197,15 +197,12 @@ Then on current change basis, supplement Design Doc: **Immediately use the Skill
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: phase guard `--apply` advances the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After each phase guard or state transition advances phase, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue the hotfix flow (`phase: build` returns `comet-hotfix`, `verify` returns `comet-verify`, `archive` returns `comet-archive`)
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to continue hotfix workflow (`phase: build` returns `comet-hotfix`, `verify` returns `comet-verify`, `archive` returns `comet-archive`)
+- `NEXT: manual` → do not invoke the next skill; prompt user to manually run `/<SKILL>` per `HINT`
+- `NEXT: done` → workflow is complete, no further action needed

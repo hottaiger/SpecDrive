@@ -95,12 +95,6 @@ The archive script moves `openspec/changes/<name>/` to `openspec/changes/archive
 
 Comet workflow complete. To start new work, invoke `/comet` or `/comet-open`.
 
-## Context Compaction Recovery
+## Context Compression Recovery
 
-The archive phase may trigger context compaction during execution. On resume, first run:
-
-```bash
-"$COMET_BASH" "$COMET_STATE" check <change-name> archive --recover
-```
-
-The script outputs structured recovery context (archive status, completed steps). Follow the Recovery action to determine next steps. If `archived: true` and the archive directory exists, archiving is already complete — no need to run the archive operation again.
+Follow `comet/reference/context-recovery.md` with phase set to `archive`. If `archived: true` and archive directory exists, archival is complete — do not re-execute archive operations.

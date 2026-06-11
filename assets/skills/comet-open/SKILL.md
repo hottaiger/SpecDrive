@@ -170,17 +170,14 @@ Full workflow auto-transitions to `phase: design`; hotfix/tweak presets auto-tra
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: the "phase advancement" above is performed by guard `--apply`, which updates the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After user confirmation and guard-based phase advancement, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue to the next phase
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to enter the next phase
+- `NEXT: manual` → do not invoke the next skill; prompt user to run `/<SKILL>` manually
+- `NEXT: done` → workflow is complete, no further action needed
 
-Hotfix/tweak presets are controlled by their preset skills (phase goes directly to build), and their `next` output points to the preset path.
+hotfix/tweak presets are controlled by their corresponding preset skill (phase goes directly to build); their `next` returns the corresponding preset skill.

@@ -92,6 +92,14 @@ Before continuing or starting changes, handle uncommitted changes through `comet
 
 State automatically updates to `phase: verify`, `verify_result: pending`, then enter verification.
 
+During tweak execution, whenever running programs, tests, builds, or manual verification results in crashes, abnormal behavior, test failures, or build failures, you must use the Skill tool to load the Superpowers `systematic-debugging` skill. Do not propose or implement source code fixes before completing root cause investigation.
+
+Follow the `systematic-debugging` four-stage process:
+- First reproduce and locate the root cause, reading the full error, checking recent changes, tracing data flow
+- If the root cause points to a source code bug, first add a minimal failing test that reproduces the crash/abnormality, then modify the source code
+- After fixing, run the failing test, related tests, and project build/verification commands to confirm all pass
+- Keep the tests, source code fix, and tasks.md checkoff within the current change; do not start a separate "write test cases" change to bypass the current change's verification loop
+
 ### 3. Lightweight Verification (preset verify)
 
 Reuse `/comet-verify`. Tweak must maintain lightweight verification conditions: ≤ 3 tasks, ≤ 4 files, no delta spec, no new capability.
@@ -165,15 +173,12 @@ Then on current change basis, supplement Design Doc: **Immediately use the Skill
 
 ## Automatic Handoff to Next Phase
 
-> **Terminology distinction**: phase guard `--apply` advances the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. This section's "automatic handoff" only controls whether to automatically invoke the next skill.
-
-After each phase guard or state transition advances phase, run:
+Follow `comet/reference/auto-transition.md`. Key command:
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <name>
 ```
 
-The script determines the next action from `phase`, `workflow`, and `auto_transition`:
-- `NEXT: auto` -> invoke the `SKILL` target to continue the tweak flow (`phase: build` returns `comet-tweak`, `verify` returns `comet-verify`, `archive` returns `comet-archive`)
-- `NEXT: manual` -> do not invoke the next skill; follow `HINT` and ask the user to run `/<SKILL>` manually
-- `NEXT: done` -> workflow is complete; no further action needed
+- `NEXT: auto` → invoke the skill pointed to by `SKILL` to continue tweak workflow (`phase: build` returns `comet-tweak`, `verify` returns `comet-verify`, `archive` returns `comet-archive`)
+- `NEXT: manual` → do not invoke the next skill; prompt user to manually run `/<SKILL>` per `HINT`
+- `NEXT: done` → workflow is complete, no further action needed

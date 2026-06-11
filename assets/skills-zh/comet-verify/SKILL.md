@@ -212,25 +212,16 @@ mkdir -p docs/superpowers/reports
 
 ## 上下文压缩恢复
 
-Verify 阶段可能触发上下文压缩。恢复时先运行：
-
-```bash
-"$COMET_BASH" "$COMET_STATE" check <change-name> verify --recover
-```
-
-脚本输出结构化恢复上下文（phase、验证状态、分支状态、恢复动作），根据输出的 Recovery action 决定下一步。
+按 `comet/reference/context-recovery.md` 执行，phase 参数为 `verify`。
 
 ## 自动衔接下一阶段
 
-> **术语区分**：上面的「阶段守卫推进」由 guard `--apply` 完成，更新 `.comet.yaml` 的 `phase` 字段——这一步**始终发生**，与 `auto_transition` 无关。本节的「自动衔接」只决定**是否自动调用下一个 skill**，由 `auto_transition` 控制。
-
-验证、分支处理完成且阶段守卫推进 phase 后，运行：
+按 `comet/reference/auto-transition.md` 执行。关键命令：
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-脚本根据 `phase`、`workflow`、`auto_transition` 输出确定性的下一步：
 - `NEXT: auto` → 调用 `SKILL` 指向的 skill 进入下一阶段
 - `NEXT: manual` → 不要调用下一 skill，按 `HINT` 提示用户手动运行 `/<SKILL>`
 - `NEXT: done` → 流程已完成，无需继续

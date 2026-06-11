@@ -266,8 +266,7 @@ git commit -m "chore: add implementation plan"
 Build 是最长阶段，可能跨越大量任务。为支持上下文压缩后断点恢复：
 
 - **每完成一个 task**：按当前执行分支完成验收后再勾选对应任务并提交。`subagent-driven-development` 必须等两个审查都通过，并按任务唯一文本完成定向检查。可用 `grep -c '\- \[ \]' tasks.md` 检查剩余未勾选数，无需重新读取整个文件
-- **上下文压缩后恢复**：先运行 `"$COMET_BASH" "$COMET_STATE" check <change-name> build --recover`，脚本输出结构化恢复上下文（isolation/build_mode 状态、plan 路径、任务完成进度、恢复动作）。根据 Recovery action 决定下一步。
-  - **若 `build_mode: subagent-driven-development`**：立即重新读取 `comet/reference/subagent-dispatch.md`，从第一个未勾选 task 恢复并完整执行协议。
+- **上下文压缩后恢复**：按 `comet/reference/context-recovery.md` 执行，phase 参数为 `build`。
 - **用户手动修改恢复**：按 `comet/reference/dirty-worktree.md` 协议处理未提交改动。该协议定义了检查步骤、归因分类和禁令。build 阶段的特殊处理：
   1. 归因后，若 diff 暗示计划或 spec 已变化，按 Step 4「Spec 增量更新」分级处理
 - **长任务拆分**：单任务超过 200 行代码变更时，考虑拆分为多个子任务分别提交
@@ -303,15 +302,12 @@ verify_command: <verify command>
 
 ## 自动衔接下一阶段
 
-> **术语区分**：上面的「阶段守卫推进」由 guard `--apply` 完成，更新 `.comet.yaml` 的 `phase` 字段——这一步**始终发生**，与 `auto_transition` 无关。本节的「自动衔接」只决定**是否自动调用下一个 skill**，由 `auto_transition` 控制。
-
-退出条件满足且阶段守卫推进 phase 后，运行：
+按 `comet/reference/auto-transition.md` 执行。关键命令：
 
 ```bash
 "$COMET_BASH" "$COMET_STATE" next <change-name>
 ```
 
-脚本根据 `phase`、`workflow`、`auto_transition` 输出确定性的下一步：
 - `NEXT: auto` → 调用 `SKILL` 指向的 skill 进入下一阶段
 - `NEXT: manual` → 不要调用下一 skill，按 `HINT` 提示用户手动运行 `/<SKILL>`
 - `NEXT: done` → 流程已完成，无需继续
