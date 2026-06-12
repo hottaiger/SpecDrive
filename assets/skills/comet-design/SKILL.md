@@ -135,7 +135,7 @@ For context compaction recovery, the agent must incrementally update `brainstorm
 
 ### 1c. User Confirms Design Proposal (Blocking Point)
 
-After brainstorming produces a design proposal, **must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm the design proposal**. Must not create the final Design Doc, write `design_doc`, run design guard, or enter `/comet-build` before user confirmation. If the current platform has no structured question tool, ask a confirmation question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+After brainstorming produces a design proposal, **must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm the design proposal**. Must not create the final Design Doc, write `design_doc`, run design guard, or enter `/comet-build` before user confirmation.
 
 When pausing, only present essential summary:
 - Technical approach adopted

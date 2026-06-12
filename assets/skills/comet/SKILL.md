@@ -120,7 +120,7 @@ Flow chain: open → design → build → verify → archive
 
 **Distinguish phase advancement vs automatic handoff**: each sub-skill runs phase guard `--apply` before exit to advance the `.comet.yaml` `phase` field. This step **always happens** and is not controlled by `auto_transition`. After that, the sub-skill runs `"$COMET_BASH" "$COMET_STATE" next <name>` to resolve the next action: when `auto_transition` is not `false`, output is `NEXT: auto` (auto-invoke next skill); when `auto_transition` is `false`, output is `NEXT: manual` (do not invoke next skill, show a manual run hint). Therefore `auto_transition` **only controls next skill invocation, not phase advancement**. Regardless of `auto_transition`, user decision points below remain blocking.
 
-**Decision points are blocking points**: whenever reaching any of the following nodes, the current `/comet` invocation must stop, **using the current platform's available user input/confirmation mechanism to wait for the user's choice**. If the current platform has no structured question tool, ask clear options in the conversation and stop the workflow, waiting for the user's reply before continuing. Only after the user explicitly chooses can the corresponding state fields be written and operations executed, then auto-advance resumes.
+**Decision points are blocking points**: whenever reaching any of the following nodes, the current `/comet` invocation must stop, and follow the `comet/reference/decision-point.md` protocol to obtain the user's explicit choice. Only after the user explicitly chooses can the corresponding state fields be written and operations executed, then auto-advance resumes.
 
 Nodes requiring user participation (pause only at these nodes):
 1. Open phase proposal/design/tasks review and confirmation
@@ -204,6 +204,14 @@ See `comet/reference/auto-transition.md` for the complete automatic handoff work
 ### Context Recovery
 
 See `comet/reference/context-recovery.md` for structured recovery after context compression.
+
+### Decision Point Protocol
+
+See `comet/reference/decision-point.md` for the complete user decision point protocol.
+
+### Debug Gate Protocol
+
+See `comet/reference/debug-gate.md` for the complete debug gate protocol.
 
 ### Script Location
 

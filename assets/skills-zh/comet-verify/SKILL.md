@@ -77,7 +77,7 @@ git diff --stat "$BASE_REF"...HEAD
 
 ### 1b. 验证失败决策（阻塞点）
 
-验证不通过时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户决定修复或接受偏差**。不得自动运行 `"$COMET_BASH" "$COMET_STATE" transition <change-name> verify-fail`，也不得自动调用 `/comet-build`。若当前平台没有结构化提问工具，则在对话中提出修复/接受偏差选项并停止流程，等待用户回复后才能继续。
+验证不通过时**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户决定修复或接受偏差**。不得自动运行 `"$COMET_BASH" "$COMET_STATE" transition <change-name> verify-fail`，也不得自动调用 `/comet-build`。
 
 暂停时必须列出：
 - 失败项
@@ -175,7 +175,7 @@ CURRENT_HASH=$("$COMET_BASH" "$COMET_HANDOFF" <change-name> --hash-only 2>/dev/n
 3. 保持分支（稍后处理）
 4. 丢弃工作
 
-这是用户决策点。**必须使用当前平台可用的用户输入/确认机制暂停并等待用户选择分支处理方式**，不得根据推荐、默认值或当前分支状态自行选择。若当前平台没有结构化提问工具，则在对话中提出分支处理选项并停止流程，等待用户回复后才能继续。只有在用户完成选择且对应操作完成后，才允许写入 `branch_status: handled`。
+这是用户决策点。**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户选择分支处理方式**，不得根据推荐、默认值或当前分支状态自行选择。只有在用户完成选择且对应操作完成后，才允许写入 `branch_status: handled`。
 
 **确认项**：
 - 全部测试通过

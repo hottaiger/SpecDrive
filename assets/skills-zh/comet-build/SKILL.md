@@ -87,7 +87,7 @@ Subagent 完成后：
 | A | 继续执行 | 保持在当前模型中，进入 Step 3 选择工作区隔离和执行方式 |
 | B | 暂停切换模型 | 记录 `build_pause: plan-ready`，本次 `/comet-build` 停止，用户稍后可从 `/comet` 或 `/comet-build` 恢复 |
 
-这是用户决策点。**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确选择**，不得自动继续，也不得把暂停写入 `build_mode`。若当前平台没有结构化提问工具，则在对话中提出同等选项并停止流程，等待用户回复后才能继续。
+这是用户决策点。**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确选择**，不得自动继续，也不得把暂停写入 `build_mode`。
 
 用户选择继续时：
 
@@ -138,7 +138,7 @@ Subagent 完成后：
 - 任务数 ≤ 2 且无跨模块依赖 → 推荐 B
 - 来自 hotfix 路径 → 推荐 B
 
-这是用户决策点。**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确选择隔离方式、执行方式和 TDD 模式**，不得根据推荐规则自行选择 `branch` 或 `worktree`，也不得根据推荐规则自行选择执行方式或 TDD 模式。推荐规则只能用于说明建议，不能替代用户确认。若当前平台没有结构化提问工具，则在对话中提出同等选项并停止流程，等待用户回复后才能继续。
+这是用户决策点。**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确选择隔离方式、执行方式和 TDD 模式**，不得根据推荐规则自行选择 `branch` 或 `worktree`，也不得根据推荐规则自行选择执行方式或 TDD 模式。推荐规则只能用于说明建议，不能替代用户确认。
 
 用户选择后，更新 `isolation`、执行方式和 TDD 模式相关字段：
 
@@ -226,11 +226,7 @@ git commit -m "chore: add implementation plan"
 
 执行任务期间，只要运行程序、测试、构建或手动验证时出现崩溃、异常行为、测试失败或构建失败，必须使用 Skill 工具加载 Superpowers `systematic-debugging` 技能。在完成根因调查前，不得提出或实施源码修复。
 
-按 `systematic-debugging` 的四阶段流程处理：
-- 先复现并定位根因，读取完整错误、检查近期变更、追踪数据流
-- 若根因指向源码 bug，先补充能复现该崩溃/异常的最小失败测试，再修改源码
-- 修复后运行该失败测试、相关测试和项目构建/验证命令，确认全部通过
-- 将测试、源码修复和 tasks.md 勾选保留在当前 change 内；不得通过另起一个“写测试用例”的 change 来替代当前 change 的验证闭环
+具体调查、最小失败测试、修复验证和保持当前 change 验证闭环的要求，按 `comet/reference/debug-gate.md` 执行。
 
 ### 4. Spec 增量更新
 
@@ -242,7 +238,7 @@ git commit -m "chore: add implementation plan"
 | 中 | 接口变更、新增组件、数据流变化 | **使用当前平台可用的用户输入/确认机制暂停并等待用户确认后**，必须使用 Skill 工具加载 Superpowers `brainstorming` 更新 Design Doc + delta spec |
 | 大 | 全新 capability 需求 | **必须使用当前平台可用的用户输入/确认机制暂停并等待用户确认拆分**；用户确认后，通过 `/comet-open` 创建独立 change |
 
-**50% 阈值判定**：以 tasks.md 初始任务总数为基准，若新增任务数超过该总数的一半，视为超出原计划范围，**必须使用当前平台可用的用户输入/确认机制暂停并等待用户决定是否拆分为新 change**。若当前平台没有结构化提问工具，则在对话中提出拆分选项并停止流程，等待用户回复后才能继续。
+**50% 阈值判定**：以 tasks.md 初始任务总数为基准，若新增任务数超过该总数的一半，视为超出原计划范围，**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户决定是否拆分为新 change**。
 
 创建独立 change 时必须调用 `/comet-open`，不得直接调用 `/opsx:new`。`/comet-open` 会同时创建 OpenSpec 产物和 `.comet.yaml`，避免新 change 脱离 Comet 状态机。
 

@@ -135,7 +135,7 @@ brainstorming 阶段不写入 Design Doc 文件，仅产出设计方案供 Step 
 
 ### 1c. 用户确认设计方案（阻塞点）
 
-brainstorming 产出设计方案后，**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认设计方案**。不得在用户确认前创建最终 Design Doc、写入 `design_doc`、运行 design guard，或进入 `/comet-build`。若当前平台没有结构化提问工具，则在对话中提出确认问题并停止流程，等待用户回复后才能继续。
+brainstorming 产出设计方案后，**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确确认设计方案**。不得在用户确认前创建最终 Design Doc、写入 `design_doc`、运行 design guard，或进入 `/comet-build`。
 
 暂停时只展示必要摘要：
 - 采用的技术方案

@@ -94,11 +94,7 @@ State automatically updates to `phase: verify`, `verify_result: pending`, then e
 
 During tweak execution, whenever running programs, tests, builds, or manual verification results in crashes, abnormal behavior, test failures, or build failures, you must use the Skill tool to load the Superpowers `systematic-debugging` skill. Do not propose or implement source code fixes before completing root cause investigation.
 
-Follow the `systematic-debugging` four-stage process:
-- First reproduce and locate the root cause, reading the full error, checking recent changes, tracing data flow
-- If the root cause points to a source code bug, first add a minimal failing test that reproduces the crash/abnormality, then modify the source code
-- After fixing, run the failing test, related tests, and project build/verification commands to confirm all pass
-- Keep the tests, source code fix, and tasks.md checkoff within the current change; do not start a separate "write test cases" change to bypass the current change's verification loop
+For specific investigation, minimal failing test, fix verification, and keeping the current change verification loop, follow `comet/reference/debug-gate.md`.
 
 ### 3. Lightweight Verification (preset verify)
 
@@ -151,7 +147,7 @@ Upgrade to full `/comet` when **any** of the following conditions are met:
 | New capability needed | Exceeds local optimization |
 | Delta spec needed | Affects existing specs |
 
-When upgrade conditions are met, **must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm** upgrading to the full `/comet` workflow. Do not directly enter `/comet-design`, and do not automatically supplement Design Doc. If the current platform has no structured question tool, ask an upgrade confirmation question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+When upgrade conditions are met, **must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm** upgrading to the full `/comet` workflow. Do not directly enter `/comet-design`, and do not automatically supplement Design Doc.
 
 After user confirms upgrade, **must first update the workflow and phase fields** before entering full flow:
 

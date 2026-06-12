@@ -97,11 +97,7 @@ Before continuing or starting changes, handle uncommitted changes through `comet
 
 During hotfix execution, whenever a crash, unexpected behavior, test failure, or build failure appears while running the program, tests, build, or manual verification, must use the Skill tool to load the Superpowers `systematic-debugging` skill. Before root-cause investigation is complete, must not propose or implement source-code fixes.
 
-Handle it using the four-phase `systematic-debugging` flow:
-- First reproduce and locate the root cause, read full errors, check recent changes, and trace data flow
-- If root cause points to a source bug, first add a minimal failing test that reproduces the crash or unexpected behavior, then modify source code
-- After the fix, run that failing test, related tests, and project build/verification commands to confirm all pass
-- Keep the test, source fix, and tasks.md checkoff inside the current change; must not replace the current change verification loop by starting a separate "write test cases" change
+For specific investigation, minimal failing test, fix verification, and keeping the current change verification loop, follow `comet/reference/debug-gate.md`.
 
 ### 3. Root Cause Elimination Check
 
@@ -175,7 +171,7 @@ Upgrade to full `/comet` when **any** of the following conditions are met:
 | Introduces new public API | Fix creates new external interface |
 | Fix scope exceeds single function/module | Requires coordinated changes |
 
-When upgrade conditions are met, **must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm** upgrading to the full `/comet` workflow. Do not directly enter `/comet-design`, and do not automatically supplement Design Doc. If the current platform has no structured question tool, ask an upgrade confirmation question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+When upgrade conditions are met, **must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm** upgrading to the full `/comet` workflow. Do not directly enter `/comet-design`, and do not automatically supplement Design Doc.
 
 After user confirms upgrade, **must first update the workflow and phase fields** before entering full flow:
 

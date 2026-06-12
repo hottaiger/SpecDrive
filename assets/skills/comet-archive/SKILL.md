@@ -35,7 +35,7 @@ Proceed to Step 1 after verification passes. The script outputs specific failure
 
 ### 1. Final Archive Confirmation (Blocking Point)
 
-After entry verification passes, **must use the current platform's available user input/confirmation mechanism to pause and wait for the user to confirm whether to archive immediately**. Must not run `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"` before user confirmation. If the current platform has no structured question tool, ask an equivalent single-select question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+After entry verification passes, **must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to confirm whether to archive immediately**. Must not run `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"` before user confirmation.
 
 Before confirmation, show the user a brief summary:
 - Change name

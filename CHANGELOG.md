@@ -14,6 +14,8 @@ All notable changes to @rpamis/comet will be documented in this file.
 
 - **Skills progressive loading refactor**: All 7 sub-skills (`comet-open`, `comet-design`, `comet-build`, `comet-verify`, `comet-archive`, `comet-hotfix`, `comet-tweak`) in both Chinese and English now reference shared protocol documents for auto-transition and context recovery instead of embedding full content inline, while retaining critical inline commands (`next` command and output interpretation) for safe standalone loading.
 - **Phase guard recovery with durable checkpoints**: Updated recovery steps in `comet-phase-guard.md` (Chinese and English) to reload the Superpowers `subagent-driven-development` skill, read `subagent-progress.md` for exact stage recovery (implementation commit, RED/GREEN evidence, passed reviews, unresolved feedback, review-fix round), and resume from the checkpoint's precise phase instead of always starting from the first unchecked task. Both `.claude/rules/` and `assets/skills/comet/rules/` copies include consistent references with bilingual identifiers for cross-language test compatibility.
+- **Decision point protocol extraction**: Extracted inline user-decision-point text from all 7 sub-skills (`comet-open`, `comet-design`, `comet-build`, `comet-verify`, `comet-archive`, `comet-hotfix`, `comet-tweak`) and main `comet/SKILL.md` into shared `comet/reference/decision-point.md` (both Chinese and English). Sub-skills now reference the protocol by path instead of repeating the full blocking-point rules, reducing per-invocation token cost and ensuring consistency across skills.
+- **Debug gate protocol extraction**: Extracted the inline systematic-debugging four-stage flow from `comet-build`, `comet-hotfix`, and `comet-tweak` into shared `comet/reference/debug-gate.md` (both Chinese and English). Sub-skills now reference the debug gate protocol by path, centralizing the investigation, minimal failing test, fix verification, and verification-loop rules.
 
 ### Fixed
 
@@ -27,6 +29,7 @@ All notable changes to @rpamis/comet will be documented in this file.
 ### Tests
 
 - **Subagent dispatch contract coverage**: Added Chinese and English skill-content regression coverage for Superpowers/Comet composition, coordinator-only source execution with tracking-file exceptions, one fresh background agent per task and role, prompt/status/reviewer evidence contracts, durable recovery checkpoints, TDD ownership, dual-review checkoff, bounded stop conditions, continuous task execution, Comet-specific final handoff, and the absence of a Stop hook.
+- **Reference doc assertions**: Added assertions verifying all skill files that reference `decision-point.md` and `debug-gate.md` include the correct protocol path, and that the shipped reference docs contain the expected core rules and fallback behavior.
 
 ## What's Changed [0.3.7] - 2026-06-07
 

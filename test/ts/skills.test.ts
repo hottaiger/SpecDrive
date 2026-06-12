@@ -106,9 +106,11 @@ describe('skills', () => {
       const result = await copyCometSkillsForPlatform(tmpDir, mockPlatform, false, 'skills-zh');
       expect(result.copied).toBeGreaterThan(0);
 
-      // Chinese SKILL.md should exist
-      const zhSkillPath = path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md');
-      expect(await fileExists(zhSkillPath)).toBe(true);
+      const manifest = await readManifest();
+      for (const skillRelPath of manifest.skills) {
+        const copiedPath = path.join(tmpDir, '.claude', 'skills', skillRelPath);
+        expect(await fileExists(copiedPath), `zh install should include ${skillRelPath}`).toBe(true);
+      }
     });
 
     it('creates OpenCode slash commands for copied Comet skills', async () => {
@@ -219,12 +221,24 @@ describe('skills', () => {
         path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.md'),
         'utf-8',
       );
+      const zhDecisionPoint = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'comet', 'reference', 'decision-point.md'),
+        'utf-8',
+      );
+      const zhDebugGate = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'comet', 'reference', 'debug-gate.md'),
+        'utf-8',
+      );
 
       expect(zhComet).toContain('决策点是阻塞点');
+      expect(zhComet).toContain('`comet/reference/decision-point.md`');
+      expect(zhDecisionPoint).toContain('若当前平台没有结构化提问工具，则必须在对话中提出明确选项并停止流程');
+      expect(zhDecisionPoint).toContain('不得用推荐规则、默认值、历史偏好');
       expect(zhOpen).toContain('### 1b. 需求澄清完成确认（阻塞点）');
       expect(zhOpen).toContain(
         '不得在用户确认需求澄清完成前创建 proposal.md、design.md 或 tasks.md',
       );
+      expect(zhOpen).toContain('`comet/reference/decision-point.md`');
       expect(zhOpen).toContain(
         '完整 `/comet` 流程默认不得使用 Skill 工具加载 `openspec-propose` 技能',
       );
@@ -242,7 +256,7 @@ describe('skills', () => {
       expect(zhDesign).toContain('技能加载后，按其指引使用以下上下文');
       expect(zhDesign).not.toContain('ARGUMENTS 包含');
       expect(zhDesign).toContain(
-        '必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认设计方案',
+        '必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确确认设计方案',
       );
       expect(zhDesign).toContain(
         '不得用“跳过重复上下文探索”削弱 Superpowers `brainstorming` 的澄清流程',
@@ -250,11 +264,12 @@ describe('skills', () => {
       expect(zhDesign).not.toContain('跳过重复上下文探索，直接进入设计提问');
       expect(zhBuild).toContain('不得根据推荐规则自行选择 `branch` 或 `worktree`');
       expect(zhBuild).toContain('不得根据推荐规则自行选择执行方式');
+      expect(zhBuild).toContain('`comet/reference/decision-point.md`');
       expect(zhVerify).toContain(
-        '验证不通过时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户决定修复或接受偏差',
+        '验证不通过时**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户决定修复或接受偏差',
       );
       expect(zhVerify).toContain(
-        '必须使用当前平台可用的用户输入/确认机制暂停并等待用户选择分支处理方式',
+        '必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户选择分支处理方式',
       );
       expect(zhVerify).toContain(
         '只有在用户完成选择且对应操作完成后，才允许写入 `branch_status: handled`',
@@ -263,6 +278,7 @@ describe('skills', () => {
       expect(zhArchive).toContain(
         '不得在用户确认前运行 `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"`',
       );
+      expect(zhArchive).toContain('`comet/reference/decision-point.md`');
       expect(zhArchive).toContain('「确认归档」');
       expect(zhArchive).toContain('「需要调整或重新验证」');
       expect(zhArchive).toContain('「暂不归档」');
@@ -271,11 +287,11 @@ describe('skills', () => {
       );
       expect(zhVerify).toContain('不得因为验证已通过就自动归档');
       expect(zhHotfix).toContain(
-        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/comet` 流程',
+        '满足升级条件时**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确确认**升级为完整 `/comet` 流程',
       );
       expect(zhHotfix).toContain('不得直接进入 `/comet-design`');
       expect(zhTweak).toContain(
-        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/comet` 流程',
+        '满足升级条件时**必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户明确确认**升级为完整 `/comet` 流程',
       );
       expect(zhTweak).toContain('不得直接进入 `/comet-design`');
       expect(zhComet).toContain('`verify_result: fail` → 进入验证失败决策阻塞点');
@@ -335,7 +351,7 @@ describe('skills', () => {
 
       // LOW: comet-build 50% threshold is a hard decision point
       expect(zhBuild).toContain(
-        '必须使用当前平台可用的用户输入/确认机制暂停并等待用户决定是否拆分为新 change',
+        '必须按 `comet/reference/decision-point.md` 的协议暂停并等待用户决定是否拆分为新 change',
       );
 
       // LOW: comet-verify Step 2b disambiguates design.md vs Design Doc
@@ -404,23 +420,22 @@ describe('skills', () => {
 
       // CRITICAL: implementation-time crashes must enter systematic debugging and keep tests in the current change.
       expect(zhBuild).toContain('必须使用 Skill 工具加载 Superpowers `systematic-debugging` 技能');
+      expect(zhBuild).toContain('`comet/reference/debug-gate.md`');
       expect(zhBuild).toContain(
         '运行程序、测试、构建或手动验证时出现崩溃、异常行为、测试失败或构建失败',
       );
-      expect(zhBuild).toContain('先补充能复现该崩溃/异常的最小失败测试');
-      expect(zhBuild).toContain(
+      expect(zhHotfix).toContain('必须使用 Skill 工具加载 Superpowers `systematic-debugging` 技能');
+      expect(zhHotfix).toContain('`comet/reference/debug-gate.md`');
+      expect(zhTweak).toContain('`comet/reference/debug-gate.md`');
+      expect(zhDebugGate).toContain('先补充能复现该崩溃/异常的最小失败测试');
+      expect(zhDebugGate).toContain(
         '不得通过另起一个“写测试用例”的 change 来替代当前 change 的验证闭环',
       );
-      expect(zhHotfix).toContain('必须使用 Skill 工具加载 Superpowers `systematic-debugging` 技能');
-      expect(zhHotfix).toContain('先补充能复现该崩溃/异常的最小失败测试');
 
       // CRITICAL: user-confirmation gates must not hardcode a platform-specific tool name.
       expect(
         [zhComet, zhDesign, zhBuild, zhVerify, zhArchive, zhHotfix, zhTweak].join('\n'),
       ).not.toContain('AskUserQuestion');
-      expect(zhComet).toContain(
-        '若当前平台没有结构化提问工具，则必须在对话中提出明确选项并停止流程',
-      );
       expect(zhComet).toContain('`auto_transition`');
       expect(zhComet).toContain('不影响 phase 推进');
       expect(zhCometRule).toContain(
@@ -497,8 +512,18 @@ describe('skills', () => {
         path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.md'),
         'utf-8',
       );
+      const enDecisionPoint = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'reference', 'decision-point.md'),
+        'utf-8',
+      );
+      const enDebugGate = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet', 'reference', 'debug-gate.md'),
+        'utf-8',
+      );
 
       expect(enComet).toContain('Decision points are blocking points');
+      expect(enDecisionPoint).toContain('If the current platform has no structured question tool, ask clear options in the conversation and stop until the user replies');
+      expect(enDecisionPoint).toContain('Never substitute recommendation rules, defaults, historical preferences');
       expect(enOpen).toContain(
         '### 1b. Requirements Clarification Completion Confirmation (Blocking Point)',
       );
@@ -508,6 +533,7 @@ describe('skills', () => {
       expect(enOpen).toContain(
         'Full `/comet` workflow must not use the Skill tool to load the `openspec-propose` skill',
       );
+      expect(enOpen).toContain('`comet/reference/decision-point.md`');
       expect(enOpen).toContain(
         'After the skill loads, follow its guidance to create the change skeleton, but override its "STOP and wait for user direction" behavior when a confirmed clarification summary from Step 1b is already available in the conversation context',
       );
@@ -522,7 +548,7 @@ describe('skills', () => {
       );
       expect(enDesign).not.toContain('ARGUMENTS containing');
       expect(enDesign).toContain(
-        "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
+        'must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm',
       );
       expect(enDesign).toContain(
         'must not weaken the Superpowers `brainstorming` clarification flow by "skipping redundant context exploration"',
@@ -534,11 +560,12 @@ describe('skills', () => {
       expect(enBuild).toContain(
         'must not choose the execution method or TDD mode based on recommendation rules',
       );
+      expect(enBuild).toContain('`comet/reference/decision-point.md`');
       expect(enVerify).toContain(
-        "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to decide whether to fix or accept the deviation",
+        'must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to decide whether to fix or accept the deviation',
       );
       expect(enVerify).toContain(
-        "Must use the current platform's available user input/confirmation mechanism to pause and wait for the user to choose branch handling method",
+        'Must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to choose branch handling method',
       );
       expect(enVerify).toContain(
         'Only after the user completes selection and the corresponding operation finishes, may `branch_status: handled` be written',
@@ -547,6 +574,7 @@ describe('skills', () => {
       expect(enArchive).toContain(
         'Must not run `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"` before user confirmation',
       );
+      expect(enArchive).toContain('`comet/reference/decision-point.md`');
       expect(enArchive).toContain('Confirm archive');
       expect(enArchive).toContain('Needs adjustment or re-verification');
       expect(enArchive).toContain('Do not archive yet');
@@ -555,13 +583,14 @@ describe('skills', () => {
       );
       expect(enVerify).toContain('Must not automatically archive just because verification passed');
       expect(enHotfix).toContain(
-        "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
+        'must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm',
       );
       expect(enHotfix).toContain('Do not directly enter `/comet-design`');
       expect(enTweak).toContain(
-        "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
+        'must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly confirm',
       );
       expect(enTweak).toContain('Do not directly enter `/comet-design`');
+      expect(enTweak).toContain('`comet/reference/debug-gate.md`');
       expect(enComet).toContain(
         '`verify_result: fail` → Enter verification failure decision blocking point',
       );
@@ -581,7 +610,7 @@ describe('skills', () => {
       expect(enTweak).toContain('Final archive confirmation');
       expect(enDesign).toContain('The brainstorming phase does not write to the Design Doc file');
       expect(enVerify).toContain(
-        "must use the current platform's available user input/confirmation mechanism as a single-select question to pause and wait for the user to choose the handling method",
+        'must use the current platform\'s available user input/confirmation mechanism as a single-select question to pause and wait for the user to choose the handling method',
       );
       expect(enComet).toContain('first check `build_pause`, `plan`, `build_mode`, and `isolation`');
       expect(enComet).toContain('`build_pause: plan-ready` and the plan file exists');
@@ -607,10 +636,10 @@ describe('skills', () => {
         'workspace isolation and execution-method selection when tasks exceed 3 and transfer to `/comet-build`',
       );
       expect(enBuild).toContain(
-        "Must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
+        'Must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to explicitly choose',
       );
       expect(enBuild).toContain(
-        "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to decide whether to split into a new change",
+        'must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to decide whether to split into a new change',
       );
       expect(enVerify).toContain(
         'Implementation matches `openspec/changes/<name>/design.md` high-level design decisions',
@@ -671,28 +700,25 @@ describe('skills', () => {
       expect(enBuild).toContain(
         'must use the Skill tool to load the Superpowers `systematic-debugging` skill',
       );
+      expect(enBuild).toContain('`comet/reference/debug-gate.md`');
       expect(enBuild).toContain(
         'a crash, unexpected behavior, test failure, or build failure appears while running the program, tests, build, or manual verification',
       );
-      expect(enBuild).toContain(
+      expect(enDebugGate).toContain(
         'first add a minimal failing test that reproduces the crash or unexpected behavior',
-      );
-      expect(enBuild).toContain(
-        'Must not replace the current change verification loop by starting a separate "write test cases" change',
       );
       expect(enHotfix).toContain(
         'must use the Skill tool to load the Superpowers `systematic-debugging` skill',
       );
-      expect(enHotfix).toContain(
-        'first add a minimal failing test that reproduces the crash or unexpected behavior',
+      expect(enHotfix).toContain('`comet/reference/debug-gate.md`');
+      expect(enDebugGate).toContain(
+        'do not replace the current change verification loop by starting a separate “write test cases” change',
       );
 
       expect(
         [enComet, enOpen, enDesign, enBuild, enVerify, enArchive, enHotfix, enTweak].join('\n'),
       ).not.toContain('AskUserQuestion');
-      expect(enComet).toContain(
-        'If the current platform has no structured question tool, ask clear options in the conversation and stop the workflow',
-      );
+      expect(enComet).toContain('`comet/reference/decision-point.md`');
       expect(enComet).toContain('`auto_transition`');
       expect(enComet).toContain('does not block phase updates');
       expect(enCometRule).toContain(
@@ -1051,6 +1077,74 @@ describe('skills', () => {
             content,
             `${languageDir}/${skillPath} should avoid raw bash for Comet scripts`,
           ).not.toMatch(/(^|[` \t])bash[ \t]+"?\$COMET_/m);
+        }
+      }
+    });
+
+    it('keeps the COMET_ENV locator block identical across shipped skills', async () => {
+      const manifest = await readManifest();
+      const skillPaths = manifest.skills.filter(
+        (skillPath) =>
+          skillPath.endsWith('SKILL.md') &&
+          (skillPath === 'comet/SKILL.md' || skillPath.startsWith('comet-')),
+      );
+
+      const extractLocatorBlock = (content: string) => {
+        const start = content.indexOf('COMET_ENV="${COMET_ENV:-$(find .');
+        const end = content.indexOf('. "$COMET_ENV"');
+
+        expect(start).toBeGreaterThanOrEqual(0);
+        expect(end).toBeGreaterThan(start);
+
+        return content.slice(start, end + '. "$COMET_ENV"'.length);
+      };
+
+      for (const languageDir of ['skills', 'skills-zh']) {
+        let baseline: string | null = null;
+
+        for (const skillPath of skillPaths) {
+          const content = await fs.readFile(
+            path.resolve('assets', languageDir, skillPath),
+            'utf-8',
+          );
+          if (!content.includes('COMET_ENV="${COMET_ENV:-$(find .')) continue;
+
+          const locatorBlock = extractLocatorBlock(content);
+          if (baseline === null) {
+            baseline = locatorBlock;
+            continue;
+          }
+
+          expect(locatorBlock, `${languageDir}/${skillPath} should reuse the shared locator block`).toBe(
+            baseline,
+          );
+        }
+      }
+    });
+
+    it('ships every comet reference doc that skill prose points to', async () => {
+      const manifest = await readManifest();
+      const manifestSkills = new Set(manifest.skills);
+      const skillPaths = manifest.skills.filter(
+        (skillPath) =>
+          skillPath.endsWith('SKILL.md') &&
+          (skillPath === 'comet/SKILL.md' || skillPath.startsWith('comet-')),
+      );
+
+      for (const languageDir of ['skills', 'skills-zh']) {
+        for (const skillPath of skillPaths) {
+          const content = await fs.readFile(
+            path.resolve('assets', languageDir, skillPath),
+            'utf-8',
+          );
+          const references = content.match(/comet\/reference\/[a-z-]+\.md/g) ?? [];
+
+          for (const referencePath of new Set(references)) {
+            expect(
+              manifestSkills.has(referencePath),
+              `${languageDir}/${skillPath} references ${referencePath} but manifest.json does not ship it`,
+            ).toBe(true);
+          }
         }
       }
     });

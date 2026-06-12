@@ -46,7 +46,7 @@ Recommend splitting when any condition applies:
 - The work is expected to produce multiple delta specs or more than 3 large tasks
 - Failure or delay in one part should not block other parts from entering later phases
 
-When splitting is recommended, must use the current platform's available user input/confirmation mechanism to pause and wait for the user's choice. If the current platform has no structured question tool, ask an equivalent single-select question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+When splitting is recommended, must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user's choice.
 
 The user choices must include:
 - "Create multiple OpenSpec changes" — create independent changes from the proposed split
@@ -65,7 +65,7 @@ Minimal resume rule: do not add a dedicated batch state file. On resume, first c
 
 ### 1b. Requirements Clarification Completion Confirmation (Blocking Point)
 
-Before creating OpenSpec artifacts, must use the current platform's available user input/confirmation mechanism to pause and wait for the user to confirm requirements clarification is complete. If the current platform has no structured question tool, present the clarification summary in the conversation, ask a confirmation question, stop the workflow, and wait for the user's reply before continuing.
+Before creating OpenSpec artifacts, must follow the `comet/reference/decision-point.md` protocol to pause and wait for the user to confirm requirements clarification is complete.
 
 When pausing, present the clarification summary: goals, non-goals, scope boundaries, key unknowns, and draft acceptance scenarios.
 
@@ -139,7 +139,7 @@ Confirm the three documents have complete content:
 
 ### 5. User Review and Confirmation (Blocking Point)
 
-After the three documents are created and content completeness check passes, **must use the current platform's available user input/confirmation mechanism to pause and wait for user confirmation**. Must not execute phase guard or auto-transition before user confirmation. If the current platform has no structured question tool, ask an equivalent single-select question in the conversation, stop the workflow, and wait for the user's reply before continuing.
+After the three documents are created and content completeness check passes, **must follow the `comet/reference/decision-point.md` protocol to pause and wait for user confirmation**. Must not execute phase guard or auto-transition before user confirmation.
 
 The user confirmation question must be presented as a single-select question with the following summary and options:
 
