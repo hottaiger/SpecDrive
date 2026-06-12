@@ -663,5 +663,7 @@ export {
   getManifestSkills,
   createWorkingDirs,
   getAssetsDir,
+  computeRuleDestPath,
+  isManagedHookCommand,
 };
 export type { Manifest, LanguageConfig };

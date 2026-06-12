@@ -97,3 +97,42 @@ export async function readDir(dirPath: string): Promise<string[]> {
     throw error;
   }
 }
+
+/**
+ * Remove a file. Returns true if the file existed and was removed.
+ */
+export async function removeFile(filePath: string): Promise<boolean> {
+  try {
+    const resolved = await resolveSymlinkPath(filePath);
+    await fs.unlink(resolved);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Remove a directory recursively. Returns true if the directory existed and was removed.
+ */
+export async function removeDir(dirPath: string): Promise<boolean> {
+  try {
+    const resolved = await resolveSymlinkPath(dirPath);
+    await fs.rm(resolved, { recursive: true, force: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check if a directory is empty or does not exist.
+ */
+export async function isDirEmpty(dirPath: string): Promise<boolean> {
+  try {
+    const resolved = await resolveSymlinkPath(dirPath);
+    const entries = await fs.readdir(resolved);
+    return entries.length === 0;
+  } catch {
+    return true;
+  }
+}
