@@ -150,14 +150,29 @@ describe('update command helpers', () => {
     await expect(detectCometPackageScope(projectDir, tmpDir)).resolves.toBe('global');
   });
 
-  it('builds npm update args preserving package install scope', () => {
-    expect(buildNpmUpdateArgs('global')).toEqual(['install', '-g', '@rpamis/comet@latest']);
-    expect(buildNpmUpdateArgs('project')).toEqual(['install', '@rpamis/comet@latest']);
+  it('builds npm update args preserving package install scope with official registry', () => {
+    expect(buildNpmUpdateArgs('global')).toEqual([
+      'install',
+      '-g',
+      '@rpamis/comet@latest',
+      '--registry',
+      'https://registry.npmjs.org',
+    ]);
+    expect(buildNpmUpdateArgs('project')).toEqual([
+      'install',
+      '@rpamis/comet@latest',
+      '--registry',
+      'https://registry.npmjs.org',
+    ]);
   });
 
   it('formats the npm update command for friendly console output', () => {
-    expect(formatNpmUpdateCommand('global')).toBe('npm install -g @rpamis/comet@latest');
-    expect(formatNpmUpdateCommand('project')).toBe('npm install @rpamis/comet@latest');
+    expect(formatNpmUpdateCommand('global')).toBe(
+      'npm install -g @rpamis/comet@latest --registry https://registry.npmjs.org',
+    );
+    expect(formatNpmUpdateCommand('project')).toBe(
+      'npm install @rpamis/comet@latest --registry https://registry.npmjs.org',
+    );
   });
 
   it('formats the skill update command with scope, platform, and language source', () => {

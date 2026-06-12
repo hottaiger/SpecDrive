@@ -21,6 +21,7 @@ import { printVersionInfo } from '../core/version.js';
 const require = createRequire(import.meta.url);
 const { version } = require('../../package.json');
 const PACKAGE_NAME = '@rpamis/comet';
+const OFFICIAL_REGISTRY = 'https://registry.npmjs.org';
 
 interface UpdateOptions {
   json?: boolean;
@@ -149,8 +150,8 @@ async function detectCometPackageScope(
 
 function buildNpmUpdateArgs(scope: InstallScope): string[] {
   return scope === 'global'
-    ? ['install', '-g', `${PACKAGE_NAME}@latest`]
-    : ['install', `${PACKAGE_NAME}@latest`];
+    ? ['install', '-g', `${PACKAGE_NAME}@latest`, '--registry', OFFICIAL_REGISTRY]
+    : ['install', `${PACKAGE_NAME}@latest`, '--registry', OFFICIAL_REGISTRY];
 }
 
 function formatNpmUpdateCommand(scope: InstallScope): string {
@@ -170,14 +171,29 @@ function getNpmExecutable(): string {
   return process.platform === 'win32' ? 'npm.cmd' : 'npm';
 }
 
-async function updateCometNpmPackage(scope: InstallScope, projectPath: string): Promise<boolean> {
+async function updateCometNpmPackage(
+  scope: InstallScope,
+  projectPath: string,
+  log: (message: string) => void,
+): Promise<boolean> {
   const args = buildNpmUpdateArgs(scope);
   const cwd = scope === 'global' ? process.cwd() : projectPath;
 
   return new Promise((resolve) => {
     const child = spawn(getNpmExecutable(), args, { cwd, stdio: 'inherit', shell: true });
-    child.on('error', () => resolve(false));
-    child.on('exit', (code) => resolve(code === 0));
+    child.on('error', (err) => {
+      log(`  npm package: failed to launch npm — ${err.message}`);
+      resolve(false);
+    });
+    child.on('exit', (code) => {
+      if (code !== 0) {
+        log(
+          `  npm package: update failed (exit code ${code}). Unable to reach the official npm registry at ${OFFICIAL_REGISTRY}.`,
+        );
+        log(`  Check your network connection or firewall settings and try again.`);
+      }
+      resolve(code === 0);
+    });
   });
 }
 
@@ -197,7 +213,7 @@ export async function updateCommand(
   if (!options.skipNpm) {
     log(`  Updating npm package (${packageScope} scope)...`);
     log(`    $ ${formatNpmUpdateCommand(packageScope)}`);
-    const npmUpdated = await updateCometNpmPackage(packageScope, projectPath);
+    const npmUpdated = await updateCometNpmPackage(packageScope, projectPath, log);
     if (npmUpdated) {
       npmStatus = 'updated';
       log(`  npm package: updated to latest ${PACKAGE_NAME}`);
