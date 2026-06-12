@@ -411,6 +411,70 @@ describe('skills', () => {
   });
 
   describe('Chinese Comet workflow safeguards', () => {
+    it('requires OpenSpec instructions for each standard open artifact', async () => {
+      const zhOpen = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'comet-open', 'SKILL.md'),
+        'utf-8',
+      );
+
+      expect(zhOpen).toContain(
+        'openspec instructions proposal --change "<name>" --json',
+      );
+      expect(zhOpen).toContain(
+        'openspec instructions design --change "<name>" --json',
+      );
+      expect(zhOpen).toContain(
+        'openspec instructions tasks --change "<name>" --json',
+      );
+      for (const field of [
+        '`context`',
+        '`rules`',
+        '`template`',
+        '`instruction`',
+        '`resolvedOutputPath`',
+        '`dependencies`',
+      ]) {
+        expect(zhOpen).toContain(field);
+      }
+      expect(zhOpen).toContain('不得复制到 artifact 内容中');
+      expect(zhOpen).toContain('每创建一个 artifact 后');
+      expect(zhOpen).toContain('openspec status --change "<name>" --json');
+      expect(zhOpen).toContain('必须立即停止 artifact 创建');
+      expect(zhOpen).toContain('不得回退为硬编码文档结构');
+    });
+
+    it('requires OpenSpec instructions for each standard open artifact (English)', async () => {
+      const enOpen = await fs.readFile(
+        path.resolve('assets', 'skills', 'comet-open', 'SKILL.md'),
+        'utf-8',
+      );
+
+      expect(enOpen).toContain(
+        'openspec instructions proposal --change "<name>" --json',
+      );
+      expect(enOpen).toContain(
+        'openspec instructions design --change "<name>" --json',
+      );
+      expect(enOpen).toContain(
+        'openspec instructions tasks --change "<name>" --json',
+      );
+      for (const field of [
+        '`context`',
+        '`rules`',
+        '`template`',
+        '`instruction`',
+        '`resolvedOutputPath`',
+        '`dependencies`',
+      ]) {
+        expect(enOpen).toContain(field);
+      }
+      expect(enOpen).toContain('must not copy them into the artifact content');
+      expect(enOpen).toContain('After creating each artifact');
+      expect(enOpen).toContain('openspec status --change "<name>" --json');
+      expect(enOpen).toContain('must immediately stop artifact creation');
+      expect(enOpen).toContain('Must not fall back to hard-coded artifact prose');
+    });
+
     it('requires explicit user confirmation at full-workflow decision points', async () => {
       const zhComet = await fs.readFile(
         path.resolve('assets', 'skills-zh', 'comet', 'SKILL.md'),

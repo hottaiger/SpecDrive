@@ -77,13 +77,33 @@ description: "Comet 阶段 1：开启。用 /comet-open 调用。通过 OpenSpec
 
 完整 `/comet` 流程默认不得使用 Skill 工具加载 `openspec-propose` 技能；只有用户明确要求一次性生成提案和 artifacts 时才允许加载。
 
-技能加载后，按其指引创建 change 骨架，但当 Step 1b 的已确认澄清摘要已存在于对话上下文时，覆盖其"STOP and wait for user direction"行为。具体如下：
+技能加载后，按其指引创建 change 骨架，但当 Step 1b 的已确认澄清摘要已存在于对话上下文时，覆盖其"STOP and wait for user direction"行为。
 
-1. 按技能指引执行 `openspec new change`、`openspec status`、`openspec instructions`
-2. 如果用户已确认澄清摘要（Step 1b），直接使用该摘要起草 proposal.md —— 不得再要求用户重新描述变更内容
-3. 如果不存在澄清摘要（边缘情况），回退到技能的默认行为，询问用户
+如果用户已确认澄清摘要（Step 1b），直接使用该摘要填充产物内容。如果不存在澄清摘要（边缘情况），回退到技能的默认行为，询问用户。
 
-然后逐个补齐 design.md、tasks.md；每个文档都必须基于已确认的澄清摘要。
+change 骨架创建后，按以下标准产物循环逐个生成 `proposal`、`design`、`tasks`：
+
+**标准产物循环**（对每个 `artifact-id`：`proposal` → `design` → `tasks`）：
+
+1. 刷新状态：`openspec status --change "<name>" --json`
+2. 获取产物指令：
+
+   ```bash
+   openspec instructions proposal --change "<name>" --json
+   openspec instructions design --change "<name>" --json
+   openspec instructions tasks --change "<name>" --json
+   ```
+
+3. 对返回的 JSON 指令载荷，必须：
+   - 读取 `dependencies` 中列出的每个已完成依赖产物
+   - 以 `template` 作为产物结构
+   - 遵循 `instruction` 的指引
+   - 将 `context` 和 `rules` 作为约束条件应用，**不得复制到 artifact 内容中**
+   - 写入 `resolvedOutputPath`
+   - 验证输出文件存在且非空
+4. 每创建一个 artifact 后，重新运行 `openspec status --change "<name>" --json` 确认状态，然后继续下一个 artifact
+
+**失败处理**：如果 `openspec instructions` 失败、返回无效 JSON、报告未满足的 `dependencies`、或未提供可用的 `resolvedOutputPath`，必须立即停止 artifact 创建并报告 OpenSpec 错误。不得回退为硬编码文档结构，因为那样会绕过项目规则。
 
 **命名与范围守卫**：change name 必须使用用户指定或通过当前平台可用的用户输入/确认机制确认的名称，不得自动生成或推断。变更范围必须与用户描述一致，不得自行扩大或缩小。
 

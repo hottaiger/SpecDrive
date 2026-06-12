@@ -77,13 +77,33 @@ Must not create proposal.md, design.md, or tasks.md before the user confirms req
 
 Full `/comet` workflow must not use the Skill tool to load the `openspec-propose` skill by default; only load it when the user explicitly requests generating the proposal and artifacts in one pass.
 
-After the skill loads, follow its guidance to create the change skeleton, but override its "STOP and wait for user direction" behavior when a confirmed clarification summary from Step 1b is already available in the conversation context. Specifically:
+After the skill loads, follow its guidance to create the change skeleton, but override its "STOP and wait for user direction" behavior when a confirmed clarification summary from Step 1b is already available in the conversation context.
 
-1. Run `openspec new change`, `openspec status`, and `openspec instructions` as the skill directs
-2. If the user has already confirmed a clarification summary (Step 1b), use that summary directly to draft proposal.md — do NOT ask the user to describe the change again
-3. If no clarification summary exists (edge case), fall back to the skill's default behavior of asking the user
+If the user has already confirmed a clarification summary (Step 1b), use that summary directly to populate artifact content. If no clarification summary exists (edge case), fall back to the skill's default behavior of asking the user.
 
-Then fill in design.md and tasks.md one by one; every document must be based on the confirmed clarification summary.
+After the change skeleton is created, generate `proposal`, `design`, and `tasks` one by one using the standard artifact loop:
+
+**Standard Artifact Loop** (for each `artifact-id`: `proposal` → `design` → `tasks`):
+
+1. Refresh status: `openspec status --change "<name>" --json`
+2. Fetch artifact instructions:
+
+   ```bash
+   openspec instructions proposal --change "<name>" --json
+   openspec instructions design --change "<name>" --json
+   openspec instructions tasks --change "<name>" --json
+   ```
+
+3. For the returned JSON instruction payload, you must:
+   - Read every completed dependency artifact listed in `dependencies`
+   - Use `template` as the artifact structure
+   - Follow `instruction` guidance
+   - Apply `context` and `rules` as constraints — **must not copy them into the artifact content**
+   - Write to `resolvedOutputPath`
+   - Verify the output file exists and is non-empty
+4. After creating each artifact, re-run `openspec status --change "<name>" --json` to confirm status before continuing to the next artifact
+
+**Failure handling**: If `openspec instructions` fails, returns invalid JSON, reports unmet `dependencies`, or does not provide a usable `resolvedOutputPath`, must immediately stop artifact creation and report the OpenSpec error. Must not fall back to hard-coded artifact prose because that would silently bypass project rules.
 
 **Naming and scope guard**: Change name must use a user-specified name or a name confirmed through the current platform's available user input/confirmation mechanism — must not auto-generate or infer. Change scope must match the user's description — must not expand or narrow it independently.
 
