@@ -329,6 +329,50 @@ function buildHookCommand(skillsDir: string, scriptRelPath: string): string {
   return `bash ${skillsDir}/skills/${scriptRelPath}`;
 }
 
+function isManagedHookCommand(command: unknown, scriptRelPaths: string[]): boolean {
+  if (typeof command !== 'string') return false;
+
+  const commandPath = command
+    .trim()
+    .match(/^bash\s+["']?([^"'\s]+)["']?(?:\s|$)/)?.[1]
+    ?.replace(/\\/g, '/');
+  if (!commandPath) return false;
+
+  return scriptRelPaths.some((scriptRelPath) =>
+    commandPath.endsWith(`/skills/${scriptRelPath.replace(/\\/g, '/')}`),
+  );
+}
+
+function mergeHookGroups<T extends { command: string }>(
+  existingGroups: Array<Record<string, unknown>>,
+  newGroups: Array<{ matcher: string; hooks: T[] }>,
+  scriptRelPaths: string[],
+): Array<Record<string, unknown>> {
+  const mergedGroups = existingGroups.flatMap((group) => {
+    if (!Array.isArray(group.hooks)) return [group];
+
+    const hooks = group.hooks.filter(
+      (hook) => !isManagedHookCommand((hook as Record<string, unknown>).command, scriptRelPaths),
+    );
+    if (hooks.length === 0 && group.hooks.length > 0) return [];
+
+    return [{ ...group, hooks }];
+  });
+
+  for (const newGroup of newGroups) {
+    const existingGroup = mergedGroups.find(
+      (group) => group.matcher === newGroup.matcher && Array.isArray(group.hooks),
+    );
+    if (existingGroup) {
+      existingGroup.hooks = [...(existingGroup.hooks as unknown[]), ...newGroup.hooks];
+    } else {
+      mergedGroups.push(newGroup);
+    }
+  }
+
+  return mergedGroups;
+}
+
 /**
  * Claude Code, Codex, Amazon Q format:
  * Writes to settings.local.json with { hooks: { PreToolUse: [...] } }
@@ -371,16 +415,11 @@ async function installClaudeCodeHooks(
 
   const existingHooks = (settings.hooks as Record<string, unknown>) ?? {};
   const existingPreToolUse = (existingHooks.PreToolUse as ClaudeCodeHookEntry[]) ?? [];
-
-  // Deduplicate by matcher — replace existing entries with the same matcher
-  const matchersSeen = new Set<string>();
-  const merged: ClaudeCodeHookEntry[] = [];
-  for (const entry of [...newEntries, ...existingPreToolUse]) {
-    if (!matchersSeen.has(entry.matcher)) {
-      matchersSeen.add(entry.matcher);
-      merged.push(entry);
-    }
-  }
+  const merged = mergeHookGroups(
+    existingPreToolUse as unknown as Array<Record<string, unknown>>,
+    newEntries,
+    Object.keys(hooksConfig),
+  );
 
   settings.hooks = { ...existingHooks, PreToolUse: merged };
   await ensureDir(path.dirname(settingsPath));
@@ -432,24 +471,9 @@ async function installQwenStyleHooks(
 
   const existingHooks = (settings.hooks as Record<string, unknown>) ?? {};
   const existingPreToolUse = (existingHooks.PreToolUse as Array<Record<string, unknown>>) ?? [];
+  const merged = mergeHookGroups(existingPreToolUse, preToolUseEntries, Object.keys(hooksConfig));
 
-  // Add entries that don't already exist (match by description in nested hooks)
-  const existingDescs = new Set(
-    existingPreToolUse.flatMap(
-      (g) =>
-        ((g as Record<string, unknown>).hooks as Array<Record<string, string>>)?.map(
-          (h) => h.description,
-        ) ?? [],
-    ),
-  );
-  for (const entry of preToolUseEntries) {
-    const hasNew = entry.hooks.some((h) => !existingDescs.has(h.description));
-    if (hasNew) {
-      existingPreToolUse.push(entry as unknown as Record<string, unknown>);
-    }
-  }
-
-  settings.hooks = { ...existingHooks, PreToolUse: existingPreToolUse };
+  settings.hooks = { ...existingHooks, PreToolUse: merged };
   await ensureDir(path.dirname(settingsPath));
   await writeFile(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
   return { installed: true };
@@ -494,23 +518,9 @@ async function installGeminiHooks(
 
   const existingHooks = (settings.hooks as Record<string, unknown>) ?? {};
   const existingBeforeTool = (existingHooks.BeforeTool as Array<Record<string, unknown>>) ?? [];
-  const existingNames = new Set(
-    existingBeforeTool.flatMap(
-      (g) =>
-        ((g as Record<string, unknown>).hooks as Array<Record<string, string>>)?.map(
-          (h) => h.name,
-        ) ?? [],
-    ),
-  );
+  const merged = mergeHookGroups(existingBeforeTool, entries, Object.keys(hooksConfig));
 
-  for (const entry of entries) {
-    const hasNew = entry.hooks.some((h) => !existingNames.has(h.name));
-    if (hasNew) {
-      existingBeforeTool.push(entry as unknown as Record<string, unknown>);
-    }
-  }
-
-  settings.hooks = { ...existingHooks, BeforeTool: existingBeforeTool };
+  settings.hooks = { ...existingHooks, BeforeTool: merged };
   await ensureDir(path.dirname(settingsPath));
   await writeFile(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
   return { installed: true };
@@ -528,7 +538,7 @@ async function installWindsurfHooks(
   const hooksPath = path.join(platformBase, 'hooks.json');
 
   const entries: Array<{ command: string; show_output: boolean }> = [];
-  for (const [scriptRelPath, config] of Object.entries(hooksConfig)) {
+  for (const [scriptRelPath] of Object.entries(hooksConfig)) {
     entries.push({
       command: buildHookCommand(skillsDir, scriptRelPath),
       show_output: true,
@@ -546,18 +556,12 @@ async function installWindsurfHooks(
 
   const existingHooks = (hooksFile.hooks as Record<string, unknown>) ?? {};
   const existingPreWrite = (existingHooks.pre_write_code as Array<Record<string, unknown>>) ?? [];
-
-  // Add entries that don't already exist (match by command substring)
-  const existingCmds = new Set(
-    existingPreWrite.map((e) => (e as Record<string, string>).command ?? ''),
+  const merged = existingPreWrite.filter(
+    (entry) => !isManagedHookCommand(entry.command, Object.keys(hooksConfig)),
   );
-  for (const entry of entries) {
-    if (!existingCmds.has(entry.command)) {
-      existingPreWrite.push(entry as unknown as Record<string, unknown>);
-    }
-  }
+  merged.push(...entries);
 
-  hooksFile.hooks = { ...existingHooks, pre_write_code: existingPreWrite };
+  hooksFile.hooks = { ...existingHooks, pre_write_code: merged };
   await ensureDir(path.dirname(hooksPath));
   await writeFile(hooksPath, JSON.stringify(hooksFile, null, 2) + '\n', 'utf-8');
   return { installed: true };
@@ -610,7 +614,6 @@ async function installKiroHooks(
     const hookFilePath = path.join(hooksDir, hookFileName);
 
     // Map Write|Edit matcher to Kiro's write tool category
-    const kiroEvent = config.matcher === 'Write|Edit' ? 'Pre Tool Use' : 'Pre Tool Use';
     const toolName = config.matcher === 'Write|Edit' ? 'write' : '*';
 
     const hookConfig = {

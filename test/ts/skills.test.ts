@@ -8,6 +8,7 @@ import {
   getManifestSkills,
   createWorkingDirs,
   copyCometSkillsForPlatform,
+  installCometHooksForPlatform,
 } from '../../src/core/skills.js';
 import type { Platform } from '../../src/core/platforms.js';
 
@@ -180,6 +181,232 @@ describe('skills', () => {
       await expect(
         fs.access(path.join(tmpDir, '.opencode', 'commands', 'comet.md')),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('installCometHooksForPlatform', () => {
+    const staleCometCommand = 'bash .legacy/skills/comet/scripts/comet-hook-guard.sh';
+    const currentCometScript = 'comet/scripts/comet-hook-guard.sh';
+
+    it('merges Claude-style hooks into an existing matcher group without replacing user hooks', async () => {
+      const platform: Platform = {
+        id: 'claude',
+        name: 'Claude Code',
+        skillsDir: '.claude',
+        openspecToolId: 'claude',
+        supportsHooks: true,
+        hookFormat: 'claude-code',
+      };
+      const settingsPath = path.join(tmpDir, '.claude', 'settings.local.json');
+      const initialSettings = {
+        model: 'sonnet',
+        hooks: {
+          PostToolUse: [{ matcher: 'Write', hooks: [{ type: 'command', command: 'echo post' }] }],
+          PreToolUse: [
+            {
+              matcher: 'Write|Edit',
+              hooks: [
+                { type: 'command', command: 'echo user-write-check' },
+                { type: 'command', command: staleCometCommand },
+              ],
+            },
+            {
+              matcher: 'Bash',
+              hooks: [{ type: 'command', command: 'echo user-bash-check' }],
+            },
+          ],
+        },
+      };
+      await fs.mkdir(path.dirname(settingsPath), { recursive: true });
+      await fs.writeFile(settingsPath, JSON.stringify(initialSettings), 'utf-8');
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const firstInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+      const writeGroup = firstInstall.hooks.PreToolUse.find(
+        (entry: { matcher: string }) => entry.matcher === 'Write|Edit',
+      );
+
+      expect(firstInstall.model).toBe('sonnet');
+      expect(firstInstall.hooks.PostToolUse).toEqual(initialSettings.hooks.PostToolUse);
+      expect(firstInstall.hooks.PreToolUse).toHaveLength(2);
+      expect(writeGroup.hooks).toEqual([
+        { type: 'command', command: 'echo user-write-check' },
+        {
+          type: 'command',
+          command: `bash .claude/skills/${currentCometScript}`,
+        },
+      ]);
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const secondInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+      expect(secondInstall).toEqual(firstInstall);
+    });
+
+    it.each([
+      { id: 'qwen', skillsDir: '.qwen', hookFormat: 'qwen' as const },
+      { id: 'qoder', skillsDir: '.qoder', hookFormat: 'qoder' as const },
+    ])(
+      'merges $id hooks into the existing matcher group idempotently',
+      async ({ id, skillsDir, hookFormat }) => {
+        const platform: Platform = {
+          id,
+          name: id,
+          skillsDir,
+          openspecToolId: id,
+          supportsHooks: true,
+          hookFormat,
+        };
+        const settingsPath = path.join(tmpDir, skillsDir, 'settings.json');
+        const initialSettings = {
+          theme: 'dark',
+          hooks: {
+            AfterTool: [{ matcher: '*', hooks: [{ type: 'command', command: 'echo after' }] }],
+            PreToolUse: [
+              {
+                matcher: 'Write|Edit',
+                hooks: [
+                  {
+                    type: 'command',
+                    command: 'echo user-write-check',
+                    description: 'User write check',
+                  },
+                  {
+                    type: 'command',
+                    command: staleCometCommand,
+                    description: 'Old Comet hook',
+                  },
+                ],
+              },
+            ],
+          },
+        };
+        await fs.mkdir(path.dirname(settingsPath), { recursive: true });
+        await fs.writeFile(settingsPath, JSON.stringify(initialSettings), 'utf-8');
+
+        await installCometHooksForPlatform(tmpDir, platform);
+        const firstInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+
+        expect(firstInstall.theme).toBe('dark');
+        expect(firstInstall.hooks.AfterTool).toEqual(initialSettings.hooks.AfterTool);
+        expect(firstInstall.hooks.PreToolUse).toHaveLength(1);
+        expect(firstInstall.hooks.PreToolUse[0].hooks).toEqual([
+          {
+            type: 'command',
+            command: 'echo user-write-check',
+            description: 'User write check',
+          },
+          {
+            type: 'command',
+            command: `bash ${skillsDir}/skills/${currentCometScript}`,
+            description: 'Block code writes in wrong Comet phase (open/design/archive)',
+          },
+        ]);
+
+        await installCometHooksForPlatform(tmpDir, platform);
+        const secondInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+        expect(secondInstall).toEqual(firstInstall);
+      },
+    );
+
+    it('merges Gemini hooks into the existing matcher group idempotently', async () => {
+      const platform: Platform = {
+        id: 'gemini',
+        name: 'Gemini CLI',
+        skillsDir: '.gemini',
+        openspecToolId: 'gemini',
+        supportsHooks: true,
+        hookFormat: 'gemini',
+      };
+      const settingsPath = path.join(tmpDir, '.gemini', 'settings.json');
+      const initialSettings = {
+        selectedAuthType: 'oauth',
+        hooks: {
+          AfterTool: [{ matcher: '*', hooks: [{ type: 'command', command: 'echo after' }] }],
+          BeforeTool: [
+            {
+              matcher: 'write_file|edit_file',
+              hooks: [
+                {
+                  type: 'command',
+                  command: 'echo user-write-check',
+                  name: 'User write check',
+                },
+                {
+                  type: 'command',
+                  command: staleCometCommand,
+                  name: 'Old Comet hook',
+                },
+              ],
+            },
+          ],
+        },
+      };
+      await fs.mkdir(path.dirname(settingsPath), { recursive: true });
+      await fs.writeFile(settingsPath, JSON.stringify(initialSettings), 'utf-8');
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const firstInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+
+      expect(firstInstall.selectedAuthType).toBe('oauth');
+      expect(firstInstall.hooks.AfterTool).toEqual(initialSettings.hooks.AfterTool);
+      expect(firstInstall.hooks.BeforeTool).toHaveLength(1);
+      expect(firstInstall.hooks.BeforeTool[0].hooks).toEqual([
+        {
+          type: 'command',
+          command: 'echo user-write-check',
+          name: 'User write check',
+        },
+        {
+          type: 'command',
+          command: `bash .gemini/skills/${currentCometScript}`,
+          name: 'Block code writes in wrong Comet phase (open/design/archive)',
+        },
+      ]);
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const secondInstall = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+      expect(secondInstall).toEqual(firstInstall);
+    });
+
+    it('replaces only managed Windsurf hooks and preserves user hooks idempotently', async () => {
+      const platform: Platform = {
+        id: 'windsurf',
+        name: 'Windsurf',
+        skillsDir: '.windsurf',
+        openspecToolId: 'windsurf',
+        supportsHooks: true,
+        hookFormat: 'windsurf',
+      };
+      const hooksPath = path.join(tmpDir, '.windsurf', 'hooks.json');
+      const initialHooks = {
+        enabled: true,
+        hooks: {
+          post_write_code: [{ command: 'echo post', show_output: false }],
+          pre_write_code: [
+            { command: 'echo user-write-check', show_output: false },
+            { command: staleCometCommand, show_output: true },
+          ],
+        },
+      };
+      await fs.mkdir(path.dirname(hooksPath), { recursive: true });
+      await fs.writeFile(hooksPath, JSON.stringify(initialHooks), 'utf-8');
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const firstInstall = JSON.parse(await fs.readFile(hooksPath, 'utf-8'));
+
+      expect(firstInstall.enabled).toBe(true);
+      expect(firstInstall.hooks.post_write_code).toEqual(initialHooks.hooks.post_write_code);
+      expect(firstInstall.hooks.pre_write_code).toEqual([
+        { command: 'echo user-write-check', show_output: false },
+        {
+          command: `bash .windsurf/skills/${currentCometScript}`,
+          show_output: true,
+        },
+      ]);
+
+      await installCometHooksForPlatform(tmpDir, platform);
+      const secondInstall = JSON.parse(await fs.readFile(hooksPath, 'utf-8'));
+      expect(secondInstall).toEqual(firstInstall);
     });
   });
 

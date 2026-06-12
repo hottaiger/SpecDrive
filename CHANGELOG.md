@@ -19,6 +19,7 @@ All notable changes to @rpamis/comet will be documented in this file.
 
 ### Fixed
 
+- **Hook configuration merging during init and update**: Shared hook configuration files for Claude Code, Codex, Amazon Q, Qwen, Qoder, Gemini, and Windsurf now preserve user-defined hooks when Comet installs or updates a hook for the same matcher or event. Existing Comet commands are identified by their manifest script path and replaced in place, preventing stale install paths, duplicate matcher groups, and repeated hook accumulation while leaving unrelated settings untouched.
 - **Subagent-driven task isolation and continuity**: `comet-build` now loads the mature Superpowers `subagent-driven-development` loop and applies a stricter Comet extension that requires one fresh background implementer per task, fresh background reviewers and fix agents, coordinator-only source execution, and automatic continuation between tasks without progress summaries or "continue?" prompts. TDD mode requires each implementer/fix agent to load the TDD skill and return auditable RED/GREEN evidence before review. A durable per-task checkpoint preserves implementation commits, review stages, feedback, and the three-round retry budget across context compression; task checkoff remains blocked until both reviews pass ([#94](https://github.com/rpamis/comet/issues/94), [#96](https://github.com/rpamis/comet/issues/96), [#97](https://github.com/rpamis/comet/issues/97)).
 - **npm shebang line ending issue on macOS**: When npm packed the project on Windows, `bin/comet.js` shebang line got CRLF line endings, causing macOS to interpret `#!/usr/bin/env node\r` instead of `#!/usr/bin/env node`, resulting in "command not found" after `npm install -g @rpamis/comet`. Added explicit `eol=lf` rules for all text file extensions (`.js`, `.mjs`, `.ts`, `.json`, `.md`, `.yaml`, `.yml`) and binary markers for image files in `.gitattributes` ([#82](https://github.com/rpamis/comet/issues/82)).
 - **CodeGraph Codex CLI skip on project scope**: `comet init` with project scope passed `--target` and `--location=local` to `codegraph install`, which caused Codex CLI (no project-local config) to be skipped with a confusing message. Simplified to `codegraph install --yes` without `--target` or `--location` flags, letting CodeGraph auto-detect and configure all installed agents. Removed `filterSupportedPlatforms` and `CODEGRAPH_SUPPORTED_TARGETS` ([#98](https://github.com/rpamis/comet/issues/98)).
@@ -28,6 +29,7 @@ All notable changes to @rpamis/comet will be documented in this file.
 
 ### Tests
 
+- **Hook merge regression coverage**: Added real-file tests for Claude-style, Qwen/Qoder, Gemini, and Windsurf hook formats covering same-matcher user hook preservation, stale Comet command replacement, unrelated configuration retention, and idempotent repeated installation.
 - **Subagent dispatch contract coverage**: Added Chinese and English skill-content regression coverage for Superpowers/Comet composition, coordinator-only source execution with tracking-file exceptions, one fresh background agent per task and role, prompt/status/reviewer evidence contracts, durable recovery checkpoints, TDD ownership, dual-review checkoff, bounded stop conditions, continuous task execution, Comet-specific final handoff, and the absence of a Stop hook.
 - **Reference doc assertions**: Added assertions verifying all skill files that reference `decision-point.md` and `debug-gate.md` include the correct protocol path, and that the shipped reference docs contain the expected core rules and fallback behavior.
 
@@ -230,6 +232,7 @@ All notable changes to @rpamis/comet will be documented in this file.
 - Added contributors wall to both README and README-zh (@Joechan11)
 
 ### New Contributors
+
 * @felanny made their first contribution in #38
 * @Joechan11 made their first contribution in #44
 * @bevishe made their first contribution in #47
