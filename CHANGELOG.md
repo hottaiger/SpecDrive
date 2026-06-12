@@ -4,6 +4,10 @@ All notable changes to @rpamis/comet will be documented in this file.
 
 ## What's Changed [0.3.8] - 2026-06-11
 
+### Fixed
+
+- **OpenCode plugin-installed Superpowers detection**: `comet init` now correctly detects Superpowers already installed via the OpenCode plugin system (configured in `opencode.json`), preventing duplicate re-installation. Previously, only skills placed directly under `~/.config/opencode/skills/` were detected, missing the plugin source directory at `~/.config/opencode/superpowers/skills/` and the `plugin` array in `opencode.json`. Added `hasOpenCodePluginSuperpowers()` fallback detection similar to the existing Claude Code plugin cache check ([#105](https://github.com/rpamis/comet/issues/105)).
+
 ### Added
 
 - **Version info and update check**: `comet init` and `comet update` now display the current installed Comet version at the start of command output and check the npm registry for newer versions. If an update is available, users see a prompt to upgrade; if already on the latest version, a confirmation message is shown; if the registry is unreachable, the check is skipped silently without error ([#99](https://github.com/rpamis/comet/issues/99)).
