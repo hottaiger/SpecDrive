@@ -16,6 +16,7 @@ import {
 import { PLATFORMS, getPlatformSkillsDir, type Platform } from '../core/platforms.js';
 import { installCodegraph } from '../core/codegraph.js';
 import type { InstallScope } from '../core/types.js';
+import { printVersionInfo } from '../core/version.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../../package.json');
@@ -187,7 +188,9 @@ export async function updateCommand(
   const projectPath = path.resolve(targetPath);
   const log = options.json ? () => undefined : console.log;
 
-  log(`\n  Comet Update v${version}\n`);
+  log(`\n  Comet Update`);
+  await printVersionInfo(log);
+  log('');
 
   const packageScope = options.scope ?? (await detectCometPackageScope(projectPath));
   let npmStatus: 'updated' | 'failed' | 'skipped' = 'skipped';
