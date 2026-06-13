@@ -14,7 +14,7 @@ import {
   getManifestSkills,
 } from '../core/skills.js';
 import { PLATFORMS, getPlatformSkillsDir, type Platform } from '../core/platforms.js';
-import { installCodegraph, filterSupportedPlatforms } from '../core/codegraph.js';
+import { installGitnexus, filterSupportedPlatforms } from '../core/gitnexus.js';
 import type { InstallScope } from '../core/types.js';
 
 const require = createRequire(import.meta.url);
@@ -309,27 +309,27 @@ export async function updateCommand(
     }
   }
 
-  // CodeGraph optional step
-  let codegraphStatus: 'installed' | 'failed' | 'skipped' = 'skipped';
+  // GitNexus optional step
+  let gitnexusStatus: 'installed' | 'failed' | 'skipped' = 'skipped';
   const detectedPlatformIds = [...new Set(targets.map((t) => t.platform.id))];
-  const { supported: cgSupported } = filterSupportedPlatforms(detectedPlatformIds);
+  const { supported: gnSupported } = filterSupportedPlatforms(detectedPlatformIds);
   const primaryScope = targets[0]?.scope ?? 'project';
 
-  if (cgSupported.length > 0 && !options.json) {
-    const shouldInstallCodegraph = await select({
-      message: 'Install/update CodeGraph for semantic code intelligence?',
+  if (gnSupported.length > 0 && !options.json) {
+    const shouldInstallGitnexus = await select({
+      message: 'Install/update GitNexus for code intelligence and MCP?',
       choices: [
-        { name: 'Yes (recommended — saves ~16% cost · cuts ~58% tool calls)', value: true },
+        { name: 'Yes (recommended — knowledge graph + MCP server for AI agents)', value: true },
         { name: 'No', value: false },
       ],
     });
 
-    if (shouldInstallCodegraph) {
-      log('\n  Installing CodeGraph...');
-      codegraphStatus = await installCodegraph(projectPath, detectedPlatformIds, primaryScope);
-      log(`  CodeGraph: ${codegraphStatus}`);
+    if (shouldInstallGitnexus) {
+      log('\n  Installing GitNexus...');
+      gitnexusStatus = await installGitnexus(projectPath, detectedPlatformIds, primaryScope);
+      log(`  GitNexus: ${gitnexusStatus}`);
     } else {
-      log('\n  CodeGraph: skipped');
+      log('\n  GitNexus: skipped');
     }
   }
 
@@ -348,7 +348,7 @@ export async function updateCommand(
           },
           rules: { totalCopied: totalRulesCopied },
           hooks: { totalInstalled: totalHooksInstalled },
-          codegraph: codegraphStatus,
+          gitnexus: gitnexusStatus,
         },
         null,
         2,
@@ -362,7 +362,7 @@ export async function updateCommand(
   log(`\n  Summary:`);
   log(`    npm: ${npmStatus}${options.skipNpm ? '' : ` (${packageScope})`}`);
   log(`    skills: ${targets.length} target(s), ${totalCopied} files updated`);
-  log(`    codegraph: ${codegraphStatus}`);
+  log(`    gitnexus: ${gitnexusStatus}`);
   log(`    scope: ${scopes}`);
   log(`    language: ${languages}`);
   log(`\n  Update complete.\n`);

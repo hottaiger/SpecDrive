@@ -12,7 +12,7 @@ import {
 } from '../core/skills.js';
 import { installOpenSpec } from '../core/openspec.js';
 import { installSuperpowersForPlatforms } from '../core/superpowers.js';
-import { installCodegraph, filterSupportedPlatforms } from '../core/codegraph.js';
+import { installGitnexus, filterSupportedPlatforms } from '../core/gitnexus.js';
 
 type InitOptions = {
   yes?: boolean;
@@ -31,7 +31,7 @@ interface PlatformResult {
   openspec: InstallStatus;
   superpowers: InstallStatus;
   comet: InstallStatus;
-  codegraph: InstallStatus;
+  gitnexus: InstallStatus;
 }
 
 type ComponentPlan = {
@@ -158,21 +158,21 @@ function displaySummary(results: PlatformResult[], scope: InstallScope): void {
       r.openspec === 'installed' ||
       r.superpowers === 'installed' ||
       r.comet === 'installed' ||
-      r.codegraph === 'installed',
+      r.gitnexus === 'installed',
   );
   const skipped = results.filter(
     (r) =>
       r.openspec === 'skipped' &&
       r.superpowers === 'skipped' &&
       r.comet === 'skipped' &&
-      r.codegraph === 'skipped',
+      r.gitnexus === 'skipped',
   );
   const failed = results.filter(
     (r) =>
       r.openspec === 'failed' ||
       r.superpowers === 'failed' ||
       r.comet === 'failed' ||
-      r.codegraph === 'failed',
+      r.gitnexus === 'failed',
   );
 
   if (installed.length > 0) {
@@ -359,35 +359,35 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
       openspec: osToolIds.includes(platform.openspecToolId) ? osGlobalStatus : 'skipped',
       superpowers: plan.spAction !== 'skip' ? spGlobalStatus : 'skipped',
       comet: cmStatus,
-      codegraph: 'skipped',
+      gitnexus: 'skipped',
     });
   }
 
-  let cgGlobalStatus: InstallStatus;
-  const { supported: cgSupported } = filterSupportedPlatforms(selectedPlatformIds);
-  const shouldInstallCodegraph =
-    cgSupported.length > 0 &&
+  let gnGlobalStatus: InstallStatus;
+  const { supported: gnSupported } = filterSupportedPlatforms(selectedPlatformIds);
+  const shouldInstallGitnexus =
+    gnSupported.length > 0 &&
     !options.json &&
     (options.yes ||
       (await select({
-        message: 'Install CodeGraph for semantic code intelligence?',
+        message: 'Install GitNexus for code intelligence and MCP?',
         choices: [
-          { name: 'Yes (recommended — saves ~16% cost · cuts ~58% tool calls)', value: true },
+          { name: 'Yes (recommended — knowledge graph + MCP server for AI agents)', value: true },
           { name: 'No', value: false },
         ],
       })));
 
-  if (shouldInstallCodegraph) {
-    log('\n  Installing CodeGraph...');
-    cgGlobalStatus = await installCodegraph(projectPath, selectedPlatformIds, scope);
-    log(`  CodeGraph: ${cgGlobalStatus}`);
+  if (shouldInstallGitnexus) {
+    log('\n  Installing GitNexus...');
+    gnGlobalStatus = await installGitnexus(projectPath, selectedPlatformIds, scope);
+    log(`  GitNexus: ${gnGlobalStatus}`);
     for (const r of results) {
       if (filterSupportedPlatforms([r.platform.id]).supported.length > 0) {
-        r.codegraph = cgGlobalStatus;
+        r.gitnexus = gnGlobalStatus;
       }
     }
   } else {
-    log('\n  CodeGraph: skipped');
+    log('\n  GitNexus: skipped');
   }
 
   if (scope === 'project') {
@@ -408,7 +408,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
             openspec: result.openspec,
             superpowers: result.superpowers,
             comet: result.comet,
-            codegraph: result.codegraph,
+            gitnexus: result.gitnexus,
           })),
           workingDirsCreated: scope === 'project',
         },

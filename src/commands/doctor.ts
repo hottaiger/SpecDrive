@@ -215,29 +215,29 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
   return results;
 }
 
-async function checkCodegraph(projectPath: string, scope: DoctorScope): Promise<CheckResult> {
-  if (!isCommandAvailable('codegraph')) {
+async function checkGitnexus(projectPath: string, scope: DoctorScope): Promise<CheckResult> {
+  if (!isCommandAvailable('gitnexus')) {
     return {
-      check: 'CodeGraph CLI',
+      check: 'GitNexus CLI',
       status: 'warn',
-      message: 'not installed — install with: npm install -g @colbymchenry/codegraph',
+      message: 'not installed — install with: npm install -g gitnexus',
     };
   }
 
   if (scope === 'global') {
-    return { check: 'CodeGraph CLI', status: 'pass', message: 'installed' };
+    return { check: 'GitNexus CLI', status: 'pass', message: 'installed' };
   }
 
-  const codegraphDir = path.join(projectPath, '.codegraph');
-  if (!(await fileExists(codegraphDir))) {
+  const gitnexusDir = path.join(projectPath, '.gitnexus');
+  if (!(await fileExists(gitnexusDir))) {
     return {
-      check: 'CodeGraph',
+      check: 'GitNexus',
       status: 'warn',
-      message: 'CLI installed but project not initialized — run: codegraph init -i',
+      message: 'CLI installed but project not indexed — run: gitnexus analyze',
     };
   }
 
-  return { check: 'CodeGraph', status: 'pass', message: 'initialized (.codegraph/ present)' };
+  return { check: 'GitNexus', status: 'pass', message: 'initialized (.gitnexus/ present)' };
 }
 
 async function collectResults(projectPath: string, scope: DoctorScope): Promise<CheckResult[]> {
@@ -248,7 +248,7 @@ async function collectResults(projectPath: string, scope: DoctorScope): Promise<
   }
   results.push(...(await checkSkillCompleteness(projectPath, scope)));
   results.push(await checkScriptsPresent());
-  results.push(await checkCodegraph(projectPath, scope));
+  results.push(await checkGitnexus(projectPath, scope));
   results.push(...(await checkCometYamlValidity(projectPath)));
   return results;
 }
