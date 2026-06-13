@@ -10,8 +10,8 @@ function escapeRegExp(value) {
 
 function findUsableBash() {
   const candidates = [
-    process.env.COMET_TEST_BASH,
-    process.env.COMET_BASH,
+    process.env.SPECDRIVE_TEST_BASH,
+    process.env.SPECDRIVE_BASH,
     'bash',
     ...(process.platform === 'win32'
       ? [
@@ -159,8 +159,8 @@ if (files.length === 0) {
 }
 
 if (!bashCommand) {
-  console.error('ERROR: usable bash not found. Install Git Bash or set COMET_TEST_BASH/COMET_BASH to a working bash executable.');
-  console.error('Windows WSL launcher bash.exe is not supported for Comet shell tests.');
+  console.error('ERROR: usable bash not found. Install Git Bash or set SPECDRIVE_TEST_BASH/SPECDRIVE_BASH to a working bash executable.');
+  console.error('Windows WSL launcher bash.exe is not supported for SpecDrive shell tests.');
   process.exit(1);
 }
 
@@ -170,7 +170,7 @@ for (const file of files) {
   console.log(`# ${file}`);
   console.log(`1..${tests.length}`);
 
-  const tempDir = mkdtempSync(path.join(tmpdir(), 'comet-bats-'));
+  const tempDir = mkdtempSync(path.join(tmpdir(), 'specdrive-bats-'));
   const compiled = path.join(tempDir, 'compiled.bash');
   writeFileSync(compiled, compileBats(file), 'utf8');
 

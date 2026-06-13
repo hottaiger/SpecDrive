@@ -77,7 +77,11 @@ async function checkWorkingDirs(projectPath: string): Promise<CheckResult> {
     return { check: 'working directories', status: 'pass', message: 'present' };
   }
   if (!specsExist && !plansExist) {
-    return { check: 'working directories', status: 'fail', message: 'missing — run: comet init' };
+    return {
+      check: 'working directories',
+      status: 'fail',
+      message: 'missing — run: specdrive init',
+    };
   }
   const missing = [];
   if (!specsExist) missing.push('specs');
@@ -162,8 +166,8 @@ async function checkSkillCompleteness(
       status: 'warn',
       message:
         scope === 'auto'
-          ? 'no platforms detected in project or global scope — run comet init'
-          : `no platforms detected in ${scope} scope — run comet init`,
+          ? 'no platforms detected in project or global scope — run specdrive init'
+          : `no platforms detected in ${scope} scope — run specdrive init`,
     });
   }
 
@@ -195,7 +199,7 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
   const results: CheckResult[] = [];
 
   for (const entry of entries) {
-    const yamlPath = path.join(changesDir, entry, '.comet.yaml');
+    const yamlPath = path.join(changesDir, entry, '.specdrive.yaml');
     if (!(await fileExists(yamlPath))) continue;
 
     const raw = await fs.readFile(yamlPath, 'utf-8');
@@ -203,9 +207,9 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
 
     results.push(
       unknownFields.length === 0
-        ? { check: `.comet.yaml: ${entry}`, status: 'pass' as const, message: 'valid' }
+        ? { check: `.specdrive.yaml: ${entry}`, status: 'pass' as const, message: 'valid' }
         : {
-            check: `.comet.yaml: ${entry}`,
+            check: `.specdrive.yaml: ${entry}`,
             status: 'fail' as const,
             message: `unknown field(s): ${unknownFields.join(', ')}`,
           },
@@ -277,7 +281,7 @@ export async function doctorCommand(
     return;
   }
 
-  console.log(`Comet Doctor (scope: ${scope})\n`);
+  console.log(`SpecDrive Doctor (scope: ${scope})\n`);
 
   for (const r of results) {
     console.log(`  ${icon(r.status)} ${r.check}: ${r.message}`);

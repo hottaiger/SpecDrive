@@ -1,28 +1,28 @@
 {
   "version": "0.3.3",
   "skills": [
-    "comet/SKILL.md",
-    "comet/reference/dirty-worktree.md",
-    "comet/scripts/comet-env.sh",
-    "comet/scripts/comet-guard.sh",
-    "comet/scripts/comet-state.sh",
-    "comet/scripts/comet-handoff.sh",
-    "comet/scripts/comet-archive.sh",
-    "comet/scripts/comet-yaml-validate.sh",
-    "comet/scripts/comet-hook-guard.sh",
-    "comet-open/SKILL.md",
-    "comet-design/SKILL.md",
-    "comet-build/SKILL.md",
-    "comet-verify/SKILL.md",
-    "comet-archive/SKILL.md",
-    "comet-hotfix/SKILL.md",
-    "comet-tweak/SKILL.md"
+    "specdrive/SKILL.md",
+    "specdrive/reference/dirty-worktree.md",
+    "specdrive/scripts/specdrive-env.sh",
+    "specdrive/scripts/specdrive-guard.sh",
+    "specdrive/scripts/specdrive-state.sh",
+    "specdrive/scripts/specdrive-handoff.sh",
+    "specdrive/scripts/specdrive-archive.sh",
+    "specdrive/scripts/specdrive-yaml-validate.sh",
+    "specdrive/scripts/specdrive-hook-guard.sh",
+    "specdrive-open/SKILL.md",
+    "specdrive-design/SKILL.md",
+    "specdrive-build/SKILL.md",
+    "specdrive-verify/SKILL.md",
+    "specdrive-archive/SKILL.md",
+    "specdrive-hotfix/SKILL.md",
+    "specdrive-tweak/SKILL.md"
   ],
   "rules": [
-    "comet/rules/comet-phase-guard.md"
+    "specdrive/rules/specdrive-phase-guard.md"
   ],
   "hooks": {
-    "comet/scripts/comet-hook-guard.sh": {
+    "specdrive/scripts/specdrive-hook-guard.sh": {
       "matcher": "Write|Edit",
       "description": "Block code writes in wrong Comet phase (open/design/archive)"
     }

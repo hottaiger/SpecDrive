@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to @rpamis/comet will be documented in this file.
+All notable changes to @hottaiger/specdrive will be documented in this file.
 
 ## What's Changed [0.3.7] - 2026-06-07
 

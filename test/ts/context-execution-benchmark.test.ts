@@ -242,7 +242,7 @@ describe('context execution benchmark runner', () => {
       const report = await fs.readFile(result.reportMarkdownPath, 'utf-8');
       const data = JSON.parse(await fs.readFile(result.reportJsonPath, 'utf-8'));
 
-      expect(report).toContain('# Comet Execution Benchmark 报告');
+      expect(report).toContain('# SpecDrive Execution Benchmark 报告');
       expect(report).toContain('## L1: 设计阶段');
       expect(report).toContain('## L2: 构建阶段');
       expect(report).toContain('| 模式 |');
@@ -262,7 +262,7 @@ describe('context execution benchmark runner', () => {
         fs.stat(
           path.join(
             tmpDir,
-            '.comet',
+            '.specdrive',
             'benchmark',
             'execution',
             'l2',
@@ -276,7 +276,7 @@ describe('context execution benchmark runner', () => {
         fs.stat(
           path.join(
             tmpDir,
-            '.comet',
+            '.specdrive',
             'benchmark',
             'execution',
             'l2',
@@ -291,7 +291,7 @@ describe('context execution benchmark runner', () => {
       // Verify L1 fixture has no src/ (design only)
       await expect(
         fs.stat(
-          path.join(tmpDir, '.comet', 'benchmark', 'execution', 'l1', 'small', 'beta', 'openspec'),
+          path.join(tmpDir, '.specdrive', 'benchmark', 'execution', 'l1', 'small', 'beta', 'openspec'),
         ),
       ).resolves.toBeDefined();
     } finally {
@@ -378,7 +378,7 @@ describe('context execution benchmark runner', () => {
         fs.stat(
           path.join(
             tmpDir,
-            '.comet',
+            '.specdrive',
             'benchmark',
             'execution',
             'l3',
@@ -393,7 +393,7 @@ describe('context execution benchmark runner', () => {
         fs.stat(
           path.join(
             tmpDir,
-            '.comet',
+            '.specdrive',
             'benchmark',
             'execution',
             'l3',

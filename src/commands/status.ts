@@ -46,7 +46,7 @@ async function countTasks(tasksPath: string): Promise<{ done: number; total: num
 }
 
 async function readCometState(changesDir: string, changeName: string): Promise<CometState | null> {
-  const yamlPath = path.join(changesDir, changeName, '.comet.yaml');
+  const yamlPath = path.join(changesDir, changeName, '.specdrive.yaml');
   if (!(await fileExists(yamlPath))) return null;
   const raw = await fs.readFile(yamlPath, 'utf-8');
   const state: CometState = {};

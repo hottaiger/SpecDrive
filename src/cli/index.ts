@@ -17,7 +17,7 @@ program
 
 program
   .command('init [path]')
-  .description('Initialize Comet workflow in your project')
+  .description('Initialize SpecDrive workflow in your project')
   .option('--yes', 'Auto-install missing components, skip existing')
   .option('--skip-existing', 'Never overwrite existing components')
   .option('--overwrite', 'Overwrite manifest-managed files')
@@ -45,7 +45,7 @@ program
 
 program
   .command('doctor [path]')
-  .description('Diagnose Comet installation health')
+  .description('Diagnose SpecDrive installation health')
   .option('--json', 'Output as JSON')
   .addOption(
     new Option('--scope <scope>', 'Install scope to diagnose').choices([

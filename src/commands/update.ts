@@ -19,7 +19,7 @@ import type { InstallScope } from '../core/types.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../../package.json');
-const PACKAGE_NAME = '@rpamis/comet';
+const PACKAGE_NAME = '@hottaiger/specdrive';
 
 interface UpdateOptions {
   json?: boolean;
@@ -187,7 +187,7 @@ export async function updateCommand(
   const projectPath = path.resolve(targetPath);
   const log = options.json ? () => undefined : console.log;
 
-  log(`\n  Comet Update v${version}\n`);
+  log(`\n  SpecDrive Update v${version}\n`);
 
   const packageScope = options.scope ?? (await detectCometPackageScope(projectPath));
   let npmStatus: 'updated' | 'failed' | 'skipped' = 'skipped';
@@ -228,7 +228,7 @@ export async function updateCommand(
       );
       return;
     }
-    log('\n  No platforms with comet skills installed. Run `comet init` first.\n');
+    log('\n  No platforms with comet skills installed. Run `specdrive init` first.\n');
     return;
   }
 
@@ -283,10 +283,10 @@ export async function updateCommand(
       );
       totalRulesCopied += ruleCopied;
       if (ruleCopied > 0) {
-        log(`  Comet rules -> ${target.platform.name}: ${ruleCopied} rule(s) updated`);
+        log(`  SpecDrive rules -> ${target.platform.name}: ${ruleCopied} rule(s) updated`);
       }
     } catch (err) {
-      log(`  Comet rules -> ${target.platform.name}: failed (${(err as Error).message})`);
+      log(`  SpecDrive rules -> ${target.platform.name}: failed (${(err as Error).message})`);
     }
 
     // Install hooks for platforms that support them
@@ -299,12 +299,12 @@ export async function updateCommand(
         );
         if (installed) {
           totalHooksInstalled++;
-          log(`  Comet hooks -> ${target.platform.name}: phase guard hook updated`);
+          log(`  SpecDrive hooks -> ${target.platform.name}: phase guard hook updated`);
         } else if (reason) {
-          log(`  Comet hooks -> ${target.platform.name}: skipped (${reason})`);
+          log(`  SpecDrive hooks -> ${target.platform.name}: skipped (${reason})`);
         }
       } catch (err) {
-        log(`  Comet hooks -> ${target.platform.name}: failed (${(err as Error).message})`);
+        log(`  SpecDrive hooks -> ${target.platform.name}: failed (${(err as Error).message})`);
       }
     }
   }

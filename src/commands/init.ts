@@ -30,7 +30,7 @@ interface PlatformResult {
   platform: Platform;
   openspec: InstallStatus;
   superpowers: InstallStatus;
-  comet: InstallStatus;
+  specdrive: InstallStatus;
   gitnexus: InstallStatus;
 }
 
@@ -45,7 +45,7 @@ const LANGUAGES: LanguageConfig[] = [
   { id: 'zh', name: '中文', skillsDir: 'skills-zh' },
 ];
 
-const COMET_BANNER = [
+const SPECDRIVE_BANNER = [
   `   ██████╗ ██████╗ ███╗   ███╗███████╗████████╗`,
   `  ██╔════╝██╔═══██╗████╗ ████║██╔════╝╚══██╔══╝`,
   `  ██║     ██║   ██║██╔████╔██║█████╗     ██║   `,
@@ -72,7 +72,7 @@ async function selectLanguage(options: InitOptions): Promise<LanguageConfig> {
   if (options.yes) return LANGUAGES[0];
 
   const langId = await select({
-    message: 'Language for Comet skills:',
+    message: 'Language for SpecDrive skills:',
     choices: LANGUAGES.map((lang) => ({ name: lang.name, value: lang.id })),
   });
 
@@ -151,27 +151,27 @@ function resolveAction(
 function displaySummary(results: PlatformResult[], scope: InstallScope): void {
   const scopeLabel = scope === 'global' ? os.homedir() : 'project';
 
-  console.log(`\n  Comet setup complete! (scope: ${scopeLabel})\n`);
+  console.log(`\n  SpecDrive setup complete! (scope: ${scopeLabel})\n`);
 
   const installed = results.filter(
     (r) =>
       r.openspec === 'installed' ||
       r.superpowers === 'installed' ||
-      r.comet === 'installed' ||
+      r.specdrive === 'installed' ||
       r.gitnexus === 'installed',
   );
   const skipped = results.filter(
     (r) =>
       r.openspec === 'skipped' &&
       r.superpowers === 'skipped' &&
-      r.comet === 'skipped' &&
+      r.specdrive === 'skipped' &&
       r.gitnexus === 'skipped',
   );
   const failed = results.filter(
     (r) =>
       r.openspec === 'failed' ||
       r.superpowers === 'failed' ||
-      r.comet === 'failed' ||
+      r.specdrive === 'failed' ||
       r.gitnexus === 'failed',
   );
 
@@ -193,17 +193,17 @@ function displaySummary(results: PlatformResult[], scope: InstallScope): void {
   }
 
   console.log(`\n  Get started:`);
-  console.log(`    /comet "your idea"  — Start a new change with full workflow`);
-  console.log(`    /comet-hotfix       — Quick bug fix (skip brainstorming)`);
-  console.log(`    /comet-tweak        — Small change (skip brainstorming and plan)\n`);
+  console.log(`    /specdrive "your idea"  — Start a new change with full workflow`);
+  console.log(`    /specdrive-hotfix       — Quick bug fix (skip brainstorming)`);
+  console.log(`    /specdrive-tweak        — Small change (skip brainstorming and plan)\n`);
 }
 
 export async function initCommand(targetPath: string, options: InitOptions = {}): Promise<void> {
   const projectPath = path.resolve(targetPath);
   const log = options.json ? () => undefined : console.log;
 
-  log(`\n${COMET_BANNER}\n`);
-  log(`  Setting up Comet in ${projectPath}\n`);
+  log(`\n${SPECDRIVE_BANNER}\n`);
+  log(`  Setting up SpecDrive in ${projectPath}\n`);
 
   const detected = await detectPlatforms(projectPath);
   const scope = await selectScope(options);
@@ -247,7 +247,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
   for (const platform of selectedPlatforms) {
     const hasOS = await hasSkills(baseDir, platform, 'openspec', selectedPlatforms, scope);
     const hasSP = await hasSkills(baseDir, platform, 'superpowers', selectedPlatforms, scope);
-    const hasCM = await hasSkills(baseDir, platform, 'comet', selectedPlatforms, scope);
+    const hasCM = await hasSkills(baseDir, platform, 'specdrive', selectedPlatforms, scope);
 
     let osAction = resolveAction(hasOS, options);
     let spAction = resolveAction(hasSP, options);
@@ -326,9 +326,9 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
         scope,
       );
       cmStatus = copied > 0 ? 'installed' : 'skipped';
-      log(`  Comet -> ${platform.name}: ${cmStatus} (${copied} files) -> ${skillsPath}`);
+      log(`  SpecDrive -> ${platform.name}: ${cmStatus} (${copied} files) -> ${skillsPath}`);
     } else {
-      log(`  Comet -> ${platform.name}: skipped (already exists)`);
+      log(`  SpecDrive -> ${platform.name}: skipped (already exists)`);
     }
 
     // Distribute anti-drift rules to platforms that support them
@@ -340,7 +340,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
         scope,
       );
       if (ruleCopied > 0) {
-        log(`  Comet rules -> ${platform.name}: ${ruleCopied} rule(s) installed`);
+        log(`  SpecDrive rules -> ${platform.name}: ${ruleCopied} rule(s) installed`);
       }
     }
 
@@ -348,9 +348,9 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
     if (cmAction !== 'skip' && platform.supportsHooks) {
       const { installed, reason } = await installCometHooksForPlatform(baseDir, platform, scope);
       if (installed) {
-        log(`  Comet hooks -> ${platform.name}: phase guard hook installed`);
+        log(`  SpecDrive hooks -> ${platform.name}: phase guard hook installed`);
       } else if (reason) {
-        log(`  Comet hooks -> ${platform.name}: skipped (${reason})`);
+        log(`  SpecDrive hooks -> ${platform.name}: skipped (${reason})`);
       }
     }
 
@@ -358,7 +358,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
       platform,
       openspec: osToolIds.includes(platform.openspecToolId) ? osGlobalStatus : 'skipped',
       superpowers: plan.spAction !== 'skip' ? spGlobalStatus : 'skipped',
-      comet: cmStatus,
+      specdrive: cmStatus,
       gitnexus: 'skipped',
     });
   }
@@ -407,7 +407,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
             platformName: result.platform.name,
             openspec: result.openspec,
             superpowers: result.superpowers,
-            comet: result.comet,
+            specdrive: result.specdrive,
             gitnexus: result.gitnexus,
           })),
           workingDirsCreated: scope === 'project',

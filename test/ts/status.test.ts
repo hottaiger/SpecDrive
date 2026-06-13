@@ -20,7 +20,7 @@ describe('status command', () => {
     const changeDir = path.join(tmpDir, 'openspec', 'changes', 'next-build');
     await fs.mkdir(changeDir, { recursive: true });
     await fs.writeFile(
-      path.join(changeDir, '.comet.yaml'),
+      path.join(changeDir, '.specdrive.yaml'),
       [
         'workflow: full',
         'phase: build',
@@ -53,7 +53,7 @@ describe('status command', () => {
     const changeDir = path.join(tmpDir, 'openspec', 'changes', 'next-verify');
     await fs.mkdir(changeDir, { recursive: true });
     await fs.writeFile(
-      path.join(changeDir, '.comet.yaml'),
+      path.join(changeDir, '.specdrive.yaml'),
       ['workflow: full', 'phase: verify', 'archived: false', ''].join('\n'),
     );
 

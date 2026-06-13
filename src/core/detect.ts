@@ -43,13 +43,13 @@ async function hasPluginSuperpowers(): Promise<boolean> {
   return false;
 }
 
-async function hasOpenCodeCometCommands(baseDir: string, skillsDir: string, entries: string[]) {
-  const cometEntries = entries.filter((entry) => entry.startsWith('comet'));
-  if (cometEntries.length === 0) return false;
+async function hasOpenCodeSpecdriveCommands(baseDir: string, skillsDir: string, entries: string[]) {
+  const specdriveEntries = entries.filter((entry) => entry.startsWith('specdrive'));
+  if (specdriveEntries.length === 0) return false;
 
   const commandsDir = path.join(baseDir, skillsDir, 'commands');
   const commandEntries = await readDir(commandsDir);
-  return cometEntries.every((entry) => commandEntries.includes(`${entry}.md`));
+  return specdriveEntries.every((entry) => commandEntries.includes(`${entry}.md`));
 }
 
 async function detectPlatforms(projectPath: string): Promise<Set<string>> {
@@ -80,7 +80,7 @@ async function detectPlatforms(projectPath: string): Promise<Set<string>> {
 async function hasSkills(
   baseDir: string,
   platform: Platform,
-  component: 'openspec' | 'superpowers' | 'comet',
+  component: 'openspec' | 'superpowers' | 'specdrive',
   _selectedPlatforms: Platform[] = [],
   scope: InstallScope = 'project',
 ): Promise<boolean> {
@@ -102,14 +102,14 @@ async function hasSkills(
     case 'superpowers':
       if (SUPERPOWERS_SKILLS.some((name) => entries.includes(name))) return true;
       break;
-    case 'comet':
+    case 'specdrive':
       if (platform.id === 'opencode') {
         for (const dir of skillDirEntries) {
-          if (await hasOpenCodeCometCommands(baseDir, dir.skillsDir, dir.entries)) return true;
+          if (await hasOpenCodeSpecdriveCommands(baseDir, dir.skillsDir, dir.entries)) return true;
         }
         break;
       }
-      if (entries.some((e) => e.startsWith('comet'))) return true;
+      if (entries.some((e) => e.startsWith('specdrive'))) return true;
       break;
   }
 
@@ -132,16 +132,16 @@ async function hasSkills(
       case 'superpowers':
         if (SUPERPOWERS_SKILLS.some((name) => globalEntries.includes(name))) return true;
         break;
-      case 'comet':
+      case 'specdrive':
         if (platform.id === 'opencode') {
           for (const dir of globalSkillDirEntries) {
-            if (await hasOpenCodeCometCommands(os.homedir(), dir.skillsDir, dir.entries)) {
+            if (await hasOpenCodeSpecdriveCommands(os.homedir(), dir.skillsDir, dir.entries)) {
               return true;
             }
           }
           break;
         }
-        if (globalEntries.some((e) => e.startsWith('comet'))) return true;
+        if (globalEntries.some((e) => e.startsWith('specdrive'))) return true;
         break;
     }
   }

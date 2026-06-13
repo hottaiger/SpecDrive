@@ -1,22 +1,22 @@
 <p align="center">
-  <a href="https://github.com/rpamis/comet/blob/master/img/title-log.png">
+  <a href="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png">
     <picture>
-      <source srcset="https://github.com/rpamis/comet/blob/master/img/title-log.png">
-      <img src="https://github.com/rpamis/comet/blob/master/img/title-log.png" alt="Comet logo">
+      <source srcset="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png">
+      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png" alt="SpecDrive logo">
     </picture>
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/rpamis/comet/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/rpamis/comet/ci.yml?branch=master&style=flat-square&label=CI" /></a>
-  <a href="https://deepwiki.com/rpamis/comet"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-rpamis%2Fcomet-blue?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/@rpamis/comet"><img alt="npm version" src="https://img.shields.io/npm/v/@rpamis/comet?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/@rpamis/comet"><img alt="npm download count" src="https://img.shields.io/npm/dm/@rpamis/comet?style=flat-square&label=Downloads/mo" /></a>
-  <a href="https://www.npmjs.com/package/@rpamis/comet"><img alt="npm weekly download count" src="https://img.shields.io/npm/dw/@rpamis/comet?style=flat-square&label=Downloads/wk" /></a>
+  <a href="https://github.com/hottaiger/SpecDrive/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/hottaiger/SpecDrive/ci.yml?branch=master&style=flat-square&label=CI" /></a>
+  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-rpamis%2Fcomet-blue?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm version" src="https://img.shields.io/npm/v/@hottaiger/SpecDrive?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm download count" src="https://img.shields.io/npm/dm/@hottaiger/SpecDrive?style=flat-square&label=Downloads/mo" /></a>
+  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm weekly download count" src="https://img.shields.io/npm/dw/@hottaiger/SpecDrive?style=flat-square&label=Downloads/wk" /></a>
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
 </p>
 
-# @rpamis/comet
+# @hottaiger/SpecDrive
 
 ```
  ██████╗ ██████╗ ███╗   ███╗███████╗████████╗
@@ -37,7 +37,7 @@ OpenSpec handles **WHAT** (outlines, proposals, spec lifecycle, archiving).
 
 Superpowers handles **HOW** (technical design, planning, execution, wrap-up).
 
-Comet chains both into a five-phase automated pipeline.
+SpecDrive chains both into a five-phase automated pipeline.
 
 > [!IMPORTANT]
 > **0.3.7 Highlights** — One-step [CodeGraph](https://github.com/colbymchenry/codegraph) semantic code indexing (official: cost **↓16%**, tool calls **↓58%**); 
@@ -59,13 +59,13 @@ Superpowers generates Spec documents after brainstorming, but these documents ty
 completing requirements, Specs only have tasks checked off in the document, and Agents even forget to check them off.
 This causes the Agent to re-examine documents and project code to verify on resumption, wasting many tokens.
 
-**Comet combines the strengths of both**, integrating the core workflow into 5 phases
+**SpecDrive combines the strengths of both**, integrating the core workflow into 5 phases
 
 The main entry `/comet` supports current Spec state detection, suitable for long tasks — after closing your AI coding
-session midway, just `/comet` and Comet will automatically read the active Spec (lists multiple for selection),
+session midway, just `/comet` and SpecDrive will automatically read the active Spec (lists multiple for selection),
 dynamically identify which phase is currently executing, and continue.
 
-At the same time, Comet provides full Spec lifecycle management. During execution, it links OpenSpec change/spec
+At the same time, SpecDrive provides full Spec lifecycle management. During execution, it links OpenSpec change/spec
 artifacts with Superpowers design and planning documents, then automates handoff, state updates, validation, and archive
 sync so users do not have to repeatedly remind the Agent to keep documents synchronized and connected.
 
@@ -76,31 +76,31 @@ only like some features. For example, when using both OpenSpec and Superpowers, 
 management capabilities, but prefer Superpowers' TDD-driven approach for coding.
 
 Long-term Skill users know these capabilities can be freely combined, but exactly how to do so still requires real
-practice. The Comet project can serve as a reference:
+practice. The SpecDrive project can serve as a reference:
 
 - **How to reliably trigger nested Skills** — Not letting the Agent rely on document descriptions to perform "look-alike
   Skill trigger" operations (like writing files based on Skill descriptions), but truly triggering Skills (key feature:
-  Skill trigger prints on CC). Comet triggers many capabilities from OpenSpec and Superpowers. How is this Prompt
+  Skill trigger prints on CC). SpecDrive triggers many capabilities from OpenSpec and Superpowers. How is this Prompt
   written?
 
 - **How to make combined Skills flow automatically across phases** — Not relying on manual intervention. Comet's 5-phase
   flow can automatically trigger Skills for the core process except for necessary user choices, while the state machine
   also protects state transition reliability.
 
-- **How to turn the Spec lifecycle into a resumable workflow** — Comet links OpenSpec change/spec artifacts with
+- **How to turn the Spec lifecycle into a resumable workflow** — SpecDrive links OpenSpec change/spec artifacts with
   Superpowers design and planning documents, then records phase, execution mode, verification results, and archive
-  status in `.comet.yaml`, so the Agent can resume after interruption instead of rereading documents and guessing
+  status in `.specdrive.yaml`, so the Agent can resume after interruption instead of rereading documents and guessing
   progress.
 
-- **How to turn document synchronization from "user reminders" into automation** — Comet puts handoff, state updates,
+- **How to turn document synchronization from "user reminders" into automation** — SpecDrive puts handoff, state updates,
   validation, and archive sync into scripted flows, reducing repeated prompts like "remember to update the design
   doc", "remember to sync the spec", and "remember to archive the change".
 
-- **How to design guard conditions that Agents can execute** — Comet does not simply trust the Agent saying "done" at
-  phase exits. Scripts such as `comet-guard.sh`, `comet-yaml-validate.sh`, and `comet-state.sh` check tasks, state
+- **How to design guard conditions that Agents can execute** — SpecDrive does not simply trust the Agent saying "done" at
+  phase exits. Scripts such as `specdrive-guard.sh`, `specdrive-yaml-validate.sh`, and `specdrive-state.sh` check tasks, state
   fields, verification evidence, and archive conditions before allowing the workflow to advance.
 
-- **How to distribute and install Skills across platforms** — Comet supports multiple AI coding platforms,
+- **How to distribute and install Skills across platforms** — SpecDrive supports multiple AI coding platforms,
   project/global installation, Chinese/English Skill choices, and platform-specific directory differences such as
   Antigravity using different project-level and global paths. It can be a reference for CLI installers and Skill package
   structure.
@@ -119,43 +119,43 @@ Requirements:
 - Bash-compatible shell for workflow scripts (Windows users should use Git Bash or an equivalent bash environment)
 
 ```bash
-npm install -g @rpamis/comet
+npm install -g @hottaiger/SpecDrive
 ```
 
 ## Quick Start
 
 ```bash
 cd your-project
-comet init
+specdrive init
 ```
 
-`comet init` will:
+`specdrive init` will:
 
 1. Prompt you to select AI platforms (auto-detects existing configs)
 2. Choose install scope: project-level (current directory) or global (home directory)
-3. Select language for Comet skills: English or 中文
+3. Select language for SpecDrive skills: English or 中文
 4. Install [OpenSpec](https://github.com/Fission-AI/OpenSpec) skills
 5. Install [Superpowers](https://github.com/obra/superpowers) skills
-6. Deploy Comet skills (in your chosen language) to selected platforms
+6. Deploy SpecDrive skills (in your chosen language) to selected platforms
 7. Create `docs/superpowers/specs/` and `docs/superpowers/plans/` working directories for project-scope installs
 
 > [!TIP]
 > update version
 >
-> `comet update` or `npm install -g @rpamis/comet@latest` to get the latest features and fixes.
+> `specdrive update` or `npm install -g @hottaiger/SpecDrive@latest` to get the latest features and fixes.
 
 ## Support for OpenClaw and Hermes, and other AI platforms
 
-For platforms that use the generic `skills` CLI directly, you can install the Comet skill package with:
+For platforms that use the generic `skills` CLI directly, you can install the SpecDrive skill package with:
 
 ```bash
-npx skills add rpamis/comet
+npx skills add hottaiger/SpecDrive
 ```
 
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/rpamis/comet/blob/master/img/runner.png" alt="runner">
+  <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/runner.png" alt="runner">
 </p>
 
 <p align="center">Auto-install OpenSpec & Superpowers, one-click dev environment setup</p>
@@ -164,9 +164,9 @@ npx skills add rpamis/comet
 ## Commands
 
 <details>
-<summary><code>comet init [path]</code> — Initialize Comet workflow</summary>
+<summary><code>specdrive init [path]</code> — Initialize SpecDrive workflow</summary>
 
-Initializes OpenSpec, Superpowers, and Comet skills for selected AI coding platforms.
+Initializes OpenSpec, Superpowers, and SpecDrive skills for selected AI coding platforms.
 
 | Option            | Description                                                                    |
 |-------------------|--------------------------------------------------------------------------------|
@@ -182,9 +182,9 @@ all, skip all, or choose per component.
 </details>
 
 <details>
-<summary><code>comet status [path]</code> — Show active changes and next workflow command</summary>
+<summary><code>specdrive status [path]</code> — Show active changes and next workflow command</summary>
 
-Displays active changes, task progress, and the recommended next Comet workflow command.
+Displays active changes, task progress, and the recommended next SpecDrive workflow command.
 
 | Option   | Description                              |
 |----------|------------------------------------------|
@@ -193,9 +193,9 @@ Displays active changes, task progress, and the recommended next Comet workflow 
 </details>
 
 <details>
-<summary><code>comet doctor [path]</code> — Diagnose Comet installation health</summary>
+<summary><code>specdrive doctor [path]</code> — Diagnose SpecDrive installation health</summary>
 
-Checks project/global installation health, working directories, installed skills, scripts, and Comet state files.
+Checks project/global installation health, working directories, installed skills, scripts, and SpecDrive state files.
 
 | Option            | Description                                                     |
 |-------------------|-----------------------------------------------------------------|
@@ -205,9 +205,9 @@ Checks project/global installation health, working directories, installed skills
 </details>
 
 <details>
-<summary><code>comet update [path]</code> — Update Comet package and skills</summary>
+<summary><code>specdrive update [path]</code> — Update SpecDrive package and skills</summary>
 
-Updates the npm package and refreshes installed Comet skills in detected project/global targets.
+Updates the npm package and refreshes installed SpecDrive skills in detected project/global targets.
 
 | Option              | Description                                   |
 |---------------------|-----------------------------------------------|
@@ -219,12 +219,12 @@ Updates the npm package and refreshes installed Comet skills in detected project
 
 | Command           | Description  |
 |-------------------|--------------|
-| `comet --help`    | Show help    |
-| `comet --version` | Show version |
+| `specdrive --help`    | Show help    |
+| `specdrive --version` | Show version |
 
 ## Supported Platforms
 
-`comet init` supports 28 AI coding platforms:
+`specdrive init` supports 28 AI coding platforms:
 
 <details>
 <summary>View full platform list</summary>
@@ -253,12 +253,12 @@ Some platforms use different project and global directories. For example, OpenCo
 
 ## Skills
 
-After `comet init`, three groups of skills are installed to the selected platform's `skills/` directory:
+After `specdrive init`, three groups of skills are installed to the selected platform's `skills/` directory:
 
-### Comet Skills
+### SpecDrive Skills
 
 <details>
-<summary>View Comet skills</summary>
+<summary>View SpecDrive skills</summary>
 
 | Skill            | Description                                                    |
 |------------------|----------------------------------------------------------------|
@@ -280,13 +280,13 @@ After `comet init`, three groups of skills are installed to the selected platfor
 
 | Script                   | Purpose                                                                                                                           |
 |--------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `comet-env.sh`           | Script discovery helper — exports bundled script paths such as `COMET_GUARD`, `COMET_STATE`, `COMET_HANDOFF`, and `COMET_ARCHIVE` |
-| `comet-guard.sh`         | Phase transition guard — validates exit conditions, `--apply` auto-updates `.comet.yaml`                                          |
-| `comet-handoff.sh`       | Design handoff — generates deterministic context packages from OpenSpec artifacts with SHA256 tracing                             |
-| `comet-archive.sh`       | One-command archive — validates state, syncs specs, moves to archive, updates status                                              |
-| `comet-yaml-validate.sh` | Schema validator — validates `.comet.yaml` structure and field values                                                             |
-| `comet-hook-guard.sh`    | Phase write guard — PreToolUse hook, blocks file writes during open/design/archive phases                                         |
-| `comet-state.sh`         | Unified state management — init/set/get/check/scale, agents' exclusive YAML interface                                             |
+| `specdrive-env.sh`           | Script discovery helper — exports bundled script paths such as `SPECDRIVE_GUARD`, `SPECDRIVE_STATE`, `SPECDRIVE_HANDOFF`, and `SPECDRIVE_ARCHIVE` |
+| `specdrive-guard.sh`         | Phase transition guard — validates exit conditions, `--apply` auto-updates `.specdrive.yaml`                                          |
+| `specdrive-handoff.sh`       | Design handoff — generates deterministic context packages from OpenSpec artifacts with SHA256 tracing                             |
+| `specdrive-archive.sh`       | One-command archive — validates state, syncs specs, moves to archive, updates status                                              |
+| `specdrive-yaml-validate.sh` | Schema validator — validates `.specdrive.yaml` structure and field values                                                             |
+| `specdrive-hook-guard.sh`    | Phase write guard — PreToolUse hook, blocks file writes during open/design/archive phases                                         |
+| `specdrive-state.sh`         | Unified state management — init/set/get/check/scale, agents' exclusive YAML interface                                             |
 
 </details>
 
@@ -303,13 +303,13 @@ Development methodology: brainstorming, TDD, subagent-driven development, code r
 ```
 /comet
   ↓ auto-detect
-/comet-open  -->  /comet-design  -->  /comet-build  -->  /comet-verify  -->  /comet-archive
+/specdrive-open  -->  /specdrive-design  -->  /specdrive-build  -->  /specdrive-verify  -->  /comet-archive
 (OpenSpec)         (Superpowers)       (Superpowers)       (Both)           (OpenSpec)
 
-/comet-hotfix (preset path, skips brainstorming)
+/specdrive-hotfix (preset path, skips brainstorming)
   open  -->  build  -->  verify  -->  archive
 
-/comet-tweak (preset path, skips brainstorming and full plan)
+/specdrive-tweak (preset path, skips brainstorming and full plan)
   open  -->  lightweight build  -->  light verify  -->  archive
 ```
 
@@ -333,22 +333,22 @@ Development methodology: brainstorming, TDD, subagent-driven development, code r
 
 ### State Management
 
-Comet uses a decoupled state architecture with separate YAML files:
+SpecDrive uses a decoupled state architecture with separate YAML files:
 
 | File             | Owner    | Purpose                                             |
 |------------------|----------|-----------------------------------------------------|
 | `.openspec.yaml` | OpenSpec | Spec lifecycle, change metadata                     |
-| `.comet.yaml`    | Comet    | Workflow phase, execution mode, verification status |
+| `.specdrive.yaml`    | SpecDrive    | Workflow phase, execution mode, verification status |
 
 All states and execution phases are updated via scripts, and each phase verifies that tasks are truly complete before
-advancing. Compared to storing complex state rules only in Skill text, this script-backed state machine gives Comet more
+advancing. Compared to storing complex state rules only in Skill text, this script-backed state machine gives SpecDrive more
 reliable phase transitions, correct YAML, and easier breakpoint recovery; agents can read the current Spec situation
 through Comet's built-in commands.
 
 <details>
-<summary>View key .comet.yaml fields</summary>
+<summary>View key .specdrive.yaml fields</summary>
 
-**Key Fields in `.comet.yaml`:**
+**Key Fields in `.specdrive.yaml`:**
 
 ```yaml
 workflow: full
@@ -370,7 +370,7 @@ archived: false
 direct_override: false
 build_command: null
 verify_command: null
-handoff_context: openspec/changes/<name>/.comet/handoff/design-context.json
+handoff_context: openspec/changes/<name>/.specdrive/handoff/design-context.json
 handoff_hash: <sha256>
 ```
 
@@ -381,7 +381,7 @@ isolation and execution mode. It is not an execution mode and must not be writte
 `verification_report` stays `null` until verification writes a report, and `verify-pass` requires that report to exist
 plus `branch_status: handled`. Fields after `archived` in the example are optional or script-derived: `direct_override`
 is only needed for full-workflow direct builds, project commands may be absent unless configured, and
-`handoff_context` / `handoff_hash` are recorded by `comet-handoff.sh` before leaving design. Projects can configure
+`handoff_context` / `handoff_hash` are recorded by `specdrive-handoff.sh` before leaving design. Projects can configure
 `build_command` / `verify_command` in the change or repo root, and guard will run those commands first and print failure
 output.
 
@@ -389,7 +389,7 @@ output.
 
 ### Reliability Features
 
-Comet ensures agent execution reliability through automated state transitions:
+SpecDrive ensures agent execution reliability through automated state transitions:
 
 <details>
 <summary>View reliability features</summary>
@@ -398,13 +398,13 @@ Comet ensures agent execution reliability through automated state transitions:
     - Checks file existence, state consistency, and phase transitions
     - Outputs `[HARD STOP]` with actionable suggestions if validation fails
 
-2. **Automated State Transitions** — `comet-guard.sh --apply` updates `.comet.yaml` automatically
+2. **Automated State Transitions** — `specdrive-guard.sh --apply` updates `.specdrive.yaml` automatically
     - All phase transitions (open → design/build → verify → archive) use `guard --apply`
     - No manual state editing required — eliminates write-verification errors
-    - `comet-state.sh` is the agents' exclusive interface for state operations
-    - Guard and archive scripts use `comet-state.sh` internally for state management
+    - `specdrive-state.sh` is the agents' exclusive interface for state operations
+    - Guard and archive scripts use `specdrive-state.sh` internally for state management
 
-3. **Schema Validation** — `comet-yaml-validate.sh` ensures data integrity
+3. **Schema Validation** — `specdrive-yaml-validate.sh` ensures data integrity
     - Validates required and optional fields
     - Validates enum values, including `direct_override`
     - Validates `design_doc`, `plan`, and `handoff_context` paths exist, plus `handoff_hash` format
@@ -422,7 +422,7 @@ Comet ensures agent execution reliability through automated state transitions:
     - Guard checks `verification_report exists` and `branch_status=handled` as hard prerequisites
     - Prevents false phase advances when verification or branch handling was skipped
 
-6. **Archive Automation** — `comet-archive.sh` handles the full archive flow in one command
+6. **Archive Automation** — `specdrive-archive.sh` handles the full archive flow in one command
     - Validates entry state, merges delta specs into main specs through OpenSpec
     - Annotates design doc and plan frontmatter
     - Moves change to archive directory and updates `archived: true`
@@ -434,18 +434,18 @@ Comet ensures agent execution reliability through automated state transitions:
 
 ```
 your-project/
-├── .comet/
+├── .specdrive/
 │   └── config.yaml              # Project-level global config (context_compression, auto_transition, etc.)
-├── .claude/skills/              # Platform skills dir (Comet + OpenSpec + Superpowers)
+├── .claude/skills/              # Platform skills dir (SpecDrive + OpenSpec + Superpowers)
 │   ├── comet/SKILL.md
 │   │   └── scripts/
-│   │       ├── comet-guard.sh       # Phase transition guard (--apply auto-updates state)
-│   │       ├── comet-env.sh         # Script discovery helper
-│   │       ├── comet-handoff.sh     # Design handoff (OpenSpec → Superpowers context tracing)
-│   │       ├── comet-archive.sh     # One-command archive automation
-│   │       ├── comet-yaml-validate.sh # Schema validator
-│   │       ├── comet-hook-guard.sh   # Phase write guard (PreToolUse hook)
-│   │       └── comet-state.sh       # Unified state management (init/set/get/check/scale)
+│   │       ├── specdrive-guard.sh       # Phase transition guard (--apply auto-updates state)
+│   │       ├── specdrive-env.sh         # Script discovery helper
+│   │       ├── specdrive-handoff.sh     # Design handoff (OpenSpec → Superpowers context tracing)
+│   │       ├── specdrive-archive.sh     # One-command archive automation
+│   │       ├── specdrive-yaml-validate.sh # Schema validator
+│   │       ├── specdrive-hook-guard.sh   # Phase write guard (PreToolUse hook)
+│   │       └── specdrive-state.sh       # Unified state management (init/set/get/check/scale)
 │   ├── comet-*/SKILL.md
 │   ├── openspec-*/SKILL.md
 │   └── brainstorming/SKILL.md
@@ -454,7 +454,7 @@ your-project/
 │   └── changes/
 │       └── <name>/
 │           ├── .openspec.yaml       # OpenSpec state
-│           ├── .comet.yaml          # Comet workflow state (decoupled)
+│           ├── .specdrive.yaml          # SpecDrive workflow state (decoupled)
 │           ├── proposal.md
 │           ├── design.md
 │           ├── specs/<capability>/spec.md
@@ -467,7 +467,7 @@ your-project/
 <details>
 <summary>Context Compression (Beta)</summary>
 
-Comet supports context compression at the Design → Build handoff. When enabled, `comet-handoff.sh` generates a compact
+SpecDrive supports context compression at the Design → Build handoff. When enabled, `specdrive-handoff.sh` generates a compact
 context package that reduces Build-phase input tokens by **25–30%** without affecting implementation correctness.
 
 | Mode   | Behavior                                 | Token Savings |
@@ -481,7 +481,7 @@ Key findings from benchmark testing:
 - **Spec coverage**: 100% (off) vs 95% (beta) — minor edge-case detail loss
 - **Scaling**: Larger tasks yield higher absolute savings (up to 15,000 tokens for large-tier tasks)
 
-Enable in `.comet/config.yaml`: `context_compression: beta`
+Enable in `.specdrive/config.yaml`: `context_compression: beta`
 
 See [CONTEXT-COMPRESSION.md](docs/CONTEXT-COMPRESSION.md) for the full benchmark report, compression principles, and
 reproduction steps.
@@ -491,7 +491,7 @@ reproduction steps.
 <details>
 <summary>Auto Transition</summary>
 
-`auto_transition` controls whether Comet automatically invokes the next skill after a phase completes, or pauses for
+`auto_transition` controls whether SpecDrive automatically invokes the next skill after a phase completes, or pauses for
 manual handoff. Phase advancement itself always happens — this setting only affects skill invocation.
 
 | Value  | Behavior |
@@ -499,7 +499,7 @@ manual handoff. Phase advancement itself always happens — this setting only af
 | `true` | Auto-invoke the next skill after each phase (default) |
 | `false` | Pause after each phase; user manually triggers the next skill |
 
-Three-layer configuration with precedence: `COMET_AUTO_TRANSITION` env var > `.comet/config.yaml` (project) > `.comet.yaml` (change).
+Three-layer configuration with precedence: `SPECDRIVE_AUTO_TRANSITION` env var > `.specdrive/config.yaml` (project) > `.specdrive.yaml` (change).
 
 See [AUTO-TRANSITION.md](docs/AUTO-TRANSITION.md) for configuration details, workflow mapping, and FAQ.
 
@@ -515,16 +515,16 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ## Roadmap
 
-Track our development progress and upcoming features on the [Comet Roadmap](https://github.com/orgs/rpamis/projects/1).
+Track our development progress and upcoming features on the [SpecDrive Roadmap](https://github.com/orgs/rpamis/projects/1).
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=rpamis/comet&type=Date)](https://star-history.com/#rpamis/comet&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=hottaiger/SpecDrive&type=Date)](https://star-history.com/#hottaiger/SpecDrive&Date)
 
 ## Contributors
 
-<a href="https://github.com/rpamis/comet/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=rpamis/comet&columns=12&anon=1" />
+<a href="https://github.com/hottaiger/SpecDrive/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hottaiger/SpecDrive&columns=12&anon=1" />
 </a>
 
 ## License
@@ -536,15 +536,15 @@ Track our development progress and upcoming features on the [Comet Roadmap](http
 <table align="center">
   <tr>
     <td align="center" width="180">
-      <img src="https://github.com/rpamis/comet/blob/master/img/douyin.png" width="120" height="120"><br>
+      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/douyin.png" width="120" height="120"><br>
       <b>DouYin (Recommended)</b>
     </td>
     <td align="center" width="180">
-      <img src="https://github.com/rpamis/comet/blob/master/img/wechat.jpg" width="120" height="120"><br>
+      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/wechat.jpg" width="120" height="120"><br>
       <b>WeChat</b>
     </td>
     <td align="center" width="180">
-      <img src="https://github.com/rpamis/comet/blob/master/img/qq.jpg" width="120" height="120"><br>
+      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/qq.jpg" width="120" height="120"><br>
       <b>QQ</b>
     </td>
   </tr>

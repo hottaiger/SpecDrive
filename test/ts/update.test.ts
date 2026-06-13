@@ -136,7 +136,7 @@ describe('update command helpers', () => {
     await fs.mkdir(projectDir, { recursive: true });
     await fs.writeFile(
       path.join(projectDir, 'package.json'),
-      JSON.stringify({ devDependencies: { '@rpamis/comet': '^0.2.4' } }),
+      JSON.stringify({ devDependencies: { '@hottaiger/specdrive': '^0.2.4' } }),
       'utf-8',
     );
 
@@ -151,13 +151,13 @@ describe('update command helpers', () => {
   });
 
   it('builds npm update args preserving package install scope', () => {
-    expect(buildNpmUpdateArgs('global')).toEqual(['install', '-g', '@rpamis/comet@latest']);
-    expect(buildNpmUpdateArgs('project')).toEqual(['install', '@rpamis/comet@latest']);
+    expect(buildNpmUpdateArgs('global')).toEqual(['install', '-g', '@hottaiger/specdrive@latest']);
+    expect(buildNpmUpdateArgs('project')).toEqual(['install', '@hottaiger/specdrive@latest']);
   });
 
   it('formats the npm update command for friendly console output', () => {
-    expect(formatNpmUpdateCommand('global')).toBe('npm install -g @rpamis/comet@latest');
-    expect(formatNpmUpdateCommand('project')).toBe('npm install @rpamis/comet@latest');
+    expect(formatNpmUpdateCommand('global')).toBe('npm install -g @hottaiger/specdrive@latest');
+    expect(formatNpmUpdateCommand('project')).toBe('npm install @hottaiger/specdrive@latest');
   });
 
   it('formats the skill update command with scope, platform, and language source', () => {

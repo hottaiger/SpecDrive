@@ -20,7 +20,7 @@ describe('doctor command', () => {
     const changeDir = path.join(tmpDir, 'openspec', 'changes', 'current-state');
     await fs.mkdir(changeDir, { recursive: true });
     await fs.writeFile(
-      path.join(changeDir, '.comet.yaml'),
+      path.join(changeDir, '.specdrive.yaml'),
       [
         'workflow: full',
         'phase: verify',
@@ -48,16 +48,16 @@ describe('doctor command', () => {
     }
 
     const results = JSON.parse(json).results as Array<{ check: string; status: string }>;
-    expect(results.find((result) => result.check === '.comet.yaml: current-state')).toMatchObject({
+    expect(results.find((result) => result.check === '.specdrive.yaml: current-state')).toMatchObject({
       status: 'pass',
     });
   });
 
-  it('only validates top-level keys in .comet.yaml', async () => {
+  it('only validates top-level keys in .specdrive.yaml', async () => {
     const validChangeDir = path.join(tmpDir, 'openspec', 'changes', 'nested-valid');
     await fs.mkdir(validChangeDir, { recursive: true });
     await fs.writeFile(
-      path.join(validChangeDir, '.comet.yaml'),
+      path.join(validChangeDir, '.specdrive.yaml'),
       [
         'workflow: full',
         'phase: verify',
@@ -72,7 +72,7 @@ describe('doctor command', () => {
     const invalidChangeDir = path.join(tmpDir, 'openspec', 'changes', 'top-level-invalid');
     await fs.mkdir(invalidChangeDir, { recursive: true });
     await fs.writeFile(
-      path.join(invalidChangeDir, '.comet.yaml'),
+      path.join(invalidChangeDir, '.specdrive.yaml'),
       [
         'workflow: full',
         'phase: verify',
@@ -92,11 +92,11 @@ describe('doctor command', () => {
 
     const results = JSON.parse(json).results as Array<{ check: string; status: string; message: string }>;
 
-    expect(results.find((result) => result.check === '.comet.yaml: nested-valid')).toMatchObject({
+    expect(results.find((result) => result.check === '.specdrive.yaml: nested-valid')).toMatchObject({
       status: 'pass',
     });
 
-    expect(results.find((result) => result.check === '.comet.yaml: top-level-invalid')).toMatchObject({
+    expect(results.find((result) => result.check === '.specdrive.yaml: top-level-invalid')).toMatchObject({
       status: 'fail',
       message: expect.stringContaining('unknown_root_field'),
     });

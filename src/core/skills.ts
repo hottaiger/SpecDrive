@@ -29,7 +29,7 @@ type Manifest = {
 };
 
 const OPENCODE_COMMAND_HEADER = `---
-description: Run the {skillName} Comet workflow
+description: Run the {skillName} SpecDrive workflow
 ---
 `;
 
@@ -138,7 +138,7 @@ async function createOpenCodeCommands(
     }
     const skillBody = stripFrontmatter(await readFile(skillSourcePath, 'utf-8'));
     const content = `${OPENCODE_COMMAND_HEADER.replace('{skillName}', skillName)}
-Equivalent Comet skill: \`${skillName}\`
+Equivalent SpecDrive skill: \`${skillName}\`
 Command name: \`/${skillName}\`
 
 Use the invocation arguments below as the user input for this workflow:
@@ -168,7 +168,7 @@ async function getManifestSkills(): Promise<string[]> {
 }
 
 /**
- * Copy Comet rule files to a platform's rules directory.
+ * Copy SpecDrive rule files to a platform's rules directory.
  * Formats:
  *   'md' = plain markdown copy
  *   'mdc' = Cursor MDC with frontmatter
@@ -242,7 +242,7 @@ function computeRuleDestPath(
     return path.join(rulesDestDir, ruleFileName.replace(/\.md$/, '.mdc'));
   }
   if (rulesFormat === 'copilot') {
-    // GitHub Copilot: comet-phase-guard.md → comet-phase-guard.instructions.md
+    // GitHub Copilot: specdrive-phase-guard.md → comet-phase-guard.instructions.md
     return path.join(rulesDestDir, ruleFileName.replace(/\.md$/, '.instructions.md'));
   }
   return path.join(rulesDestDir, ruleFileName);
@@ -272,7 +272,7 @@ ${content}`;
 }
 
 /**
- * Install Comet hooks for platforms that support them.
+ * Install SpecDrive hooks for platforms that support them.
  * Supports multiple hook formats:
  *   'claude-code' — settings.local.json with PreToolUse array (Claude Code, Codex, Amazon Q)
  *   'qwen' — settings.json with PreToolUse/hooks array (Qwen Code)
@@ -565,7 +565,7 @@ async function installWindsurfHooks(
 
 /**
  * GitHub Copilot format:
- * Writes to .github/hooks/comet-guard.json with preToolUse hooks config.
+ * Writes to .github/hooks/specdrive-guard.json with preToolUse hooks config.
  */
 async function installCopilotHooks(
   platformBase: string,
@@ -573,7 +573,7 @@ async function installCopilotHooks(
   hooksConfig: Record<string, HookConfig>,
 ): Promise<{ installed: boolean; reason?: string }> {
   const hooksDir = path.join(platformBase, 'hooks');
-  const hookFilePath = path.join(hooksDir, 'comet-guard.json');
+  const hookFilePath = path.join(hooksDir, 'specdrive-guard.json');
 
   const scriptEntries: Array<{ bash: string; powershell: string }> = [];
   for (const [scriptRelPath] of Object.entries(hooksConfig)) {
@@ -596,7 +596,7 @@ async function installCopilotHooks(
 
 /**
  * Kiro format:
- * Writes to .kiro/hooks/comet-phase-guard.kiro.hook as a JSON file.
+ * Writes to .kiro/hooks/specdrive-phase-guard.kiro.hook as a JSON file.
  */
 async function installKiroHooks(
   platformBase: string,
@@ -639,14 +639,14 @@ async function createWorkingDirs(projectPath: string): Promise<void> {
   const dirs = [
     path.join(projectPath, 'docs', 'superpowers', 'specs'),
     path.join(projectPath, 'docs', 'superpowers', 'plans'),
-    path.join(projectPath, '.comet'),
+    path.join(projectPath, '.specdrive'),
   ];
 
   for (const dir of dirs) {
     await ensureDir(dir);
   }
 
-  const configPath = path.join(projectPath, '.comet', 'config.yaml');
+  const configPath = path.join(projectPath, '.specdrive', 'config.yaml');
   if (!(await fileExists(configPath))) {
     await writeFile(configPath, 'context_compression: off\nauto_transition: true\n', 'utf-8');
   }
