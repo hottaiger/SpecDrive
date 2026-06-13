@@ -121,7 +121,7 @@ Tweak 流程默认 **一次性连续执行**。调用 `/specdrive-tweak` 后，a
 
 执行顺序：快速开启 → 轻量构建 → 轻量验证 → 归档 → 完成
 
-每个阶段完成后立即进入下一阶段。阶段内部仍必须按上文要求调用对应 Comet/OpenSpec/Superpowers skill，被调用的 skill 如有自己的用户决策点，按该 skill 规则执行。
+每个阶段完成后立即进入下一阶段。阶段内部仍必须按上文要求调用对应 SpecDrive/OpenSpec/Superpowers skill，被调用的 skill 如有自己的用户决策点，按该 skill 规则执行。
 </IMPORTANT>
 
 ---

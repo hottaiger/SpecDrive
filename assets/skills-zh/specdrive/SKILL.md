@@ -58,7 +58,7 @@ agent 做决策只需读本节，参考附录按需查阅。
 - 每次恢复上下文时，先重新执行 Step 0 和 Step 1，不依赖对话历史判断阶段
 - 只要存在 active change 且工作区有未提交改动，必须按 `specdrive/reference/dirty-worktree.md` 协议处理。该协议定义了检查步骤、归因分类和禁令，本文件不重复
 - 若 `phase: build`，先检查 `build_pause`、`plan`、`build_mode` 和 `isolation`（详见下方）：
-  - 若 `build_pause: plan-ready` 但 `isolation` 和 `build_mode` 已经设置，则视为 stale pause：先输出 `[COMET] 检测到 stale pause（build_pause=plan-ready 但 isolation/build_mode 已设置），自动清除并继续`，再运行 `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" set <name> build_pause null`，然后读取 tasks.md 的下一个未勾选任务并按 `build_mode` 恢复执行
+  - 若 `build_pause: plan-ready` 但 `isolation` 和 `build_mode` 已经设置，则视为 stale pause：先输出 `[SPECDRIVE] 检测到 stale pause（build_pause=plan-ready 但 isolation/build_mode 已设置），自动清除并继续`，再运行 `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" set <name> build_pause null`，然后读取 tasks.md 的下一个未勾选任务并按 `build_mode` 恢复执行
   - 若 `build_pause: plan-ready` 且 plan 文件存在，但 `isolation` 或 `build_mode` 尚未设置，回到 `/specdrive-build` 的 plan-ready 恢复点，提示用户继续选择隔离方式和执行方式，不重新生成 plan
   - 若 `build_pause: plan-ready` 但 plan 文件缺失，回到 `/specdrive-build` 处理状态损坏或重新生成 plan
   - 若 `build_mode`、`isolation` 或 `tdd_mode` 未设置，回到 `/specdrive-build` 对应步骤补充后再执行

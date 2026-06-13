@@ -158,7 +158,7 @@ The following situations must also pause and wait for user confirmation:
 
 Execution order: quick open → direct build → root cause check → verification → archive → complete
 
-After each step completes, immediately enter next step. Within each phase, must still call corresponding Comet/OpenSpec/Superpowers skill according to above requirements; if the called skill has its own user decision points, follow that skill's rules.
+After each step completes, immediately enter next step. Within each phase, must still call corresponding SpecDrive/OpenSpec/Superpowers skill according to above requirements; if the called skill has its own user decision points, follow that skill's rules.
 </IMPORTANT>
 
 ---

@@ -5,7 +5,7 @@ description: "SpecDrive preset path: Non-bug small changes (tweak). Skip brainst
 
 # SpecDrive Preset Path: Tweak
 
-Tweak is a preset workflow of Comet's five-phase capabilities, not an independent parallel process. It reuses open, build, verify, archive capabilities, only skipping brainstorming and full plan.
+Tweak is a preset workflow of SpecDrive's five-phase capabilities, not an independent parallel process. It reuses open, build, verify, archive capabilities, only skipping brainstorming and full plan.
 
 Applicable for non-bug small scope changes, such as copy adjustment, configuration adjustment, documentation or prompt local optimization.
 
@@ -125,7 +125,7 @@ The following situations must pause and wait for user confirmation:
 
 Execution order: quick open → lightweight build → lightweight verification → archive → complete
 
-After each phase completes, immediately enter next phase. Within each phase, must still call corresponding Comet/OpenSpec/Superpowers skill according to above requirements; if the called skill has its own user decision points, follow that skill's rules.
+After each phase completes, immediately enter next phase. Within each phase, must still call corresponding SpecDrive/OpenSpec/Superpowers skill according to above requirements; if the called skill has its own user decision points, follow that skill's rules.
 </IMPORTANT>
 
 ---

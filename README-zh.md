@@ -39,6 +39,9 @@ Superpowers 处理 **HOW**（技术设计、规划、执行、收尾）。
 
 SpecDrive 将二者串联为五阶段自动化流水线。
 
+> [!NOTE]
+> 本项目 fork 自 [Comet](https://github.com/rpamis/comet)（原作者 [rpamis](https://github.com/rpamis)）。SpecDrive 在其基础上继续演进；CLI 与技能命名已迁移为 SpecDrive，并保留对部分旧 Comet 配置与 skill 目录的兼容。
+
 > [!IMPORTANT]
 > **0.3.7 亮点** — 一键接入 [CodeGraph](https://github.com/colbymchenry/codegraph) 语义代码索引（官方：成本 **↓16%**、工具调用 **↓58%**）；
 >

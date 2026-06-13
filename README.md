@@ -39,6 +39,9 @@ Superpowers handles **HOW** (technical design, planning, execution, wrap-up).
 
 SpecDrive chains both into a five-phase automated pipeline.
 
+> [!NOTE]
+> This project is a fork of [Comet](https://github.com/rpamis/comet) by [rpamis](https://github.com/rpamis). SpecDrive continues development on that foundation; the CLI and skill names now use SpecDrive branding, with backward compatibility for some legacy Comet config paths and skill directories.
+
 > [!IMPORTANT]
 > **0.3.7 Highlights** — One-step [CodeGraph](https://github.com/colbymchenry/codegraph) semantic code indexing (official: cost **↓16%**, tool calls **↓58%**); 
 >

@@ -257,7 +257,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
       const existingComponents = [
         hasOS && osAction === 'install' ? 'OpenSpec' : null,
         hasSP && spAction === 'install' ? 'Superpowers' : null,
-        hasCM && cmAction === 'install' ? 'Comet' : null,
+        hasCM && cmAction === 'install' ? 'SpecDrive' : null,
       ].filter((component): component is string => Boolean(component));
 
       if (existingComponents.length > 1) {
@@ -278,7 +278,7 @@ export async function initCommand(targetPath: string, options: InitOptions = {})
         spAction = await promptOverwriteChoice('Superpowers', platform.name);
       }
       if (cmAction === 'install' && hasCM) {
-        cmAction = await promptOverwriteChoice('Comet', platform.name);
+        cmAction = await promptOverwriteChoice('SpecDrive', platform.name);
       }
     }
 

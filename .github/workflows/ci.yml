@@ -74,7 +74,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Run Comet script smoke tests
+      - name: Run SpecDrive script smoke tests
         run: pnpm test -- test/ts/specdrive-scripts.test.ts
 
       - name: Run portable shell tests

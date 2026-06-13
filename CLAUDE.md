@@ -7,7 +7,7 @@ npx vitest run                                   # 全量测试
 
 ## Shell 脚本规范
 
-脚本位于 `assets/skills/comet/scripts/`，必须跨平台兼容（macOS / Linux / Windows Git Bash）：
+脚本位于 `assets/skills/specdrive/scripts/`，必须跨平台兼容（macOS / Linux / Windows Git Bash）：
 
 - **禁止** `sed -i`（GNU/BSD 不兼容），用 `awk` 做字段替换
 - 必须兼容 `sha256sum`（GNU）和 `shasum -a 256`（BSD/macOS）

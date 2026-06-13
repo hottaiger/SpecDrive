@@ -4,15 +4,15 @@
 
 ### CodeGraph 语义代码索引
 
-`comet init` 和 `comet update` 现在支持一键安装 [CodeGraph](https://github.com/colbymchenry/codegraph)（`@colbymchenry/codegraph`），为 Agent 提供语义代码索引能力。自动检测 7 个支持平台（Claude Code、Cursor、Codex、OpenCode、Gemini、Kiro、Antigravity），安装 CLI 并初始化项目索引。`comet doctor` 可检查 CodeGraph 状态。
+`specdrive init` 和 `specdrive update` 现在支持一键安装 [CodeGraph](https://github.com/colbymchenry/codegraph)（`@colbymchenry/codegraph`），为 Agent 提供语义代码索引能力。自动检测 7 个支持平台（Claude Code、Cursor、Codex、OpenCode、Gemini、Kiro、Antigravity），安装 CLI 并初始化项目索引。`specdrive doctor` 可检查 CodeGraph 状态。
 
 官方数据：成本降低约 **16%**，工具调用减少约 **58%**。
 
 ### 上下文压缩（Beta）
 
-Design → Build 阶段交接时的 spec 投影压缩。启用后 Build 阶段输入 token 降低 **25–30%**，大型任务绝对节省可达 15,000 tokens。Beta 模式使用全文投影（`cat`），支持中英文 Spec，无需求关键词依赖。
+Design → Build 阶段交接时的 spec 投影压缩。启用后 Build 阶段输入 token 降低 **25–30%**，大型任务绝对节省可达 15,000 tokens。Beta 模式使用 verbatim 投影 delta `spec.md`，支持文件仅以 SHA256 引用。
 
-启用：`.comet.yaml` 设置 `context_compression: beta`
+启用：`.specdrive/config.yaml` 或 change 级 `.specdrive.yaml` 设置 `context_compression: beta`
 
 详见 [CONTEXT-COMPRESSION.md](docs/CONTEXT-COMPRESSION.md)。
 
@@ -22,7 +22,7 @@ Design 阶段新增 Step 1e 主动压缩门：Brainstorming 完成后、创建 D
 
 ### 自动流转（Auto Transition）
 
-`auto_transition` 控制阶段推进后是否自动调用下一个 Skill，还是暂停等待用户手动触发。默认 `true`（全自动），设为 `false` 可在阶段间暂停审查。支持三层配置优先级：环境变量 `COMET_AUTO_TRANSITION` > `.comet/config.yaml`（项目级）> `.comet.yaml`（change 级）。适用于所有工作流类型（full / hotfix / tweak）。
+`auto_transition` 控制阶段推进后是否自动调用下一个 Skill，还是暂停等待用户手动触发。默认 `true`（全自动），设为 `false` 可在阶段间暂停审查。配置优先级：change 级 `.specdrive.yaml` 显式值 > `SPECDRIVE_AUTO_TRANSITION` 环境变量 > `.specdrive/config.yaml`（项目级）> 默认 `true`。适用于所有工作流类型（full / hotfix / tweak）。
 
 详见 [AUTO-TRANSITION.md](docs/AUTO-TRANSITION.md)。
 
@@ -44,18 +44,18 @@ Design 阶段新增 Step 1e 主动压缩门：Brainstorming 完成后、创建 D
 
 长上下文会话中 Agent 容易遗忘当前阶段，导致在 `open`/`design` 阶段误写源码。0.3.7 新增两层防护：
 
-- **Rule（软提醒）**：`.claude/rules/comet-phase-guard.md` 每轮注入阶段感知、Skill 调用规范、脚本执行要求和上下文压缩恢复指令。适用于所有平台。
-- **Hook（硬拦截）**：`comet-hook-guard.sh` PreToolUse hook 在 `open`/`design`/`archive` 阶段直接拦截文件写入，白名单 `openspec/*`、`docs/superpowers/*`、`.claude/*`、`.comet/*` 路径。仅 Claude Code 等支持 hook 的平台生效。
+- **Rule（软提醒）**：`.claude/rules/specdrive-phase-guard.md` 每轮注入阶段感知、Skill 调用规范、脚本执行要求和上下文压缩恢复指令。适用于所有平台。
+- **Hook（硬拦截）**：`specdrive-hook-guard.sh` PreToolUse hook 在 `open`/`design`/`archive` 阶段直接拦截文件写入，白名单 `openspec/*`、`docs/superpowers/*`、`.claude/*`、`.specdrive/*` 路径。仅 Claude Code 等支持 hook 的平台生效。
 
 ### 其他重要变更
 
-- **TDD 模式**：`.comet.yaml` 新增 `tdd_mode`（`tdd`|`direct`），用户可选择是否在 build 阶段强制 TDD
-- **子代理调度确认**：`.comet.yaml` 新增 `subagent_dispatch`，确保 `subagent-driven-development` 模式在平台真实支持后台调度后才离开 build 阶段
-- **PRD 拆分预检**：`/comet-open` 在创建 OpenSpec 制品前对大型 PRD 进行分流，允许拆分为多个 Comet change
+- **TDD 模式**：`.specdrive.yaml` 新增 `tdd_mode`（`tdd`|`direct`），用户可选择是否在 build 阶段强制 TDD
+- **子代理调度确认**：`.specdrive.yaml` 新增 `subagent_dispatch`，确保 `subagent-driven-development` 模式在平台真实支持后台调度后才离开 build 阶段
+- **PRD 拆分预检**：`/specdrive-open` 在创建 OpenSpec 制品前对大型 PRD 进行分流，允许拆分为多个 SpecDrive change
 - **验证重试限制**：连续 3 次 verify-fail 后强制用户决策，防止无限重试
-- **归档前确认与回退**：`/comet-archive` 在执行归档脚本前暂停等待用户确认，拒绝后可通过 `archive-reopen` 返回 verify 阶段调整，无需手动编辑 `.comet.yaml`
+- **归档前确认与回退**：`/specdrive-archive` 在执行归档脚本前暂停等待用户确认，拒绝后可通过 `archive-reopen` 返回 verify 阶段调整，无需手动编辑 `.specdrive.yaml`
 - **系统化调试拦截**：build/hotfix 阶段遇到崩溃或测试失败时必须加载 `systematic-debugging` skill，确保根因定位后才修复
-- **验证完成检查**：`/comet-verify` 执行前必须加载 `verification-before-completion` skill，强制基于证据的完成确认
+- **验证完成检查**：`/specdrive-verify` 执行前必须加载 `verification-before-completion` skill，强制基于证据的完成确认
 - **50% 范围阈值第三选项**：变更超过 50% 范围时新增"继续在当前 change 中完成"选项，不再强制拆分
 - **平台中性确认机制**：去除 `AskUserQuestion` 硬编码，Codex 等非 Claude Code 平台使用各自的确认机制
 
