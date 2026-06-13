@@ -645,7 +645,7 @@ cmd_check() {
   local design_file="$change_dir/design.md"
   local tasks_file="$change_dir/tasks.md"
 
-  echo "=== Entry Check: comet-${phase} ==="
+  echo "=== Entry Check: specdrive-${phase} ==="
 
   # .specdrive.yaml must exist for all phases (state machine core)
   if [ ! -f "$yaml_file" ]; then
@@ -804,11 +804,11 @@ cmd_recover() {
       done
       echo ""
       if [ "$artifacts_done" -eq 3 ]; then
-        echo "Recovery action: All artifacts complete. Run /comet-open user confirmation, then guard to transition."
+        echo "Recovery action: All artifacts complete. Run /specdrive-open user confirmation, then guard to transition."
       elif [ "$artifacts_done" -eq 0 ]; then
-        echo "Recovery action: No artifacts created yet. Start from /comet-open Step 1 (explore and clarify)."
+        echo "Recovery action: No artifacts created yet. Start from /specdrive-open Step 1 (explore and clarify)."
       else
-        echo "Recovery action: Some artifacts incomplete. Resume /comet-open from the first missing artifact."
+        echo "Recovery action: Some artifacts incomplete. Resume /specdrive-open from the first missing artifact."
       fi
       ;;
     design)
@@ -935,7 +935,7 @@ cmd_recover() {
       elif [ "$verify_result" = "pass" ]; then
         echo "Recovery action: Verification passed but branch not yet handled. Complete branch handling and set branch_status to handled."
       elif [ "$verify_result" = "fail" ]; then
-        echo "Recovery action: Verification failed and rolled back to build. Resume from /comet-build."
+        echo "Recovery action: Verification failed and rolled back to build. Resume from /specdrive-build."
       else
         echo "Recovery action: Verification not yet started or in progress. Run scale assessment then verify."
       fi
@@ -1064,20 +1064,20 @@ cmd_next() {
   local skill=""
   case "$phase" in
     open)
-      skill="comet-open"
+      skill="specdrive-open"
       ;;
     design)
-      skill="comet-design"
+      skill="specdrive-design"
       ;;
     build)
       case "$workflow" in
-        hotfix) skill="comet-hotfix" ;;
-        tweak)  skill="comet-tweak" ;;
-        *)      skill="comet-build" ;;
+        hotfix) skill="specdrive-hotfix" ;;
+        tweak)  skill="specdrive-tweak" ;;
+        *)      skill="specdrive-build" ;;
       esac
       ;;
     verify)
-      skill="comet-verify"
+      skill="specdrive-verify"
       ;;
     archive)
       skill="specdrive-archive"

@@ -43,7 +43,7 @@ fi
 
 # No target found — allow (not a file-path-bearing operation)
 if [ -z "$TARGET" ]; then
-  echo "[COMET-HOOK] allowed: no file path in tool input" >&2
+  echo "[SPECDRIVE-HOOK] allowed: no file path in tool input" >&2
   exit 0
 fi
 
@@ -69,7 +69,7 @@ fi
 
 # No active change — allow all writes
 if [ -z "$YAML_FILE" ]; then
-  echo "[COMET-HOOK] allowed: no active comet change" >&2
+  echo "[SPECDRIVE-HOOK] allowed: no active specdrive change" >&2
   exit 0
 fi
 
@@ -81,7 +81,7 @@ PHASE=$(grep "^phase:" "$YAML_FILE" 2>/dev/null \
   || true)
 
 if [ -z "$PHASE" ]; then
-  echo "[COMET-HOOK] allowed: no phase in .specdrive.yaml" >&2
+  echo "[SPECDRIVE-HOOK] allowed: no phase in .specdrive.yaml" >&2
   exit 0
 fi
 
@@ -130,7 +130,7 @@ case "$RELPATH" in
         # open: allow proposal, design, tasks, yaml, handoff, specs
         case "$RELPATH" in
           */proposal.md|*/design.md|*/tasks.md|*/.openspec.yaml|*/.specdrive.yaml|*/.specdrive/*|*/specs/*)
-            echo "[COMET-HOOK] allowed: $RELPATH (phase: open, openspec artifacts)" >&2
+            echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: open, openspec artifacts)" >&2
             exit 0
             ;;
         esac
@@ -139,7 +139,7 @@ case "$RELPATH" in
         # design: allow handoff, delta spec (Spec Patch), proposal/design/tasks (minor refinements), .specdrive.yaml
         case "$RELPATH" in
           */proposal.md|*/design.md|*/tasks.md|*/.specdrive/*|*/specs/*|*/.specdrive.yaml|*/.openspec.yaml)
-            echo "[COMET-HOOK] allowed: $RELPATH (phase: design, handoff/spec)" >&2
+            echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: design, handoff/spec)" >&2
             exit 0
             ;;
         esac
@@ -148,7 +148,7 @@ case "$RELPATH" in
         # build: allow delta spec (incremental update), tasks, .specdrive.yaml
         case "$RELPATH" in
           */specs/*|*/tasks.md|*/.specdrive.yaml|*/.openspec.yaml)
-            echo "[COMET-HOOK] allowed: $RELPATH (phase: build, spec/tasks)" >&2
+            echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: build, spec/tasks)" >&2
             exit 0
             ;;
         esac
@@ -157,7 +157,7 @@ case "$RELPATH" in
         # verify: allow tasks (post-check), .specdrive.yaml
         case "$RELPATH" in
           */tasks.md|*/.specdrive.yaml|*/.openspec.yaml)
-            echo "[COMET-HOOK] allowed: $RELPATH (phase: verify, tasks/state)" >&2
+            echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: verify, tasks/state)" >&2
             exit 0
             ;;
         esac
@@ -166,7 +166,7 @@ case "$RELPATH" in
         # archive: allow .specdrive.yaml state updates only
         case "$RELPATH" in
           */.specdrive.yaml|*/.openspec.yaml)
-            echo "[COMET-HOOK] allowed: $RELPATH (phase: archive, state)" >&2
+            echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: archive, state)" >&2
             exit 0
             ;;
         esac
@@ -177,15 +177,15 @@ case "$RELPATH" in
     # Superpowers artifacts — phase-aware sub-check
     case "$PHASE" in
       design)
-        echo "[COMET-HOOK] allowed: $RELPATH (phase: design, superpowers)" >&2
+        echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: design, superpowers)" >&2
         exit 0
         ;;
       build)
-        echo "[COMET-HOOK] allowed: $RELPATH (phase: build, superpowers)" >&2
+        echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: build, superpowers)" >&2
         exit 0
         ;;
       verify)
-        echo "[COMET-HOOK] allowed: $RELPATH (phase: verify, superpowers)" >&2
+        echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: verify, superpowers)" >&2
         exit 0
         ;;
     esac
@@ -193,12 +193,12 @@ case "$RELPATH" in
     ;;
   .specdrive/*|*/.specdrive/*)
     # SpecDrive config
-    echo "[COMET-HOOK] allowed: $RELPATH (whitelist: comet config)" >&2
+    echo "[SPECDRIVE-HOOK] allowed: $RELPATH (whitelist: specdrive config)" >&2
     exit 0
     ;;
   .claude/*)
     # Claude settings/rules
-    echo "[COMET-HOOK] allowed: $RELPATH (whitelist: claude config)" >&2
+    echo "[SPECDRIVE-HOOK] allowed: $RELPATH (whitelist: claude config)" >&2
     exit 0
     ;;
   CLAUDE.md|CHANGELOG.md|README.md|*.md)
@@ -206,14 +206,14 @@ case "$RELPATH" in
     case "$RELPATH" in
       */*) ;; # subdirectory .md — NOT whitelisted, fall through
       *)
-        echo "[COMET-HOOK] allowed: $RELPATH (whitelist: root markdown)" >&2
+        echo "[SPECDRIVE-HOOK] allowed: $RELPATH (whitelist: root markdown)" >&2
         exit 0
         ;;
     esac
     ;;
   .specdrive.yaml|comet.yaml|.comet.yml|comet.yml)
-    # Project-level comet config
-    echo "[COMET-HOOK] allowed: $RELPATH (whitelist: comet config)" >&2
+    # Project-level state config (.specdrive.yaml + legacy comet yaml names)
+    echo "[SPECDRIVE-HOOK] allowed: $RELPATH (whitelist: specdrive config)" >&2
     exit 0
     ;;
 esac
@@ -223,13 +223,13 @@ esac
 case "$PHASE" in
   build|verify)
     # Code writes allowed in build and verify
-    echo "[COMET-HOOK] allowed: $RELPATH (phase: $PHASE)" >&2
+    echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: $PHASE)" >&2
     exit 0
     ;;
   open|design|archive)
     echo "" >&2
     echo "╔══════════════════════════════════════════╗" >&2
-    echo "║     COMET PHASE GUARD — WRITE BLOCKED    ║" >&2
+    echo "║   SPECDRIVE PHASE GUARD — WRITE BLOCKED  ║" >&2
     echo "╚══════════════════════════════════════════╝" >&2
     echo "" >&2
     echo "  当前阶段: $PHASE" >&2
@@ -256,5 +256,5 @@ case "$PHASE" in
     ;;
 esac
 
-echo "[COMET-HOOK] allowed: $RELPATH (phase: $PHASE)" >&2
+echo "[SPECDRIVE-HOOK] allowed: $RELPATH (phase: $PHASE)" >&2
 exit 0

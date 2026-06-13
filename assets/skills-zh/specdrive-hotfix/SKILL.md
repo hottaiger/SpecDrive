@@ -27,12 +27,12 @@ description: "SpecDrive 预设路径：Bug fix / 热修复。跳过 brainstormin
 开始前先定位 SpecDrive 脚本：
 
 ```bash
-COMET_ENV="${COMET_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
-if [ -z "$COMET_ENV" ]; then
-  echo "ERROR: comet-env.sh not found. Ensure the comet skill is installed." >&2
+SPECDRIVE_ENV="${SPECDRIVE_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
+if [ -z "$SPECDRIVE_ENV" ]; then
+  echo "ERROR: specdrive-env.sh not found. Ensure the SpecDrive skill is installed." >&2
   return 1
 fi
-. "$COMET_ENV"
+. "$SPECDRIVE_ENV"
 ```
 
 ### 1. 快速开启（preset open）

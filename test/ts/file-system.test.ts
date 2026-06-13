@@ -8,7 +8,7 @@ describe('file-system utils', () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    tmpDir = path.join(os.tmpdir(), `comet-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpDir = path.join(os.tmpdir(), `specdrive-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await fs.mkdir(tmpDir, { recursive: true });
   });
 

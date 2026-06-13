@@ -8,7 +8,7 @@ describe('status command', () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    tmpDir = path.join(os.tmpdir(), `comet-status-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpDir = path.join(os.tmpdir(), `specdrive-status-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await fs.mkdir(tmpDir, { recursive: true });
   });
 
@@ -45,7 +45,7 @@ describe('status command', () => {
       log.mockRestore();
     }
 
-    expect(output).toContain('next: /comet-build');
+    expect(output).toContain('next: /specdrive-build');
     expect(output).toContain('[1/2 tasks]');
   });
 
@@ -66,6 +66,6 @@ describe('status command', () => {
       log.mockRestore();
     }
 
-    expect(JSON.parse(json).changes[0].nextCommand).toBe('/comet-verify');
+    expect(JSON.parse(json).changes[0].nextCommand).toBe('/specdrive-verify');
   });
 });

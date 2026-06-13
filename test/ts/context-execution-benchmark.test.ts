@@ -227,7 +227,7 @@ describe('context execution benchmark runner', () => {
     const { runExecutionBenchmark } = await import(benchmarkModule);
     const tmpDir = path.join(
       os.tmpdir(),
-      `comet-execution-benchmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-execution-benchmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
 
     try {
@@ -346,7 +346,7 @@ describe('context execution benchmark runner', () => {
     const { runExecutionBenchmark } = await import(benchmarkModule);
     const tmpDir = path.join(
       os.tmpdir(),
-      `comet-execution-l3-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-execution-l3-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
 
     try {
@@ -417,7 +417,7 @@ describe('context execution benchmark runner', () => {
     const { runExecutionBenchmark } = await import(benchmarkModule);
     const tmpDir = path.join(
       os.tmpdir(),
-      `comet-execution-all-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-execution-all-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
 
     try {

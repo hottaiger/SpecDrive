@@ -56,7 +56,7 @@ describe('init command helpers', () => {
   });
 
   it('creates a project SpecDrive config with context compression disabled by default', async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'comet-init-config-'));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'specdrive-init-config-'));
 
     try {
       await createWorkingDirs(tmpDir);

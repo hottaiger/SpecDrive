@@ -24,7 +24,7 @@
   "hooks": {
     "specdrive/scripts/specdrive-hook-guard.sh": {
       "matcher": "Write|Edit",
-      "description": "Block code writes in wrong Comet phase (open/design/archive)"
+      "description": "Block code writes in wrong SpecDrive phase (open/design/archive)"
     }
   },
   "languages": [

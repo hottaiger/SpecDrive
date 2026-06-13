@@ -290,7 +290,7 @@ Output format: `NEXT: auto|manual|done` + `SKILL: <skill-name>` (omitted for `do
 "$SPECDRIVE_BASH" "$SPECDRIVE_ARCHIVE" <change-name>
 ```
 
-After loading comet, agents should run the variable assignments above once, then reuse `$SPECDRIVE_GUARD`, `$SPECDRIVE_STATE`, `$SPECDRIVE_HANDOFF`, `$SPECDRIVE_ARCHIVE` throughout the session.
+After loading specdrive, agents should run the variable assignments above once, then reuse `$SPECDRIVE_GUARD`, `$SPECDRIVE_STATE`, `$SPECDRIVE_HANDOFF`, `$SPECDRIVE_ARCHIVE` throughout the session.
 
 ### File Structure
 

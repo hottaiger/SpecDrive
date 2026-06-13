@@ -17,12 +17,12 @@ description: "SpecDrive Phase 2: Deep Design. Invoke with /specdrive-design. Pro
 Execute entry verification:
 
 ```bash
-COMET_ENV="${COMET_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
-if [ -z "$COMET_ENV" ]; then
-  echo "ERROR: comet-env.sh not found. Ensure the comet skill is installed." >&2
+SPECDRIVE_ENV="${SPECDRIVE_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
+if [ -z "$SPECDRIVE_ENV" ]; then
+  echo "ERROR: specdrive-env.sh not found. Ensure the SpecDrive skill is installed." >&2
   return 1
 fi
-. "$COMET_ENV"
+. "$SPECDRIVE_ENV"
 "$SPECDRIVE_BASH" "$SPECDRIVE_STATE" check <name> design
 ```
 
@@ -111,7 +111,7 @@ Do not rewrite proposal/spec; if you find OpenSpec delta spec missing acceptance
 
 Design Doc frontmatter must be minimal, containing only:
 ---
-comet_change: <change-name>
+specdrive_change: <change-name>
 role: technical-design
 canonical_spec: openspec
 ---
@@ -200,7 +200,7 @@ Design Doc frontmatter must be minimal:
 
 ```yaml
 ---
-comet_change: <change-name>
+specdrive_change: <change-name>
 role: technical-design
 canonical_spec: openspec
 ---
@@ -231,7 +231,7 @@ If there are no delta spec changes, skip the handoff regeneration step. The stat
 ## Exit Conditions
 
 - Design Doc created and saved
-- Design Doc frontmatter contains `comet_change`, `role: technical-design`, `canonical_spec: openspec`
+- Design Doc frontmatter contains `specdrive_change`, `role: technical-design`, `canonical_spec: openspec`
 - `handoff_context` and `handoff_hash` written to `.specdrive.yaml` (enforced by guard)
 - `handoff_hash` matches current OpenSpec open phase artifacts (enforced by guard)
 - `design-context.md` or beta `spec-context.md` must be script-generated and contain source path, mode, sha256 traceability markers (enforced by guard)

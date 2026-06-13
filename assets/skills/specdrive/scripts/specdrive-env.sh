@@ -62,8 +62,8 @@ SPECDRIVE_BASH="$(_comet_resolve_bash || true)"
 export SPECDRIVE_BASH
 
 _comet_env_fail() {
-  echo "ERROR: SpecDrive scripts not found. Ensure the comet skill is installed completely." >&2
-  echo "Expected path pattern: */specdrive/scripts/comet-*.sh under project or platform skill directories" >&2
+  echo "ERROR: SpecDrive scripts not found. Ensure the SpecDrive skill is installed completely." >&2
+  echo "Expected path pattern: */specdrive/scripts/specdrive-*.sh under project or platform skill directories" >&2
 }
 
 _specdrive_bash_fail() {

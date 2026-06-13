@@ -26,12 +26,12 @@ describe('run-bats shell runner', () => {
       'utf-8',
     );
 
-    const cometBashCheck = content.indexOf('if _specdrive_bash_is_usable "${SPECDRIVE_BASH:-}"');
+    const specdriveBashCheck = content.indexOf('if _specdrive_bash_is_usable "${SPECDRIVE_BASH:-}"');
     const currentBashCheck = content.indexOf('if _specdrive_bash_is_usable "${BASH:-}"');
     const shellFallback = content.indexOf('command -v sh');
 
-    expect(cometBashCheck).toBeGreaterThan(-1);
-    expect(currentBashCheck).toBeGreaterThan(cometBashCheck);
+    expect(specdriveBashCheck).toBeGreaterThan(-1);
+    expect(currentBashCheck).toBeGreaterThan(specdriveBashCheck);
     expect(shellFallback).toBeGreaterThan(currentBashCheck);
     expect(content).not.toContain('for _specdrive_bash_candidate in \\');
   });

@@ -581,7 +581,7 @@ design_doc_links_current_change() {
     echo "design_doc must point to an existing Superpowers Design Doc before leaving design." >&2
     return 1
   fi
-  design_doc_frontmatter_has "$design_doc" "comet_change" "$CHANGE"
+  design_doc_frontmatter_has "$design_doc" "specdrive_change" "$CHANGE"
 }
 
 design_doc_declares_technical_role() {

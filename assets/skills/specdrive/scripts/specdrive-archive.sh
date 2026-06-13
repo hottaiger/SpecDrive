@@ -139,7 +139,7 @@ if [ "$PHASE_VAL" != "archive" ]; then
 fi
 
 if [ "$VERIFY_VAL" != "pass" ]; then
-  red "FATAL: verify_result is '$VERIFY_VAL', expected 'pass'. Run comet-verify first."
+  red "FATAL: verify_result is '$VERIFY_VAL', expected 'pass'. Run specdrive-verify first."
   exit 1
 fi
 

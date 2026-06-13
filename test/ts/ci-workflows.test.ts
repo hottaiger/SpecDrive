@@ -39,7 +39,7 @@ describe('CI workflows', () => {
     expect(workflow).toContain('All 28 platforms global SpecDrive skills: OK');
   });
 
-  it('defines PR title linting with Comet-specific semantic scopes', async () => {
+  it('defines PR title linting with SpecDrive-specific semantic scopes', async () => {
     const workflow = (await fs.readFile('.github/workflows/pr-title-lint.yml', 'utf-8')).replace(/\r\n/g, '\n');
 
     expect(workflow).toContain('name: PR Title Lint');

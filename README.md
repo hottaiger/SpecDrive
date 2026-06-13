@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/hottaiger/SpecDrive/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/hottaiger/SpecDrive/ci.yml?branch=master&style=flat-square&label=CI" /></a>
-  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-rpamis%2Fcomet-blue?style=flat-square" /></a>
+  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-hottaiger%2FSpecDrive-blue?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm version" src="https://img.shields.io/npm/v/@hottaiger/SpecDrive?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm download count" src="https://img.shields.io/npm/dm/@hottaiger/SpecDrive?style=flat-square&label=Downloads/mo" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm weekly download count" src="https://img.shields.io/npm/dw/@hottaiger/SpecDrive?style=flat-square&label=Downloads/wk" /></a>
@@ -515,7 +515,7 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ## Roadmap
 
-Track our development progress and upcoming features on the [SpecDrive Roadmap](https://github.com/orgs/rpamis/projects/1).
+Track our development progress and upcoming features on the [SpecDrive Roadmap](https://github.com/orgs/hottaiger/projects/1).
 
 ## Star History
 

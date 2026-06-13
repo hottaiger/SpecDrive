@@ -53,7 +53,7 @@ function runBash(
   timeout?: number,
 ) {
   if (!bashCommand) {
-    throw new Error('comet shell script tests require Bash or Git Bash');
+    throw new Error('specdrive shell script tests require Bash or Git Bash');
   }
   return spawnSync(bashCommand, [toBashPath(script), ...args], {
     cwd,
@@ -70,7 +70,7 @@ async function writeFile(filePath: string, content: string) {
 
 function runHookGuard(cwd: string, script: string, stdin: string, env: NodeJS.ProcessEnv = {}) {
   if (!bashCommand) {
-    throw new Error('comet shell script tests require Bash or Git Bash');
+    throw new Error('specdrive shell script tests require Bash or Git Bash');
   }
   return spawnSync(bashCommand, [toBashPath(script)], {
     cwd,
@@ -142,7 +142,7 @@ async function createFakeOpenSpecArchive(tmpDir: string, archiveDateScript = 'da
 
 const describeShell = bashCommand ? describe : describe.skip;
 
-describeShell('comet shell scripts', () => {
+describeShell('specdrive shell scripts', () => {
   let tmpDir: string;
   let guardScript: string;
   let stateScript: string;
@@ -151,7 +151,7 @@ describeShell('comet shell scripts', () => {
   beforeEach(async () => {
     tmpDir = path.join(
       os.tmpdir(),
-      `comet-scripts-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-scripts-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tmpDir, { recursive: true });
     const tmpScriptsDir = path.join(tmpDir, 'scripts');
@@ -274,7 +274,7 @@ describeShell('comet shell scripts', () => {
     expect(yaml).toContain('context_compression: off');
   }, 20_000);
 
-  it('initializes auto_transition as true when openspec comet config is absent', async () => {
+  it('initializes auto_transition as true when openspec specdrive config is absent', async () => {
     const result = runBash(tmpDir, stateScript, ['init', 'auto-transition-defaults', 'full']);
     const yaml = await fs.readFile(
       path.join(tmpDir, 'openspec', 'changes', 'auto-transition-defaults', '.specdrive.yaml'),
@@ -373,7 +373,7 @@ describeShell('comet shell scripts', () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('NEXT: auto');
-    expect(result.stdout).toContain('SKILL: comet-verify');
+    expect(result.stdout).toContain('SKILL: specdrive-verify');
   }, 20_000);
 
   it('next resolves manual with hint when auto_transition is false', async () => {
@@ -389,7 +389,7 @@ describeShell('comet shell scripts', () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('NEXT: manual');
-    expect(result.stdout).toContain('SKILL: comet-build');
+    expect(result.stdout).toContain('SKILL: specdrive-build');
     expect(result.stdout).toContain('HINT:');
   }, 20_000);
 
@@ -412,8 +412,8 @@ describeShell('comet shell scripts', () => {
     const hotfix = runBash(tmpDir, stateScript, ['next', 'next-hotfix-build']);
     const tweak = runBash(tmpDir, stateScript, ['next', 'next-tweak-build']);
 
-    expect(hotfix.stdout).toContain('SKILL: comet-hotfix');
-    expect(tweak.stdout).toContain('SKILL: comet-tweak');
+    expect(hotfix.stdout).toContain('SKILL: specdrive-hotfix');
+    expect(tweak.stdout).toContain('SKILL: specdrive-tweak');
   }, 20_000);
 
   it('next reports done for an archived change', async () => {
@@ -451,7 +451,7 @@ describeShell('comet shell scripts', () => {
     const design = runBash(tmpDir, stateScript, ['next', 'next-design']);
     const archive = runBash(tmpDir, stateScript, ['next', 'next-archive']);
 
-    expect(design.stdout).toContain('SKILL: comet-design');
+    expect(design.stdout).toContain('SKILL: specdrive-design');
     expect(archive.stdout).toContain('SKILL: specdrive-archive');
   }, 20_000);
 
@@ -632,7 +632,7 @@ describeShell('comet shell scripts', () => {
       path.join(tmpDir, 'docs', 'superpowers', 'specs', 'handoff-design.md'),
       [
         '---',
-        'comet_change: handoff-change',
+        'specdrive_change: handoff-change',
         'role: technical-design',
         'canonical_spec: openspec',
         '---',
@@ -746,7 +746,7 @@ describeShell('comet shell scripts', () => {
       path.join(tmpDir, 'docs', 'superpowers', 'specs', 'beta-design.md'),
       [
         '---',
-        'comet_change: beta-context',
+        'specdrive_change: beta-context',
         'role: technical-design',
         'canonical_spec: openspec',
         '---',
@@ -824,7 +824,7 @@ describeShell('comet shell scripts', () => {
       path.join(tmpDir, 'docs', 'superpowers', 'specs', 'beta-bad-json-design.md'),
       [
         '---',
-        'comet_change: beta-bad-json',
+        'specdrive_change: beta-bad-json',
         'role: technical-design',
         'canonical_spec: openspec',
         '---',
@@ -844,7 +844,7 @@ describeShell('comet shell scripts', () => {
     expect(result.stderr).toContain('[FAIL] beta spec-context.json is structurally valid');
   }, 20_000);
 
-  it('reads comet yaml fields without including trailing comments', async () => {
+  it('reads specdrive yaml fields without including trailing comments', async () => {
     const handoffScript = path.join(tmpDir, 'scripts', 'specdrive-handoff.sh');
     const validateScript = path.join(tmpDir, 'scripts', 'specdrive-yaml-validate.sh');
     await createChange(
@@ -905,7 +905,7 @@ describeShell('comet shell scripts', () => {
         '\uFEFF',
         '',
         '---',
-        'comet_change: frontmatter-prefix',
+        'specdrive_change: frontmatter-prefix',
         'role: technical-design',
         'canonical_spec: openspec',
         '---',
@@ -1190,12 +1190,12 @@ describeShell('comet shell scripts', () => {
 
     runBash(tmpDir, handoffScript, ['bad-frontmatter', 'design', '--write']);
 
-    // Design doc with wrong comet_change
+    // Design doc with wrong specdrive_change
     await writeFile(
       path.join(tmpDir, 'docs', 'superpowers', 'specs', 'bad-design.md'),
       [
         '---',
-        'comet_change: wrong-change',
+        'specdrive_change: wrong-change',
         'role: technical-design',
         'canonical_spec: openspec',
         '---',
@@ -3298,7 +3298,7 @@ describeShell('comet shell scripts', () => {
   });
 
   describe('specdrive-hook-guard.sh — phase write guard', () => {
-    it('allows all writes when no active comet change exists', async () => {
+    it('allows all writes when no active specdrive change exists', async () => {
       const srcDir = path.join(tmpDir, 'src');
       await fs.mkdir(srcDir, { recursive: true });
       const targetFile = path.join(srcDir, 'foo.ts');

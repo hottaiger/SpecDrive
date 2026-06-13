@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/hottaiger/SpecDrive/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/hottaiger/SpecDrive/ci.yml?branch=master&style=flat-square&label=CI" /></a>
-  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-rpamis%2Fcomet-blue?style=flat-square" /></a>
+  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-hottaiger%2FSpecDrive-blue?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm version" src="https://img.shields.io/npm/v/@hottaiger/SpecDrive?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm download count" src="https://img.shields.io/npm/dm/@hottaiger/SpecDrive?style=flat-square&label=Downloads/mo" /></a>
   <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm weekly download count" src="https://img.shields.io/npm/dw/@hottaiger/SpecDrive?style=flat-square&label=Downloads/wk" /></a>
@@ -454,8 +454,8 @@ Build 阶段的输入 token 降低 **25–30%**。
 
 | 模式     | 行为                              | Token 节省 |
 |--------|---------------------------------|----------|
-| `off`  | handoff context 包含完整 Spec 摘录    | 基线       |
-| `beta` | 仅保留 Design Doc + SHA256 hash 引用 | ~25–30%  |
+| `off`  | handoff 嵌入 OpenSpec 源文件摘录（proposal / design / tasks / spec.md） | 基线       |
+| `beta` | verbatim 投影 delta `spec.md`；支持文件仅以 SHA256 引用 | ~25–30%  |
 
 Benchmark 核心结论：
 
@@ -479,7 +479,7 @@ Benchmark 核心结论：
 | `true` | 阶段完成后自动调用下一个 Skill（默认） |
 | `false` | 阶段完成后暂停，用户手动触发下一个 Skill |
 
-三层配置与优先级：`SPECDRIVE_AUTO_TRANSITION` 环境变量 > `.specdrive/config.yaml`（项目级）> `.specdrive.yaml`（change 级）。
+三层配置与优先级：change 级 `.specdrive.yaml` 显式值 > `SPECDRIVE_AUTO_TRANSITION` 环境变量 > `.specdrive/config.yaml`（项目级）> 默认 `true`。
 
 详见 [AUTO-TRANSITION.md](docs/AUTO-TRANSITION.md) 获取配置详情、工作流映射和常见问题。
 
@@ -494,7 +494,7 @@ Benchmark 核心结论：
 
 ## 路线图
 
-在 [SpecDrive Roadmap](https://github.com/orgs/rpamis/projects/1) 查看开发进展与即将推出的功能。
+在 [SpecDrive Roadmap](https://github.com/orgs/hottaiger/projects/1) 查看开发进展与即将推出的功能。
 
 ## Star历史
 

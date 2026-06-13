@@ -83,8 +83,8 @@ describe('skills', () => {
       expect(result.skipped).toBe(0);
 
       // Verify a key file was copied
-      const cometSkillPath = path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md');
-      expect(await fileExists(cometSkillPath)).toBe(true);
+      const specdriveSkillPath = path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md');
+      expect(await fileExists(specdriveSkillPath)).toBe(true);
     });
 
     it('skips existing files when overwrite is false', async () => {
@@ -852,7 +852,7 @@ describe('skills', () => {
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {
@@ -889,7 +889,7 @@ describe('skills', () => {
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {
@@ -914,7 +914,7 @@ describe('skills', () => {
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {

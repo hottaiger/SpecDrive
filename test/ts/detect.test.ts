@@ -114,7 +114,7 @@ describe('detect', () => {
       expect(await hasSkills(tmpDir, mockPlatform, 'superpowers')).toBe(true);
     });
 
-    it('detects comet skills', async () => {
+    it('detects specdrive skills', async () => {
       await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
       expect(await hasSkills(tmpDir, mockPlatform, 'specdrive')).toBe(true);
     });
@@ -125,7 +125,9 @@ describe('detect', () => {
       if (!opencode) return;
 
       await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive'), { recursive: true });
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), {
+        recursive: true,
+      });
 
       expect(await hasSkills(tmpDir, opencode, 'specdrive')).toBe(false);
     });
@@ -136,7 +138,9 @@ describe('detect', () => {
       if (!opencode) return;
 
       await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive'), { recursive: true });
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), {
+        recursive: true,
+      });
       await fs.mkdir(path.join(tmpDir, '.opencode', 'commands'), { recursive: true });
       await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'specdrive.md'), '');
       await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'specdrive-open.md'), '');

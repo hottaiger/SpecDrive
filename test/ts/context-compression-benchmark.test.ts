@@ -131,15 +131,15 @@ describe('context compression benchmark runner', () => {
   it('normalizes Windows paths before passing script paths to Bash', async () => {
     const { toBashPath } = await import(benchmarkModule);
 
-    expect(toBashPath('D:\\Project\\Comet\\assets\\skills\\comet\\scripts\\specdrive-handoff.sh')).toBe(
-      '/d/Project/Comet/assets/skills/specdrive/scripts/specdrive-handoff.sh',
+    expect(toBashPath('D:\\Project\\SpecDrive\\assets\\skills\\specdrive\\scripts\\specdrive-handoff.sh')).toBe(
+      '/d/Project/SpecDrive/assets/skills/specdrive/scripts/specdrive-handoff.sh',
     );
     expect(
       toBashPath(
-        'D:\\Project\\Comet\\assets\\skills\\comet\\scripts\\specdrive-handoff.sh',
+        'D:\\Project\\SpecDrive\\assets\\skills\\specdrive\\scripts\\specdrive-handoff.sh',
         'wsl',
       ),
-    ).toBe('/mnt/d/Project/Comet/assets/skills/specdrive/scripts/specdrive-handoff.sh');
+    ).toBe('/mnt/d/Project/SpecDrive/assets/skills/specdrive/scripts/specdrive-handoff.sh');
     expect(toBashPath('/tmp/specdrive-handoff.sh')).toBe('/tmp/specdrive-handoff.sh');
   });
 
@@ -147,7 +147,7 @@ describe('context compression benchmark runner', () => {
     const { buildCodexArgs } = await import(benchmarkModule);
 
     const args = buildCodexArgs({
-      cwd: 'D:\\Project\\Comet\\.comet\\fixture',
+      cwd: 'D:\\Project\\SpecDrive\\.specdrive\\fixture',
       model: 'gpt-test',
     });
 
@@ -166,7 +166,7 @@ describe('context compression benchmark runner', () => {
     const { runBenchmark } = await import(benchmarkModule);
     const tmpDir = path.join(
       os.tmpdir(),
-      `comet-context-benchmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-context-benchmark-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
 
     try {

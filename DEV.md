@@ -26,13 +26,13 @@ npm install -g .
 ## 取消本地链接
 
 ```bash
-npm unlink -g @rpamis/comet
+npm unlink -g @hottaiger/specdrive
 ```
 
 ## 卸载
 
 ```bash
-npm uninstall -g @rpamis/comet
+npm uninstall -g @hottaiger/specdrive
 ```
 
 ## 正式安装（未发布 npm 前）

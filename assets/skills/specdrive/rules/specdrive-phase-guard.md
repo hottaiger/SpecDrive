@@ -1,14 +1,14 @@
-# Comet 阶段感知（防漂移规则）
+# SpecDrive 阶段感知（防漂移规则）
 
-> 此规则每轮注入，防止长上下文时遗忘 Comet 流程状态。
-> Hook 平台额外执行 `comet-hook-guard.sh` 进行硬性拦截；
+> 此规则每轮注入，防止长上下文时遗忘 SpecDrive 流程状态。
+> Hook 平台额外执行 `specdrive-hook-guard.sh` 进行硬性拦截；
 > 此 Rule 是所有平台通用的软性防线。
 
 ## 全局规则
 
 ### 阶段感知（最高优先级）
 
-有活跃 comet change 时（`openspec/changes/<name>/.specdrive.yaml` 存在），**每次开始执行操作前**必须读取 `phase` 字段确认当前阶段。
+有活跃 SpecDrive change 时（`openspec/changes/<name>/.specdrive.yaml` 存在），**每次开始执行操作前**必须读取 `phase` 字段确认当前阶段。
 
 **阶段与允许操作：**
 
@@ -84,7 +84,7 @@
 
 guard `--apply` 成功后，必须调用下一阶段的 skill：
 
-- open → `comet-design`（full）/ `comet-build`（hotfix/tweak）
-- design → `comet-build`
-- build → `comet-verify`
+- open → `specdrive-design`（full）/ `specdrive-build`（hotfix/tweak）
+- design → `specdrive-build`
+- build → `specdrive-verify`
 - verify → `specdrive-archive`

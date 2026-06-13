@@ -11,7 +11,7 @@ const { version } = require('../../package.json');
 const program = new Command();
 
 program
-  .name('comet')
+  .name('specdrive')
   .description('OpenSpec + Superpowers dual-star development workflow')
   .version(version);
 
@@ -60,7 +60,7 @@ program
 
 program
   .command('update [path]')
-  .description('Update comet skill files to latest version')
+  .description('Update SpecDrive skill files to latest version')
   .option('--json', 'Output as JSON')
   .addOption(new Option('--language <lang>', 'Language for skills').choices(['en', 'zh']))
   .addOption(new Option('--scope <scope>', 'Install scope').choices(['global', 'project']))

@@ -53,6 +53,10 @@ function getScopedBaseDir(
   return scope === 'global' ? globalBaseDir : projectPath;
 }
 
+function isInstalledSpecdriveSkillEntry(entry: string): boolean {
+  return entry.startsWith('specdrive') || entry.startsWith('comet');
+}
+
 async function hasLocalCometSkills(
   baseDir: string,
   platform: Platform,
@@ -62,7 +66,7 @@ async function hasLocalCometSkills(
   if (!(await fileExists(skillsDir))) return false;
 
   const entries = await readDir(skillsDir);
-  return entries.some((entry) => entry.startsWith('comet'));
+  return entries.some(isInstalledSpecdriveSkillEntry);
 }
 
 async function detectInstalledCometLanguage(
@@ -73,7 +77,7 @@ async function detectInstalledCometLanguage(
   const skillsDir = path.join(baseDir, getPlatformSkillsDir(platform, scope), 'skills');
   if (!(await fileExists(skillsDir))) return 'en';
 
-  const entries = (await readDir(skillsDir)).filter((entry) => entry.startsWith('comet'));
+  const entries = (await readDir(skillsDir)).filter(isInstalledSpecdriveSkillEntry);
 
   for (const entry of entries) {
     const skillPath = path.join(skillsDir, entry, 'SKILL.md');
@@ -123,7 +127,7 @@ async function detectCometPackageScope(
   projectPath: string,
   packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'),
 ): Promise<InstallScope> {
-  const localPackageRoot = path.join(projectPath, 'node_modules', '@rpamis', 'comet');
+  const localPackageRoot = path.join(projectPath, 'node_modules', '@hottaiger', 'specdrive');
   if (isSameOrInside(packageRoot, localPackageRoot)) return 'project';
 
   const packageJsonPath = path.join(projectPath, 'package.json');
@@ -228,11 +232,11 @@ export async function updateCommand(
       );
       return;
     }
-    log('\n  No platforms with comet skills installed. Run `specdrive init` first.\n');
+    log('\n  No platforms with SpecDrive skills installed. Run `specdrive init` first.\n');
     return;
   }
 
-  log(`\n  Updating comet skills on ${targets.length} installed target(s):`);
+  log(`\n  Updating SpecDrive skills on ${targets.length} installed target(s):`);
   for (const target of targets) {
     const language = options.language ?? target.language;
     const scopeLabel = target.scope === 'global' ? 'global' : `project (${projectPath})`;

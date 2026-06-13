@@ -36,7 +36,7 @@ function mockExternalSuccess() {
       const cwd = (opts as { cwd?: string } | undefined)?.cwd ?? os.tmpdir();
       const stagedSkillsDir = path.join(cwd, '.claude', 'skills', 'specdrive');
       mkdirSync(stagedSkillsDir, { recursive: true });
-      writeFileSync(path.join(stagedSkillsDir, 'SKILL.md'), '# Lingma Comet\n');
+      writeFileSync(path.join(stagedSkillsDir, 'SKILL.md'), '# Lingma SpecDrive\n');
       return Buffer.from('installed');
     }
 

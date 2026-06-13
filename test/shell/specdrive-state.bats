@@ -2,8 +2,8 @@
 
 setup() {
   export TEST_TMPDIR="$(mktemp -d)"
-  export SCRIPT_SOURCE="$BATS_TEST_DIRNAME/../../assets/skills/comet/scripts/comet-state.sh"
-  export SCRIPT_PATH="$TEST_TMPDIR/comet-state.sh"
+  export SCRIPT_SOURCE="$BATS_TEST_DIRNAME/../../assets/skills/specdrive/scripts/specdrive-state.sh"
+  export SCRIPT_PATH="$TEST_TMPDIR/specdrive-state.sh"
   cd "$TEST_TMPDIR"
   tr -d '\r' < "$SCRIPT_SOURCE" > "$SCRIPT_PATH"
   mkdir -p openspec/changes
@@ -15,31 +15,31 @@ teardown() {
 
 # --- init subcommand ---
 
-@test "init creates .comet.yaml with full workflow defaults" {
+@test "init creates .specdrive.yaml with full workflow defaults" {
   run bash "$SCRIPT_PATH" init my-change full
   [ "$status" -eq 0 ]
-  [ -f "openspec/changes/my-change/.comet.yaml" ]
-  grep -q "phase: open" "openspec/changes/my-change/.comet.yaml"
-  grep -q "verify_mode: null" "openspec/changes/my-change/.comet.yaml"
-  grep -q "verification_report: null" "openspec/changes/my-change/.comet.yaml"
-  grep -q "branch_status: pending" "openspec/changes/my-change/.comet.yaml"
+  [ -f "openspec/changes/my-change/.specdrive.yaml" ]
+  grep -q "phase: open" "openspec/changes/my-change/.specdrive.yaml"
+  grep -q "verify_mode: null" "openspec/changes/my-change/.specdrive.yaml"
+  grep -q "verification_report: null" "openspec/changes/my-change/.specdrive.yaml"
+  grep -q "branch_status: pending" "openspec/changes/my-change/.specdrive.yaml"
 }
 
-@test "init creates .comet.yaml with hotfix workflow defaults" {
+@test "init creates .specdrive.yaml with hotfix workflow defaults" {
   run bash "$SCRIPT_PATH" init hotfix-123 hotfix
   [ "$status" -eq 0 ]
-  grep -q "phase: open" "openspec/changes/hotfix-123/.comet.yaml"
-  grep -q "build_mode: direct" "openspec/changes/hotfix-123/.comet.yaml"
+  grep -q "phase: open" "openspec/changes/hotfix-123/.specdrive.yaml"
+  grep -q "build_mode: direct" "openspec/changes/hotfix-123/.specdrive.yaml"
 }
 
-@test "init creates .comet.yaml with tweak workflow defaults" {
+@test "init creates .specdrive.yaml with tweak workflow defaults" {
   run bash "$SCRIPT_PATH" init tweak-abc tweak
   [ "$status" -eq 0 ]
-  grep -q "phase: open" "openspec/changes/tweak-abc/.comet.yaml"
-  grep -q "isolation: branch" "openspec/changes/tweak-abc/.comet.yaml"
+  grep -q "phase: open" "openspec/changes/tweak-abc/.specdrive.yaml"
+  grep -q "isolation: branch" "openspec/changes/tweak-abc/.specdrive.yaml"
 }
 
-@test "init rejects duplicate .comet.yaml" {
+@test "init rejects duplicate .specdrive.yaml" {
   bash "$SCRIPT_PATH" init my-change full
   run bash "$SCRIPT_PATH" init my-change full
   [ "$status" -ne 0 ]
@@ -134,7 +134,7 @@ teardown() {
   [ "$status" -eq 0 ]
 }
 
-@test "check open fails without .comet.yaml" {
+@test "check open fails without .specdrive.yaml" {
   mkdir -p openspec/changes/my-change
   run bash "$SCRIPT_PATH" check my-change open
   [ "$status" -ne 0 ]

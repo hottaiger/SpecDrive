@@ -176,7 +176,7 @@ async function checkSkillCompleteness(
 
 async function checkScriptsPresent(): Promise<CheckResult> {
   const assetsDir = getAssetsDir();
-  const scriptsDir = path.join(assetsDir, 'skills', 'comet', 'scripts');
+  const scriptsDir = path.join(assetsDir, 'skills', 'specdrive', 'scripts');
   if (!(await fileExists(scriptsDir))) {
     return { check: 'scripts present', status: 'warn', message: 'scripts directory not found' };
   }

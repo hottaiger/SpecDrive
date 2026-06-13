@@ -17,12 +17,12 @@ description: "SpecDrive Phase 3: Plan and Build. Invoke with /specdrive-build. C
 Execute entry verification:
 
 ```bash
-COMET_ENV="${COMET_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
-if [ -z "$COMET_ENV" ]; then
-  echo "ERROR: comet-env.sh not found. Ensure the comet skill is installed." >&2
+SPECDRIVE_ENV="${SPECDRIVE_ENV:-$(find . "$HOME"/.*/skills "$HOME/.config" "$HOME/.gemini" -path '*/specdrive/scripts/specdrive-env.sh' -type f -print -quit 2>/dev/null)}"
+if [ -z "$SPECDRIVE_ENV" ]; then
+  echo "ERROR: specdrive-env.sh not found. Ensure the SpecDrive skill is installed." >&2
   return 1
 fi
-. "$COMET_ENV"
+. "$SPECDRIVE_ENV"
 "$SPECDRIVE_BASH" "$SPECDRIVE_STATE" check <name> build
 ```
 

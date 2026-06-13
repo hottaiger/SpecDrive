@@ -22,15 +22,15 @@ interface ChangeStatus {
 function getNextCommand(phase: string): string | null {
   switch (phase) {
     case 'open':
-      return '/comet-open';
+      return '/specdrive-open';
     case 'design':
-      return '/comet-design';
+      return '/specdrive-design';
     case 'build':
-      return '/comet-build';
+      return '/specdrive-build';
     case 'verify':
-      return '/comet-verify';
+      return '/specdrive-verify';
     case 'archive':
-      return '/comet-archive';
+      return '/specdrive-archive';
     default:
       return null;
   }

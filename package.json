@@ -16,7 +16,7 @@
     "access": "public"
   },
   "bin": {
-    "specdrive": "./bin/comet.js"
+    "specdrive": "./bin/specdrive.js"
   },
   "files": [
     "dist",

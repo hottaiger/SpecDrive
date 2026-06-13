@@ -242,7 +242,7 @@ function computeRuleDestPath(
     return path.join(rulesDestDir, ruleFileName.replace(/\.md$/, '.mdc'));
   }
   if (rulesFormat === 'copilot') {
-    // GitHub Copilot: specdrive-phase-guard.md → comet-phase-guard.instructions.md
+    // GitHub Copilot: specdrive-phase-guard.md → specdrive-phase-guard.instructions.md
     return path.join(rulesDestDir, ruleFileName.replace(/\.md$/, '.instructions.md'));
   }
   return path.join(rulesDestDir, ruleFileName);
