@@ -81,8 +81,8 @@ async function installGitnexus(
   }
 
   try {
-    console.log(`    Running: gitnexus analyze --skip-agents-md --skip-skills`);
-    execFileSync('gitnexus', ['analyze', '--skip-agents-md', '--skip-skills'], {
+    console.log(`    Running: gitnexus analyze --skip-agents-md`);
+    execFileSync('gitnexus', ['analyze', '--skip-agents-md'], {
       cwd: projectPath,
       stdio: 'inherit',
       timeout: 300_000,

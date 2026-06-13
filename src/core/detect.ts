@@ -54,6 +54,7 @@ async function hasOpenCodeSpecdriveCommands(baseDir: string, skillsDir: string, 
 
 async function detectPlatforms(projectPath: string): Promise<Set<string>> {
   const detected = new Set<string>();
+  const homeDir = os.homedir();
 
   for (const platform of PLATFORMS) {
     if (platform.detectionPaths && platform.detectionPaths.length > 0) {
@@ -63,9 +64,21 @@ async function detectPlatforms(projectPath: string): Promise<Set<string>> {
           break;
         }
       }
-    } else {
-      for (const skillsDir of getPlatformSkillsDirs(platform, 'project')) {
-        const dirPath = path.join(projectPath, skillsDir);
+      continue;
+    }
+
+    for (const skillsDir of getPlatformSkillsDirs(platform, 'project')) {
+      const dirPath = path.join(projectPath, skillsDir);
+      if (await fileExists(dirPath)) {
+        detected.add(platform.id);
+        break;
+      }
+    }
+
+    // Detect globally installed tools (e.g. Cursor creates ~/.cursor on first launch)
+    if (!detected.has(platform.id) && platform.globalSkillsDir) {
+      for (const skillsDir of getPlatformSkillsDirs(platform, 'global')) {
+        const dirPath = path.join(homeDir, skillsDir);
         if (await fileExists(dirPath)) {
           detected.add(platform.id);
           break;

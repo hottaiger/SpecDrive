@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -82,8 +82,37 @@ describe('detect', () => {
     });
 
     it('returns empty set when no platforms detected', async () => {
+      const fakeHome = path.join(tmpDir, 'empty-home');
+      await fs.mkdir(fakeHome, { recursive: true });
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
       const detected = await detectPlatforms(tmpDir);
+
       expect(detected.size).toBe(0);
+      homedirSpy.mockRestore();
+    });
+
+    it('detects cursor from global ~/.cursor when project has no .cursor', async () => {
+      const fakeHome = path.join(tmpDir, 'home');
+      await fs.mkdir(path.join(fakeHome, '.cursor'), { recursive: true });
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
+      const detected = await detectPlatforms(tmpDir);
+
+      expect(detected.has('cursor')).toBe(true);
+      homedirSpy.mockRestore();
+    });
+
+    it('prefers project .cursor over global detection', async () => {
+      const fakeHome = path.join(tmpDir, 'home-global');
+      await fs.mkdir(path.join(fakeHome, '.cursor'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.cursor'));
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
+      const detected = await detectPlatforms(tmpDir);
+
+      expect(detected.has('cursor')).toBe(true);
+      homedirSpy.mockRestore();
     });
 
     it('detects Antigravity from the project skills directory', async () => {
