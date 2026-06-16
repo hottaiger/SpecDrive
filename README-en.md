@@ -120,7 +120,7 @@ Requirements:
 - Bash-compatible shell for workflow scripts (Windows users should use Git Bash or an equivalent bash environment)
 
 ```bash
-npm install -g @hottaiger/SpecDrive
+npm install -g @lion_zs/SpecDrive
 ```
 
 ## Quick Start
