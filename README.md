@@ -19,12 +19,12 @@
 # @hottaiger/SpecDrive
 
 ```
- ██████╗ ██████╗ ███╗   ███╗███████╗████████╗
-██╔════╝██╔═══██╗████╗ ████║██╔════╝╚══██╔══╝
-██║     ██║   ██║██╔████╔██║█████╗     ██║
-██║     ██║   ██║██║╚██╔╝██║██╔══╝     ██║
-╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗   ██║
- ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝   ╚═╝
+███████╗██████╗ ███████╗ ██████╗    ██████╗ ██████╗ ██╗██╗   ██╗███████╗
+██╔════╝██╔══██╗██╔════╝██╔════╝    ██╔══██╗██╔══██╗██║██║   ██║██╔════╝
+███████╗██████╔╝█████╗  ██║         ██║  ██║██████╔╝██║██║   ██║█████╗
+╚════██║██╔═══╝ ██╔══╝  ██║         ██║  ██║██╔══██╗██║╚██╗ ██╔╝██╔══╝
+███████║██║     ███████╗╚██████╗    ██████╔╝██║  ██║██║ ╚████╔╝ ███████╗
+╚══════╝╚═╝     ╚══════╝ ╚═════╝    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝  ╚══════╝
 ```
 
 > English version: [README-en.md](README-en.md)
@@ -127,22 +127,6 @@ specdrive init
 > 更新版本号
 >
 > 执行 `specdrive update` 或者 `npm install -g @hottaiger/SpecDrive@latest` 即可更新到最新版本。
-
-## 对OpenClaw和Hermes、或其他AI平台的支持
-
-对于直接使用通用 `skills` CLI 的平台，可以用下面的方式安装 SpecDrive skill 包：
-
-```bash
-npx skills add hottaiger/SpecDrive
-```
-
-## 运行截图
-
-<p align="center">
-  <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/runner.png" alt="runner">
-</p>
-<p align="center">自动安装 OpenSpec、Superpowers，一键配置开发环境</p>
-<p align="center">多阶段 Skill 入口，自动识别当前 Spec 阶段，核心流程自动触发，关键节点人工审核</p>
 
 ## CLI命令
 
@@ -485,51 +469,3 @@ Benchmark 核心结论：
 详见 [AUTO-TRANSITION.md](docs/AUTO-TRANSITION.md) 获取配置详情、工作流映射和常见问题。
 
 </details>
-
-## 开发
-
-贡献流程、提交规范、PR 流程、分支工作流，以及新增平台、Skill、脚本或 changelog
-的说明见 [CONTRIBUTING-zh.md](CONTRIBUTING-zh.md) | [English](CONTRIBUTING.md)。
-
-详见 [CHANGELOG.md](CHANGELOG.md) 了解版本历史与更新。
-
-## 路线图
-
-在 [SpecDrive Roadmap](https://github.com/orgs/hottaiger/projects/1) 查看开发进展与即将推出的功能。
-
-## Star历史
-
-[![Star History Chart](https://api.star-history.com/svg?repos=hottaiger/SpecDrive&type=Date)](https://star-history.com/#hottaiger/SpecDrive&Date)
-
-## Contributors
-
-<a href="https://github.com/hottaiger/SpecDrive/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=hottaiger/SpecDrive&max=999&columns=12&anon=1" />
-</a>
-
-## License
-
-[MIT](LICENSE)
-
-## 社区交流
-
-<table align="center">
-  <tr>
-    <td align="center" width="180">
-      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/douyin.png" width="120" height="120"><br>
-      <b>抖音群（推荐）</b>
-    </td>
-    <td align="center" width="180">
-      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/wechat.jpg" width="120" height="120"><br>
-      <b>微信群</b>
-    </td>
-    <td align="center" width="180">
-      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/qq.jpg" width="120" height="120"><br>
-      <b>QQ群</b>
-    </td>
-  </tr>
-</table>
-
-## 友情链接
-
-[LINUX DO - 新的理想型社区](https://linux.do/)
