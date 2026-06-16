@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { promises as fs } from 'fs';
 
-const readmes = ['README.md', 'README-zh.md'];
+const readmes = ['README.md', 'README-en.md'];
 
 describe('README assets', () => {
   it.each(readmes)('uses npm-friendly absolute image URLs in %s', async (readmePath) => {
@@ -12,8 +12,8 @@ describe('README assets', () => {
   });
 
   it('documents build_pause in README state examples and field descriptions', async () => {
-    const en = await fs.readFile('README.md', 'utf-8');
-    const zh = await fs.readFile('README-zh.md', 'utf-8');
+    const en = await fs.readFile('README-en.md', 'utf-8');
+    const zh = await fs.readFile('README.md', 'utf-8');
 
     expect(en).toContain('build_pause: null');
     expect(en).toContain('`build_pause` records an internal build-phase pause point');
