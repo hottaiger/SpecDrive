@@ -1,23 +1,3 @@
-<p align="center">
-  <a href="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png">
-    <picture>
-      <source srcset="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png">
-      <img src="https://github.com/hottaiger/SpecDrive/blob/master/img/title-log.png" alt="SpecDrive logo">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/hottaiger/SpecDrive/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/hottaiger/SpecDrive/ci.yml?branch=master&style=flat-square&label=CI" /></a>
-  <a href="https://deepwiki.com/hottaiger/SpecDrive"><img alt="DeepWiki" src="https://img.shields.io/badge/DeepWiki-hottaiger%2FSpecDrive-blue?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm version" src="https://img.shields.io/npm/v/@hottaiger/SpecDrive?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm download count" src="https://img.shields.io/npm/dm/@hottaiger/SpecDrive?style=flat-square&label=Downloads/mo" /></a>
-  <a href="https://www.npmjs.com/package/@hottaiger/SpecDrive"><img alt="npm weekly download count" src="https://img.shields.io/npm/dw/@hottaiger/SpecDrive?style=flat-square&label=Downloads/wk" /></a>
-  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
-</p>
-
-# @hottaiger/SpecDrive
-
 ```
 ███████╗██████╗ ███████╗ ██████╗    ██████╗ ██████╗ ██╗██╗   ██╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔════╝    ██╔══██╗██╔══██╗██║██║   ██║██╔════╝
