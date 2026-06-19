@@ -85,4 +85,11 @@ skills-lock.json
 # Superpowers docs (local only)
 docs/superpowers/
 
-.codegraph/
+# SpecDrive local project state and benchmark output
+.specdrive/
+
+.gitnexus/
+.mimocode/
+
+#doc
+docs

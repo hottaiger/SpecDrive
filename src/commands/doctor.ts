@@ -77,7 +77,11 @@ async function checkWorkingDirs(projectPath: string): Promise<CheckResult> {
     return { check: 'working directories', status: 'pass', message: 'present' };
   }
   if (!specsExist && !plansExist) {
-    return { check: 'working directories', status: 'fail', message: 'missing — run: comet init' };
+    return {
+      check: 'working directories',
+      status: 'fail',
+      message: 'missing — run: specdrive init',
+    };
   }
   const missing = [];
   if (!specsExist) missing.push('specs');
@@ -162,8 +166,8 @@ async function checkSkillCompleteness(
       status: 'warn',
       message:
         scope === 'auto'
-          ? 'no platforms detected in project or global scope — run comet init'
-          : `no platforms detected in ${scope} scope — run comet init`,
+          ? 'no platforms detected in project or global scope — run specdrive init'
+          : `no platforms detected in ${scope} scope — run specdrive init`,
     });
   }
 
@@ -172,7 +176,7 @@ async function checkSkillCompleteness(
 
 async function checkScriptsPresent(): Promise<CheckResult> {
   const assetsDir = getAssetsDir();
-  const scriptsDir = path.join(assetsDir, 'skills', 'comet', 'scripts');
+  const scriptsDir = path.join(assetsDir, 'skills', 'specdrive', 'scripts');
   if (!(await fileExists(scriptsDir))) {
     return { check: 'scripts present', status: 'warn', message: 'scripts directory not found' };
   }
@@ -195,7 +199,7 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
   const results: CheckResult[] = [];
 
   for (const entry of entries) {
-    const yamlPath = path.join(changesDir, entry, '.comet.yaml');
+    const yamlPath = path.join(changesDir, entry, '.specdrive.yaml');
     if (!(await fileExists(yamlPath))) continue;
 
     const raw = await fs.readFile(yamlPath, 'utf-8');
@@ -203,9 +207,9 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
 
     results.push(
       unknownFields.length === 0
-        ? { check: `.comet.yaml: ${entry}`, status: 'pass' as const, message: 'valid' }
+        ? { check: `.specdrive.yaml: ${entry}`, status: 'pass' as const, message: 'valid' }
         : {
-            check: `.comet.yaml: ${entry}`,
+            check: `.specdrive.yaml: ${entry}`,
             status: 'fail' as const,
             message: `unknown field(s): ${unknownFields.join(', ')}`,
           },
@@ -215,29 +219,29 @@ async function checkCometYamlValidity(projectPath: string): Promise<CheckResult[
   return results;
 }
 
-async function checkCodegraph(projectPath: string, scope: DoctorScope): Promise<CheckResult> {
-  if (!isCommandAvailable('codegraph')) {
+async function checkGitnexus(projectPath: string, scope: DoctorScope): Promise<CheckResult> {
+  if (!isCommandAvailable('gitnexus')) {
     return {
-      check: 'CodeGraph CLI',
+      check: 'GitNexus CLI',
       status: 'warn',
-      message: 'not installed — install with: npm install -g @colbymchenry/codegraph',
+      message: 'not installed — install with: npm install -g gitnexus',
     };
   }
 
   if (scope === 'global') {
-    return { check: 'CodeGraph CLI', status: 'pass', message: 'installed' };
+    return { check: 'GitNexus CLI', status: 'pass', message: 'installed' };
   }
 
-  const codegraphDir = path.join(projectPath, '.codegraph');
-  if (!(await fileExists(codegraphDir))) {
+  const gitnexusDir = path.join(projectPath, '.gitnexus');
+  if (!(await fileExists(gitnexusDir))) {
     return {
-      check: 'CodeGraph',
+      check: 'GitNexus',
       status: 'warn',
-      message: 'CLI installed but project not initialized — run: codegraph init -i',
+      message: 'CLI installed but project not indexed — run: gitnexus analyze',
     };
   }
 
-  return { check: 'CodeGraph', status: 'pass', message: 'initialized (.codegraph/ present)' };
+  return { check: 'GitNexus', status: 'pass', message: 'initialized (.gitnexus/ present)' };
 }
 
 async function collectResults(projectPath: string, scope: DoctorScope): Promise<CheckResult[]> {
@@ -248,7 +252,7 @@ async function collectResults(projectPath: string, scope: DoctorScope): Promise<
   }
   results.push(...(await checkSkillCompleteness(projectPath, scope)));
   results.push(await checkScriptsPresent());
-  results.push(await checkCodegraph(projectPath, scope));
+  results.push(await checkGitnexus(projectPath, scope));
   results.push(...(await checkCometYamlValidity(projectPath)));
   return results;
 }
@@ -277,7 +281,7 @@ export async function doctorCommand(
     return;
   }
 
-  console.log(`Comet Doctor (scope: ${scope})\n`);
+  console.log(`SpecDrive Doctor (scope: ${scope})\n`);
 
   for (const r of results) {
     console.log(`  ${icon(r.status)} ${r.check}: ${r.message}`);

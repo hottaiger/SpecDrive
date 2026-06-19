@@ -31,7 +31,7 @@ describe('update command helpers', () => {
   beforeEach(async () => {
     tmpDir = path.join(
       os.tmpdir(),
-      `comet-update-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-update-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tmpDir, { recursive: true });
   });
@@ -40,18 +40,29 @@ describe('update command helpers', () => {
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
 
-  it('detects Chinese installed comet skills from existing skill content', async () => {
-    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'comet'), { recursive: true });
+  it('detects Chinese installed specdrive skills from existing skill content', async () => {
+    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
     await fs.writeFile(
-      path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md'),
-      '# Comet\n\n当用户提出需求时，先澄清目标再执行。',
+      path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\n当用户提出需求时，先澄清目标再执行。',
       'utf-8',
     );
 
     await expect(detectInstalledCometLanguage(tmpDir, claudePlatform)).resolves.toBe('zh');
   });
 
-  it('detects English installed comet skills from existing skill content', async () => {
+  it('detects English installed specdrive skills from existing skill content', async () => {
+    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
+    await fs.writeFile(
+      path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\nUse this skill when starting a new change.',
+      'utf-8',
+    );
+
+    await expect(detectInstalledCometLanguage(tmpDir, claudePlatform)).resolves.toBe('en');
+  });
+
+  it('still detects legacy comet skill directories for migration', async () => {
     await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'comet'), { recursive: true });
     await fs.writeFile(
       path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md'),
@@ -60,31 +71,35 @@ describe('update command helpers', () => {
     );
 
     await expect(detectInstalledCometLanguage(tmpDir, claudePlatform)).resolves.toBe('en');
+    const targets = await detectInstalledCometTargets(tmpDir, { scopes: ['project'] });
+    expect(targets.map((t) => `${t.scope}:${t.platform.id}:${t.language}`)).toEqual([
+      'project:claude:en',
+    ]);
   });
 
-  it('defaults installed comet language to English when the skills directory is missing', async () => {
+  it('defaults installed specdrive language to English when the skills directory is missing', async () => {
     await fs.mkdir(path.join(tmpDir, '.claude'), { recursive: true });
 
     await expect(detectInstalledCometLanguage(tmpDir, claudePlatform)).resolves.toBe('en');
   });
 
-  it('finds only scopes and platforms that already have comet skills installed', async () => {
+  it('finds only scopes and platforms that already have specdrive skills installed', async () => {
     const projectDir = path.join(tmpDir, 'project');
     const globalDir = path.join(tmpDir, 'home');
 
-    await fs.mkdir(path.join(projectDir, '.claude', 'skills', 'comet'), { recursive: true });
+    await fs.mkdir(path.join(projectDir, '.claude', 'skills', 'specdrive'), { recursive: true });
     await fs.writeFile(
-      path.join(projectDir, '.claude', 'skills', 'comet', 'SKILL.md'),
-      '# Comet\n\nUse this skill.',
+      path.join(projectDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\nUse this skill.',
       'utf-8',
     );
 
     await fs.mkdir(path.join(projectDir, '.cursor'), { recursive: true });
 
-    await fs.mkdir(path.join(globalDir, '.codex', 'skills', 'comet'), { recursive: true });
+    await fs.mkdir(path.join(globalDir, '.codex', 'skills', 'specdrive'), { recursive: true });
     await fs.writeFile(
-      path.join(globalDir, '.codex', 'skills', 'comet', 'SKILL.md'),
-      '# Comet\n\n当用户提出需求时使用这个技能。',
+      path.join(globalDir, '.codex', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\n当用户提出需求时使用这个技能。',
       'utf-8',
     );
 
@@ -111,10 +126,16 @@ describe('update command helpers', () => {
     const projectDir = path.join(tmpDir, 'project');
     const globalDir = path.join(tmpDir, 'home');
 
-    await fs.mkdir(path.join(projectDir, '.claude', 'skills', 'comet'), { recursive: true });
-    await fs.writeFile(path.join(projectDir, '.claude', 'skills', 'comet', 'SKILL.md'), '# Comet');
-    await fs.mkdir(path.join(globalDir, '.codex', 'skills', 'comet'), { recursive: true });
-    await fs.writeFile(path.join(globalDir, '.codex', 'skills', 'comet', 'SKILL.md'), '# Comet');
+    await fs.mkdir(path.join(projectDir, '.claude', 'skills', 'specdrive'), { recursive: true });
+    await fs.writeFile(
+      path.join(projectDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive',
+    );
+    await fs.mkdir(path.join(globalDir, '.codex', 'skills', 'specdrive'), { recursive: true });
+    await fs.writeFile(
+      path.join(globalDir, '.codex', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive',
+    );
 
     const targets = await detectInstalledCometTargets(projectDir, {
       globalBaseDir: globalDir,
@@ -126,7 +147,7 @@ describe('update command helpers', () => {
 
   it('detects project package scope from local node_modules install path', async () => {
     const projectDir = path.join(tmpDir, 'project');
-    const packageRoot = path.join(projectDir, 'node_modules', '@rpamis', 'comet');
+    const packageRoot = path.join(projectDir, 'node_modules', '@hottaiger', 'specdrive');
 
     await expect(detectCometPackageScope(projectDir, packageRoot)).resolves.toBe('project');
   });
@@ -136,7 +157,7 @@ describe('update command helpers', () => {
     await fs.mkdir(projectDir, { recursive: true });
     await fs.writeFile(
       path.join(projectDir, 'package.json'),
-      JSON.stringify({ devDependencies: { '@rpamis/comet': '^0.2.4' } }),
+      JSON.stringify({ devDependencies: { '@hottaiger/specdrive': '^0.2.4' } }),
       'utf-8',
     );
 
@@ -151,13 +172,13 @@ describe('update command helpers', () => {
   });
 
   it('builds npm update args preserving package install scope', () => {
-    expect(buildNpmUpdateArgs('global')).toEqual(['install', '-g', '@rpamis/comet@latest']);
-    expect(buildNpmUpdateArgs('project')).toEqual(['install', '@rpamis/comet@latest']);
+    expect(buildNpmUpdateArgs('global')).toEqual(['install', '-g', '@hottaiger/specdrive@latest']);
+    expect(buildNpmUpdateArgs('project')).toEqual(['install', '@hottaiger/specdrive@latest']);
   });
 
   it('formats the npm update command for friendly console output', () => {
-    expect(formatNpmUpdateCommand('global')).toBe('npm install -g @rpamis/comet@latest');
-    expect(formatNpmUpdateCommand('project')).toBe('npm install @rpamis/comet@latest');
+    expect(formatNpmUpdateCommand('global')).toBe('npm install -g @hottaiger/specdrive@latest');
+    expect(formatNpmUpdateCommand('project')).toBe('npm install @hottaiger/specdrive@latest');
   });
 
   it('formats the skill update command with scope, platform, and language source', () => {
@@ -170,10 +191,10 @@ describe('update command helpers', () => {
   });
 
   it('prints the skill update command when updating installed skills', async () => {
-    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'comet'), { recursive: true });
+    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
     await fs.writeFile(
-      path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md'),
-      '# Comet\n\n当用户提出需求时使用这个技能。',
+      path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\n当用户提出需求时使用这个技能。',
       'utf-8',
     );
 
@@ -190,10 +211,10 @@ describe('update command helpers', () => {
   });
 
   it('prints structured JSON when requested', async () => {
-    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'comet'), { recursive: true });
+    await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
     await fs.writeFile(
-      path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md'),
-      '# Comet\n\nUse this skill.',
+      path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md'),
+      '# SpecDrive\n\nUse this skill.',
       'utf-8',
     );
 

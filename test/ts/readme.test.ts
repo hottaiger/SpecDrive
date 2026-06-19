@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { promises as fs } from 'fs';
 
-const readmes = ['README.md', 'README-zh.md'];
+const readmes = ['README.md', 'README-en.md'];
 
 describe('README assets', () => {
   it.each(readmes)('uses npm-friendly absolute image URLs in %s', async (readmePath) => {
     const content = await fs.readFile(readmePath, 'utf-8');
 
     expect(content).not.toMatch(/\b(?:src|srcset)=["'](?:\.\/)?img\//);
-    expect(content).toContain('https://github.com/rpamis/comet/blob/master/img/');
+    expect(content).toContain('https://github.com/hottaiger/SpecDrive/blob/master/img/');
   });
 
   it('documents build_pause in README state examples and field descriptions', async () => {
-    const en = await fs.readFile('README.md', 'utf-8');
-    const zh = await fs.readFile('README-zh.md', 'utf-8');
+    const en = await fs.readFile('README-en.md', 'utf-8');
+    const zh = await fs.readFile('README.md', 'utf-8');
 
     expect(en).toContain('build_pause: null');
     expect(en).toContain('`build_pause` records an internal build-phase pause point');

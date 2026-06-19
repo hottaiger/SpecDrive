@@ -11,13 +11,13 @@ const { version } = require('../../package.json');
 const program = new Command();
 
 program
-  .name('comet')
+  .name('specdrive')
   .description('OpenSpec + Superpowers dual-star development workflow')
   .version(version);
 
 program
   .command('init [path]')
-  .description('Initialize Comet workflow in your project')
+  .description('Initialize SpecDrive workflow in your project')
   .option('--yes', 'Auto-install missing components, skip existing')
   .option('--skip-existing', 'Never overwrite existing components')
   .option('--overwrite', 'Overwrite manifest-managed files')
@@ -45,7 +45,7 @@ program
 
 program
   .command('doctor [path]')
-  .description('Diagnose Comet installation health')
+  .description('Diagnose SpecDrive installation health')
   .option('--json', 'Output as JSON')
   .addOption(
     new Option('--scope <scope>', 'Install scope to diagnose').choices([
@@ -60,7 +60,7 @@ program
 
 program
   .command('update [path]')
-  .description('Update comet skill files to latest version')
+  .description('Update SpecDrive skill files to latest version')
   .option('--json', 'Output as JSON')
   .addOption(new Option('--language <lang>', 'Language for skills').choices(['en', 'zh']))
   .addOption(new Option('--scope <scope>', 'Install scope').choices(['global', 'project']))

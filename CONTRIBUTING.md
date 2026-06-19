@@ -1,11 +1,13 @@
-# Contributing to Comet
+# Contributing to SpecDrive
 
 Languages: [English](CONTRIBUTING.md) | [中文](CONTRIBUTING-zh.md)
 
-Thank you for helping improve Comet. This guide is meant to be practical: it
+Thank you for helping improve SpecDrive. This guide is meant to be practical: it
 explains how to set up the project, prepare a change, keep branches healthy,
 submit a pull request, and update project-specific assets such as skills and
 shell scripts.
+
+> This project is a fork of [Comet](https://github.com/rpamis/comet) by [rpamis](https://github.com/rpamis). SpecDrive continues development on that foundation.
 
 ## Before You Start
 
@@ -22,8 +24,8 @@ shell scripts.
 ## Development Setup
 
 ```bash
-git clone https://github.com/rpamis/comet
-cd comet
+git clone https://github.com/hottaiger/SpecDrive
+cd SpecDrive
 pnpm install
 pnpm build
 ```
@@ -47,7 +49,7 @@ PR.
 For shell-script work, the most useful targeted check is:
 
 ```bash
-npx vitest run test/ts/comet-scripts.test.ts
+npx vitest run test/ts/specdrive-scripts.test.ts
 ```
 
 Before opening or updating a PR, run the full verification command unless the
@@ -154,7 +156,7 @@ Examples:
 ```text
 docs: expand contribution workflow
 fix: preserve stderr when superpowers install fails
-test: cover comet state transitions
+test: cover specdrive state transitions
 ```
 
 ## PR Process
@@ -184,10 +186,10 @@ npx prettier --check CONTRIBUTING.md CONTRIBUTING-zh.md README.md README-zh.md
 src/
 ├── cli/index.ts       # Commander registration
 ├── commands/          # Command orchestrators
-│   ├── init.ts        # comet init
-│   ├── status.ts      # comet status
-│   ├── doctor.ts      # comet doctor
-│   └── update.ts      # comet update
+│   ├── init.ts        # specdrive init
+│   ├── status.ts      # specdrive status
+│   ├── doctor.ts      # specdrive doctor
+│   └── update.ts      # specdrive update
 ├── core/              # Business logic (platform-agnostic)
 │   ├── platforms.ts   # Platform definitions
 │   ├── detect.ts      # Platform detection
@@ -226,7 +228,7 @@ Skill design guidance:
 
 ## Shell Scripts
 
-Shell scripts live under `assets/skills/comet/scripts/` and must work on macOS,
+Shell scripts live under `assets/skills/specdrive/scripts/` and must work on macOS,
 Linux, and Windows Git Bash.
 
 Rules:
@@ -237,30 +239,30 @@ Rules:
 - Add `|| true` to optional `grep` results so `pipefail` does not abort the
   script.
 - Add new scripts to the `beforeEach` copy list in
-  `test/ts/comet-scripts.test.ts`.
+  `test/ts/specdrive-scripts.test.ts`.
 - Add new scripts to `assets/manifest.json`.
 
 Script dependencies:
 
 ```text
-comet-state.sh <- comet-guard.sh, comet-handoff.sh, comet-archive.sh
-comet-yaml-validate.sh <- comet-guard.sh (preflight phase)
-comet-handoff.sh <- comet-state.sh (writes handoff_context/handoff_hash)
+specdrive-state.sh <- specdrive-guard.sh, specdrive-handoff.sh, specdrive-archive.sh
+specdrive-yaml-validate.sh <- specdrive-guard.sh (preflight phase)
+specdrive-handoff.sh <- specdrive-state.sh (writes handoff_context/handoff_hash)
 ```
 
 If two scripts need the same small helper, such as hashing or YAML parsing, it
 is acceptable to implement it independently in each script instead of forcing a
 shared shell library.
 
-## `.comet.yaml` State Changes
+## `.specdrive.yaml` State Changes
 
-When changing fields in a `.comet.yaml` state file, update all three places:
+When changing fields in a `.specdrive.yaml` state file, update all three places:
 
-1. `assets/skills/comet/scripts/comet-state.sh` for the `cmd_set` whitelist and
+1. `assets/skills/specdrive/scripts/specdrive-state.sh` for the `cmd_set` whitelist and
    enum validation.
-2. `assets/skills/comet/scripts/comet-yaml-validate.sh` for schema validation
+2. `assets/skills/specdrive/scripts/specdrive-yaml-validate.sh` for schema validation
    and `KNOWN_KEYS`.
-3. `test/ts/comet-scripts.test.ts` for YAML examples and assertions.
+3. `test/ts/specdrive-scripts.test.ts` for YAML examples and assertions.
 
 ## Changelog
 

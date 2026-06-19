@@ -42,7 +42,7 @@ jobs:
       - name: Run shellcheck
         uses: ludeeus/action-shellcheck@2.0.0
         with:
-          scandir: ./assets/skills/comet/scripts
+          scandir: ./assets/skills/specdrive/scripts
 
   bats-tests:
     runs-on: ubuntu-latest
@@ -74,8 +74,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Run Comet script smoke tests
-        run: pnpm test -- test/ts/comet-scripts.test.ts
+      - name: Run SpecDrive script smoke tests
+        run: pnpm test -- test/ts/specdrive-scripts.test.ts
 
       - name: Run portable shell tests
         run: pnpm test:shell
@@ -106,18 +106,18 @@ jobs:
         run: npm install -g @fission-ai/openspec@latest
 
       - name: Create temp project directory
-        run: mkdir -p "$RUNNER_TEMP/comet-e2e-project"
+        run: mkdir -p "$RUNNER_TEMP/specdrive-e2e-project"
         shell: bash
 
-      - name: Run comet init (project scope)
+      - name: Run specdrive init (project scope)
         run: |
-          node bin/comet.js init "$RUNNER_TEMP/comet-e2e-project" --yes --json \
-            | tee "$RUNNER_TEMP/comet-init-project.json"
+          node bin/specdrive.js init "$RUNNER_TEMP/specdrive-e2e-project" --yes --json \
+            | tee "$RUNNER_TEMP/specdrive-init-project.json"
         shell: bash
 
-      - name: Verify Comet skills installed (project)
+      - name: Verify SpecDrive skills installed (project)
         run: |
-          PROJ="$RUNNER_TEMP/comet-e2e-project"
+          PROJ="$RUNNER_TEMP/specdrive-e2e-project"
           check_file() {
             if [ ! -f "$1" ]; then
               echo "Missing file: $1" >&2
@@ -131,19 +131,19 @@ jobs:
                     .codebuddy/skills .cospec/skills .crush/skills .factory/skills \
                     .iflow/skills .pi/skills .qoder/skills .agents/skills \
                     .bob/skills .forge/skills .trae/skills .github/skills; do
-            check_file "$PROJ/$sd/comet/SKILL.md"
-            check_file "$PROJ/$sd/comet/scripts/comet-guard.sh"
-            check_file "$PROJ/$sd/comet/scripts/comet-state.sh"
-            check_file "$PROJ/$sd/comet/scripts/comet-handoff.sh"
-            check_file "$PROJ/$sd/comet/scripts/comet-yaml-validate.sh"
-            check_file "$PROJ/$sd/comet/scripts/comet-archive.sh"
+            check_file "$PROJ/$sd/specdrive/SKILL.md"
+            check_file "$PROJ/$sd/specdrive/scripts/specdrive-guard.sh"
+            check_file "$PROJ/$sd/specdrive/scripts/specdrive-state.sh"
+            check_file "$PROJ/$sd/specdrive/scripts/specdrive-handoff.sh"
+            check_file "$PROJ/$sd/specdrive/scripts/specdrive-yaml-validate.sh"
+            check_file "$PROJ/$sd/specdrive/scripts/specdrive-archive.sh"
           done
-          echo "All 29 platforms project Comet skills: OK"
+          echo "All 28 platforms project SpecDrive skills: OK"
         shell: bash
 
       - name: Verify external installer status (project)
         run: |
-          node - "$RUNNER_TEMP/comet-init-project.json" <<'NODE'
+          node - "$RUNNER_TEMP/specdrive-init-project.json" <<'NODE'
           const fs = require('fs');
           function extractJsonPayload(raw) {
             const start = raw.indexOf('{');
@@ -185,27 +185,27 @@ jobs:
 
       - name: Verify OpenSpec and working directories (project)
         run: |
-          test -d "$RUNNER_TEMP/comet-e2e-project/openspec"
-          test -d "$RUNNER_TEMP/comet-e2e-project/docs/superpowers/specs"
-          test -d "$RUNNER_TEMP/comet-e2e-project/docs/superpowers/plans"
+          test -d "$RUNNER_TEMP/specdrive-e2e-project/openspec"
+          test -d "$RUNNER_TEMP/specdrive-e2e-project/docs/superpowers/specs"
+          test -d "$RUNNER_TEMP/specdrive-e2e-project/docs/superpowers/plans"
           echo "OpenSpec + working dirs: OK"
         shell: bash
 
       - name: Create temp global home
-        run: mkdir -p "$RUNNER_TEMP/comet-e2e-global"
+        run: mkdir -p "$RUNNER_TEMP/specdrive-e2e-global"
         shell: bash
 
-      - name: Run comet init (global scope)
+      - name: Run specdrive init (global scope)
         run: |
-          export HOME="$RUNNER_TEMP/comet-e2e-global"
-          export USERPROFILE="$RUNNER_TEMP/comet-e2e-global"
-          node bin/comet.js init "$RUNNER_TEMP/comet-e2e-global" --yes --scope global --json \
-            | tee "$RUNNER_TEMP/comet-init-global.json"
+          export HOME="$RUNNER_TEMP/specdrive-e2e-global"
+          export USERPROFILE="$RUNNER_TEMP/specdrive-e2e-global"
+          node bin/specdrive.js init "$RUNNER_TEMP/specdrive-e2e-global" --yes --scope global --json \
+            | tee "$RUNNER_TEMP/specdrive-init-global.json"
         shell: bash
 
-      - name: Verify Comet skills installed (global)
+      - name: Verify SpecDrive skills installed (global)
         run: |
-          HOME_DIR="$RUNNER_TEMP/comet-e2e-global"
+          HOME_DIR="$RUNNER_TEMP/specdrive-e2e-global"
           check_file() {
             if [ ! -f "$1" ]; then
               echo "Missing file: $1" >&2
@@ -219,19 +219,19 @@ jobs:
                     .codebuddy/skills .cospec/skills .crush/skills .factory/skills \
                     .iflow/skills .pi/skills .qoder/skills .gemini/antigravity/skills \
                     .bob/skills .forge/skills .trae/skills .github/skills; do
-            check_file "$HOME_DIR/$sd/comet/SKILL.md"
-            check_file "$HOME_DIR/$sd/comet/scripts/comet-guard.sh"
-            check_file "$HOME_DIR/$sd/comet/scripts/comet-state.sh"
-            check_file "$HOME_DIR/$sd/comet/scripts/comet-handoff.sh"
-            check_file "$HOME_DIR/$sd/comet/scripts/comet-yaml-validate.sh"
-            check_file "$HOME_DIR/$sd/comet/scripts/comet-archive.sh"
+            check_file "$HOME_DIR/$sd/specdrive/SKILL.md"
+            check_file "$HOME_DIR/$sd/specdrive/scripts/specdrive-guard.sh"
+            check_file "$HOME_DIR/$sd/specdrive/scripts/specdrive-state.sh"
+            check_file "$HOME_DIR/$sd/specdrive/scripts/specdrive-handoff.sh"
+            check_file "$HOME_DIR/$sd/specdrive/scripts/specdrive-yaml-validate.sh"
+            check_file "$HOME_DIR/$sd/specdrive/scripts/specdrive-archive.sh"
           done
-          echo "All 29 platforms global Comet skills: OK"
+          echo "All 28 platforms global SpecDrive skills: OK"
         shell: bash
 
       - name: Verify external installer status (global)
         run: |
-          node - "$RUNNER_TEMP/comet-init-global.json" <<'NODE'
+          node - "$RUNNER_TEMP/specdrive-init-global.json" <<'NODE'
           const fs = require('fs');
           function extractJsonPayload(raw) {
             const start = raw.indexOf('{');
@@ -273,6 +273,6 @@ jobs:
 
       - name: Verify no working directories (global)
         run: |
-          test ! -d "$RUNNER_TEMP/comet-e2e-global/docs/superpowers/specs"
+          test ! -d "$RUNNER_TEMP/specdrive-e2e-global/docs/superpowers/specs"
           echo "Global scope has no working dirs: OK"
         shell: bash

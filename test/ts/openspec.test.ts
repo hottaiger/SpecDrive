@@ -176,7 +176,7 @@ describe('openspec', () => {
       mockedExecFileSync.mockReturnValueOnce(Buffer.from('/usr/bin/openspec'));
       mockedExecFileSync.mockReturnValueOnce(Buffer.from('ok'));
       vi.spyOn(os, 'platform').mockReturnValue('linux');
-      const xdgConfigHome = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-openspec-xdg-'));
+      const xdgConfigHome = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-openspec-xdg-'));
       vi.stubEnv('XDG_CONFIG_HOME', xdgConfigHome);
       const writeSpy = vi.spyOn(fs, 'writeFileSync');
 
@@ -195,11 +195,11 @@ describe('openspec', () => {
       mockedExecFileSync.mockReturnValueOnce(Buffer.from('/usr/bin/openspec'));
       mockedExecFileSync.mockReturnValueOnce(Buffer.from('ok'));
       vi.spyOn(os, 'platform').mockReturnValue('linux');
-      const xdgConfigHome = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-openspec-backup-'));
+      const xdgConfigHome = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-openspec-backup-'));
       vi.stubEnv('XDG_CONFIG_HOME', xdgConfigHome);
       const configDir = path.join(xdgConfigHome, 'openspec');
       const configPath = path.join(configDir, 'config.json');
-      const backupPath = configPath + '.comet-backup';
+      const backupPath = configPath + '.specdrive-backup';
       fs.mkdirSync(configDir, { recursive: true });
       fs.writeFileSync(configPath, '{"existing":true}\n', 'utf-8');
       const originalWriteFileSync = fs.writeFileSync;
@@ -220,7 +220,7 @@ describe('openspec', () => {
 
     it('cleans up the temporary OpenSpec profile directory if config creation fails', async () => {
       mockedExecFileSync.mockReturnValueOnce(Buffer.from('/usr/bin/openspec'));
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-openspec-test-'));
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-openspec-test-'));
       vi.spyOn(fs, 'mkdtempSync').mockReturnValueOnce(tempDir);
       vi.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => {
         throw new Error('config write failed');
@@ -250,7 +250,7 @@ describe('openspec', () => {
       });
       expect(
         buildOpenSpecInitInvocation(
-          'D:\\Project\\Comet',
+          'D:\\Project\\SpecDrive',
           ['codex'],
           'global',
           'C:\\Users\\Test User',
@@ -347,13 +347,13 @@ describe('openspec', () => {
     });
 
     it('merges with existing content in ~/.config/opencode/ without overwrite errors', async () => {
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-migrate-test-'));
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-migrate-test-'));
       const fakeHome = path.join(tmpDir, 'home');
       const wrongSkillsDir = path.join(fakeHome, '.opencode', 'skills');
       const correctSkillsDir = path.join(fakeHome, '.config', 'opencode', 'skills');
 
-      fs.mkdirSync(path.join(correctSkillsDir, 'comet'), { recursive: true });
-      fs.writeFileSync(path.join(correctSkillsDir, 'comet', 'SKILL.md'), 'comet skill');
+      fs.mkdirSync(path.join(correctSkillsDir, 'specdrive'), { recursive: true });
+      fs.writeFileSync(path.join(correctSkillsDir, 'specdrive', 'SKILL.md'), 'specdrive skill');
 
       fs.mkdirSync(path.join(wrongSkillsDir, 'openspec-propose'), { recursive: true });
       fs.writeFileSync(path.join(wrongSkillsDir, 'openspec-propose', 'SKILL.md'), 'propose skill');
@@ -361,8 +361,8 @@ describe('openspec', () => {
       const { migrateOpenCodeOpenSpecPaths } = await import('../../src/core/openspec.js');
       migrateOpenCodeOpenSpecPaths(fakeHome);
 
-      expect(fs.readFileSync(path.join(correctSkillsDir, 'comet', 'SKILL.md'), 'utf-8')).toBe(
-        'comet skill',
+      expect(fs.readFileSync(path.join(correctSkillsDir, 'specdrive', 'SKILL.md'), 'utf-8')).toBe(
+        'specdrive skill',
       );
       expect(
         fs.readFileSync(path.join(correctSkillsDir, 'openspec-propose', 'SKILL.md'), 'utf-8'),
@@ -372,7 +372,7 @@ describe('openspec', () => {
     });
 
     it('handles errors gracefully when source directory is a file instead of a directory', async () => {
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-migrate-test-'));
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-migrate-test-'));
       const fakeHome = path.join(tmpDir, 'home');
 
       fs.mkdirSync(path.join(fakeHome, '.opencode'), { recursive: true });
@@ -387,7 +387,7 @@ describe('openspec', () => {
     it('integrates with installOpenSpec for global scope with opencode tool', async () => {
       mockedExecFileSync.mockReturnValue(Buffer.from('/usr/bin/openspec'));
       mockedExecFileSync.mockReturnValue(Buffer.from('ok'));
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'comet-install-test-'));
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'specdrive-install-test-'));
       const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(tmpDir);
 
       const { installOpenSpec } = await import('../../src/core/openspec.js');

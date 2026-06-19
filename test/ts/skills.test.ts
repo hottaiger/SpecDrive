@@ -17,7 +17,7 @@ describe('skills', () => {
   beforeEach(async () => {
     tmpDir = path.join(
       os.tmpdir(),
-      `comet-skills-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-skills-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tmpDir, { recursive: true });
   });
@@ -48,7 +48,7 @@ describe('skills', () => {
       const skills = await getManifestSkills();
       expect(Array.isArray(skills)).toBe(true);
       expect(skills.length).toBeGreaterThan(0);
-      expect(skills.some((s) => s.includes('comet/SKILL.md'))).toBe(true);
+      expect(skills.some((s) => s.includes('specdrive/SKILL.md'))).toBe(true);
     });
   });
 
@@ -83,8 +83,8 @@ describe('skills', () => {
       expect(result.skipped).toBe(0);
 
       // Verify a key file was copied
-      const cometSkillPath = path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md');
-      expect(await fileExists(cometSkillPath)).toBe(true);
+      const specdriveSkillPath = path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md');
+      expect(await fileExists(specdriveSkillPath)).toBe(true);
     });
 
     it('skips existing files when overwrite is false', async () => {
@@ -107,11 +107,11 @@ describe('skills', () => {
       expect(result.copied).toBeGreaterThan(0);
 
       // Chinese SKILL.md should exist
-      const zhSkillPath = path.join(tmpDir, '.claude', 'skills', 'comet', 'SKILL.md');
+      const zhSkillPath = path.join(tmpDir, '.claude', 'skills', 'specdrive', 'SKILL.md');
       expect(await fileExists(zhSkillPath)).toBe(true);
     });
 
-    it('creates OpenCode slash commands for copied Comet skills', async () => {
+    it('creates OpenCode slash commands for copied SpecDrive skills', async () => {
       const opencodePlatform: Platform = {
         id: 'opencode',
         name: 'OpenCode',
@@ -123,20 +123,22 @@ describe('skills', () => {
       const result = await copyCometSkillsForPlatform(tmpDir, opencodePlatform, false);
 
       expect(result.copied).toBeGreaterThan(0);
-      const commandPath = path.join(tmpDir, '.opencode', 'commands', 'comet-open.md');
+      const commandPath = path.join(tmpDir, '.opencode', 'commands', 'specdrive-open.md');
       const command = await fs.readFile(commandPath, 'utf-8');
 
-      expect(command).toContain('description: Run the comet-open Comet workflow');
-      expect(command).toContain('Equivalent Comet skill: `comet-open`');
+      expect(command).toContain('description: Run the specdrive-open SpecDrive workflow');
+      expect(command).toContain('Equivalent SpecDrive skill: `specdrive-open`');
       expect(command).toContain(
         'Use the invocation arguments below as the user input for this workflow:',
       );
       expect(command).toContain('$ARGUMENTS');
-      expect(command).toContain('# Comet Phase 1: Open');
+      expect(command).toContain('# SpecDrive Phase 1: Open');
       expect(command).toContain('## Steps');
-      expect(command).toContain('"$COMET_BASH" "$COMET_STATE" init <name> full');
-      expect(command).not.toContain('Immediately load the `comet-open` skill with the skill tool');
-      expect(path.basename(commandPath)).toBe('comet-open.md');
+      expect(command).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" init <name> full');
+      expect(command).not.toContain(
+        'Immediately load the `specdrive-open` skill with the skill tool',
+      );
+      expect(path.basename(commandPath)).toBe('specdrive-open.md');
     });
 
     it('creates OpenCode slash commands from the selected language skill content', async () => {
@@ -150,15 +152,15 @@ describe('skills', () => {
 
       await copyCometSkillsForPlatform(tmpDir, opencodePlatform, false, 'skills-zh');
 
-      const commandPath = path.join(tmpDir, '.opencode', 'commands', 'comet-open.md');
+      const commandPath = path.join(tmpDir, '.opencode', 'commands', 'specdrive-open.md');
       const command = await fs.readFile(commandPath, 'utf-8');
 
-      expect(command).toContain('description: Run the comet-open Comet workflow');
-      expect(command).toContain('Equivalent Comet skill: `comet-open`');
-      expect(command).toContain('# Comet 阶段 1：开启（Open）');
+      expect(command).toContain('description: Run the specdrive-open SpecDrive workflow');
+      expect(command).toContain('Equivalent SpecDrive skill: `specdrive-open`');
+      expect(command).toContain('# SpecDrive 阶段 1：开启（Open）');
       expect(command).toContain('## 步骤');
-      expect(command).not.toContain('# Comet Phase 1: Open');
-      expect(path.basename(commandPath)).toBe('comet-open.md');
+      expect(command).not.toContain('# SpecDrive Phase 1: Open');
+      expect(path.basename(commandPath)).toBe('specdrive-open.md');
     });
 
     it('creates OpenCode slash commands in the global OpenCode config directory', async () => {
@@ -173,60 +175,60 @@ describe('skills', () => {
       await copyCometSkillsForPlatform(tmpDir, opencodePlatform, false, 'skills', 'global');
 
       await expect(
-        fs.access(path.join(tmpDir, '.config', 'opencode', 'commands', 'comet.md')),
+        fs.access(path.join(tmpDir, '.config', 'opencode', 'commands', 'specdrive.md')),
       ).resolves.toBeUndefined();
       await expect(
-        fs.access(path.join(tmpDir, '.opencode', 'commands', 'comet.md')),
+        fs.access(path.join(tmpDir, '.opencode', 'commands', 'specdrive.md')),
       ).rejects.toThrow();
     });
   });
 
-  describe('Chinese Comet workflow safeguards', () => {
+  describe('Chinese SpecDrive workflow safeguards', () => {
     it('requires explicit user confirmation at full-workflow decision points', async () => {
-      const zhComet = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet', 'SKILL.md'),
+      const zhSpecDrive = await fs.readFile(
+        path.resolve('assets', 'skills-zh', 'specdrive', 'SKILL.md'),
         'utf-8',
       );
       const zhOpen = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-open', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-open', 'SKILL.md'),
         'utf-8',
       );
       const zhDesign = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-design', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-design', 'SKILL.md'),
         'utf-8',
       );
       const zhBuild = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-build', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-build', 'SKILL.md'),
         'utf-8',
       );
       const zhVerify = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-verify', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-verify', 'SKILL.md'),
         'utf-8',
       );
       const zhArchive = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-archive', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-archive', 'SKILL.md'),
         'utf-8',
       );
       const zhHotfix = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-hotfix', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-hotfix', 'SKILL.md'),
         'utf-8',
       );
       const zhTweak = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-tweak', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-tweak', 'SKILL.md'),
         'utf-8',
       );
-      const zhCometRule = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.md'),
+      const zhSpecDriveRule = await fs.readFile(
+        path.resolve('assets', 'skills', 'specdrive', 'rules', 'specdrive-phase-guard.md'),
         'utf-8',
       );
 
-      expect(zhComet).toContain('决策点是阻塞点');
+      expect(zhSpecDrive).toContain('决策点是阻塞点');
       expect(zhOpen).toContain('### 1b. 需求澄清完成确认（阻塞点）');
       expect(zhOpen).toContain(
         '不得在用户确认需求澄清完成前创建 proposal.md、design.md 或 tasks.md',
       );
       expect(zhOpen).toContain(
-        '完整 `/comet` 流程默认不得使用 Skill 工具加载 `openspec-propose` 技能',
+        '完整 `/specdrive` 流程默认不得使用 Skill 工具加载 `openspec-propose` 技能',
       );
       expect(zhOpen).toContain(
         '技能加载后，按其指引创建 change 骨架，但当 Step 1b 的已确认澄清摘要已存在于对话上下文时',
@@ -261,52 +263,52 @@ describe('skills', () => {
       );
       expect(zhArchive).toContain('### 1. 归档前最终确认（阻塞点）');
       expect(zhArchive).toContain(
-        '不得在用户确认前运行 `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"`',
+        '不得在用户确认前运行 `"$SPECDRIVE_BASH" "$SPECDRIVE_ARCHIVE" "<change-name>"`',
       );
       expect(zhArchive).toContain('「确认归档」');
       expect(zhArchive).toContain('「需要调整或重新验证」');
       expect(zhArchive).toContain('「暂不归档」');
       expect(zhArchive).toContain(
-        '`"$COMET_BASH" "$COMET_STATE" transition <change-name> archive-reopen`',
+        '`"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <change-name> archive-reopen`',
       );
       expect(zhVerify).toContain('不得因为验证已通过就自动归档');
       expect(zhHotfix).toContain(
-        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/comet` 流程',
+        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/specdrive` 流程',
       );
-      expect(zhHotfix).toContain('不得直接进入 `/comet-design`');
+      expect(zhHotfix).toContain('不得直接进入 `/specdrive-design`');
       expect(zhTweak).toContain(
-        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/comet` 流程',
+        '满足升级条件时**必须使用当前平台可用的用户输入/确认机制暂停并等待用户明确确认**升级为完整 `/specdrive` 流程',
       );
-      expect(zhTweak).toContain('不得直接进入 `/comet-design`');
-      expect(zhComet).toContain('`verify_result: fail` → 进入验证失败决策阻塞点');
-      expect(zhComet).not.toContain(
-        '`verify_result: fail` → `"$COMET_BASH" "$COMET_STATE" transition <name> verify-fail` 后 `/comet-build`',
+      expect(zhTweak).toContain('不得直接进入 `/specdrive-design`');
+      expect(zhSpecDrive).toContain('`verify_result: fail` → 进入验证失败决策阻塞点');
+      expect(zhSpecDrive).not.toContain(
+        '`verify_result: fail` → `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <name> verify-fail` 后 `/specdrive-build`',
       );
       expect(zhHotfix).toContain('按升级条件阻塞确认处理');
-      expect(zhHotfix).not.toContain('停止 hotfix，升级为 `/comet`');
+      expect(zhHotfix).not.toContain('停止 hotfix，升级为 `/specdrive`');
       expect(zhTweak).toContain('按升级条件阻塞确认处理');
 
       // HIGH: hotfix/tweak IMPORTANT blocks must acknowledge verify decision points
-      expect(zhHotfix).toContain('验证阶段（comet-verify）的验证失败决策和分支处理决策');
-      expect(zhTweak).toContain('验证阶段（comet-verify）的验证失败决策和分支处理决策');
+      expect(zhHotfix).toContain('验证阶段（specdrive-verify）的验证失败决策和分支处理决策');
+      expect(zhTweak).toContain('验证阶段（specdrive-verify）的验证失败决策和分支处理决策');
       expect(zhHotfix).toContain('归档前最终确认');
       expect(zhTweak).toContain('归档前最终确认');
 
-      // MEDIUM: comet-design brainstorming does not write Design Doc before confirmation
+      // MEDIUM: specdrive-design brainstorming does not write Design Doc before confirmation
       expect(zhDesign).toContain('brainstorming 阶段不写入 Design Doc 文件');
       expect(zhDesign).toContain('增量更新 `brainstorm-summary.md`');
       expect(zhDesign).toContain('### 1e. 主动上下文压缩门');
 
-      // MEDIUM: comet-verify Spec drift requires user choice
+      // MEDIUM: specdrive-verify Spec drift requires user choice
       expect(zhVerify).toContain(
         '必须使用当前平台可用的用户输入/确认机制以单选题形式暂停并等待用户选择处理方式',
       );
 
-      // MEDIUM: comet/SKILL.md build phase resume recognizes plan-ready pause before build decisions
-      expect(zhComet).toContain('先检查 `build_pause`、`plan`、`build_mode` 和 `isolation`');
-      expect(zhComet).toContain('`build_pause: plan-ready` 且 plan 文件存在');
-      expect(zhComet).toContain('`build_pause` 不是执行方式，不得写入 `build_mode`');
-      expect(zhComet).toContain(
+      // MEDIUM: specdrive/SKILL.md build phase resume recognizes plan-ready pause before build decisions
+      expect(zhSpecDrive).toContain('先检查 `build_pause`、`plan`、`build_mode` 和 `isolation`');
+      expect(zhSpecDrive).toContain('`build_pause: plan-ready` 且 plan 文件存在');
+      expect(zhSpecDrive).toContain('`build_pause` 不是执行方式，不得写入 `build_mode`');
+      expect(zhSpecDrive).toContain(
         '若 `build_pause: plan-ready` 但 `isolation` 和 `build_mode` 已经设置，则视为 stale pause',
       );
       expect(zhBuild).toContain('提供 plan-ready 暂停点');
@@ -321,36 +323,40 @@ describe('skills', () => {
         'CRITICAL review 发现（安全漏洞、数据丢失风险、构建/测试失败）必须先修复',
       );
 
-      // MEDIUM: comet-verify Step 1b treats CRITICAL/IMPORTANT as blocking
-      expect(zhVerify).toContain('CRITICAL 或 IMPORTANT 失败项必须修复');
+      // MEDIUM: specdrive-verify Step 1b handles mixed CRITICAL/non-CRITICAL
+      expect(zhVerify).toContain('CRITICAL 失败项必须修复');
       expect(zhVerify).toContain('不允许跳过修复直接全部接受');
       expect(zhVerify).toContain('简化代码审查');
-      expect(zhVerify).toContain('必须使用 Skill 工具加载 Superpowers `requesting-code-review` 技能');
+      expect(zhVerify).toContain(
+        '必须使用 Skill 工具加载 Superpowers `requesting-code-review` 技能',
+      );
       expect(zhVerify).toContain('只检查正确性、安全、边界条件');
       expect(zhVerify).toContain('无 CRITICAL 或 IMPORTANT 问题');
       expect(zhVerify).toContain('不影响正确性、安全、边界条件的 code pattern consistency 建议');
       expect(zhVerify).toContain('不执行 spec 覆盖率、Design Doc 一致性或漂移检查');
       expect(zhHotfix).toContain('6 项快速检查，包含简化代码审查');
 
-      // MEDIUM: hotfix IMPORTANT covers >3-tasks comet-build decision points
-      expect(zhHotfix).toContain('任务超过 3 个转入 `/comet-build` 时的工作区隔离和执行方式选择');
+      // MEDIUM: hotfix IMPORTANT covers >3-tasks specdrive-build decision points
+      expect(zhHotfix).toContain(
+        '任务超过 3 个转入 `/specdrive-build` 时的工作区隔离和执行方式选择',
+      );
 
-      // LOW: comet-build "中" level requires user confirmation before brainstorming
+      // LOW: specdrive-build "中" level requires user confirmation before brainstorming
       expect(zhBuild).toContain(
         '使用当前平台可用的用户输入/确认机制暂停并等待用户确认后**，必须使用 Skill 工具加载 Superpowers `brainstorming`',
       );
 
-      // LOW: comet-build 50% threshold is a hard decision point
+      // LOW: specdrive-build 50% threshold is a hard decision point
       expect(zhBuild).toContain(
         '必须使用当前平台可用的用户输入/确认机制暂停并等待用户决定是否拆分为新 change',
       );
 
-      // LOW: comet-verify Step 2b disambiguates design.md vs Design Doc
+      // LOW: specdrive-verify Step 2b disambiguates design.md vs Design Doc
       expect(zhVerify).toContain('实现符合 `openspec/changes/<name>/design.md` 高层设计决策');
-      expect(zhTweak).not.toContain('停止 tweak，升级为完整 `/comet`');
+      expect(zhTweak).not.toContain('停止 tweak，升级为完整 `/specdrive`');
 
-      // CRITICAL: build scope split must not bypass Comet state initialization
-      expect(zhBuild).toContain('通过 `/comet-open` 创建独立 change');
+      // CRITICAL: build scope split must not bypass SpecDrive state initialization
+      expect(zhBuild).toContain('通过 `/specdrive-open` 创建独立 change');
       expect(zhBuild).not.toContain('`/opsx:new` 创建独立 change');
 
       // CRITICAL: open phase PRD split must happen before OpenSpec artifacts are created
@@ -358,20 +364,20 @@ describe('skills', () => {
       expect(zhOpen).toContain('创建多个 OpenSpec changes');
       expect(zhOpen).toContain('保持为一个 change');
       expect(zhOpen).toContain('调整拆分方案后继续');
-      expect(zhOpen).toContain('每个被接受的拆分项都必须通过 `/comet-open` 创建独立 change');
+      expect(zhOpen).toContain('每个被接受的拆分项都必须通过 `/specdrive-open` 创建独立 change');
       expect(zhOpen).not.toContain('每个被接受的拆分项都必须通过 `/opsx:new` 创建独立 change');
       expect(zhOpen).toContain('已确认拆分项');
       expect(zhOpen).toContain('跳过 PRD 拆分预检');
       expect(zhOpen).toContain(
-        '批量拆分模式下，单个拆分项完成 open 阶段后不得自动流转到 `/comet-design`',
+        '批量拆分模式下，单个拆分项完成 open 阶段后不得自动流转到 `/specdrive-design`',
       );
       expect(zhOpen).toContain('拆分完毕后必须暂停询问用户开始哪一个 change');
       expect(zhOpen).toContain('恢复时先检查已创建的 active changes');
 
       // IMPORTANT: main entry and build subskill agree scope expansion is blocking
-      expect(zhComet).toContain('build 阶段范围扩张需重新设计或拆分新 change');
-      expect(zhComet).toContain('archive 阶段执行归档脚本前的最终确认');
-      expect(zhComet).toContain('open 阶段大型 PRD 需确认拆分为多个 change');
+      expect(zhSpecDrive).toContain('build 阶段范围扩张需重新设计或拆分新 change');
+      expect(zhSpecDrive).toContain('archive 阶段执行归档脚本前的最终确认');
+      expect(zhSpecDrive).toContain('open 阶段大型 PRD 需确认拆分为多个 change');
 
       // IMPORTANT: accepted Spec drift edits must not loop back through dirty-worktree handling
       expect(zhVerify).toContain('选项 A 属于 verify 阶段允许产物');
@@ -380,7 +386,7 @@ describe('skills', () => {
       expect(zhBuild).toContain('必须使用 Skill 工具加载 Superpowers `using-git-worktrees`');
       expect(zhBuild).not.toContain('或使用原生 `EnterWorktree` 工具');
       expect(zhBuild).toContain('必须使用 Skill 工具加载 Superpowers `brainstorming`');
-      expect(zhComet).toContain(
+      expect(zhSpecDrive).toContain(
         '若 `build_mode: subagent-driven-development`，不得在主窗口直接执行任务',
       );
       expect(zhBuild).toContain(
@@ -391,22 +397,24 @@ describe('skills', () => {
         '先确认当前平台存在可调用的真实后台 subagent / Task / multi-agent 调度能力',
       );
       expect(zhBuild).toContain(
-        '`"$COMET_BASH" "$COMET_STATE" set <name> subagent_dispatch confirmed`',
+        '`"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" set <name> subagent_dispatch confirmed`',
       );
       expect(zhBuild).toContain(
-        '用户选择改用主窗口执行后，必须先运行 `"$COMET_BASH" "$COMET_STATE" set <name> build_mode executing-plans`',
+        '用户选择改用主窗口执行后，必须先运行 `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" set <name> build_mode executing-plans`',
       );
       expect(zhBuild).not.toContain('使用 Skill 工具加载对应技能');
       expect(zhBuild).toContain('tdd_mode');
-      expect(zhBuild).toContain('`"$COMET_BASH" "$COMET_STATE" set <name> tdd_mode <tdd|direct>`');
+      expect(zhBuild).toContain(
+        '`"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" set <name> tdd_mode <tdd|direct>`',
+      );
       expect(zhBuild).toContain('若 `tdd_mode: tdd`');
       expect(zhBuild).toContain('必须在 prompt 中注入 TDD 硬约束');
-      expect(zhComet).toContain('`tdd_mode`');
-      expect(zhComet).toContain('full workflow 离开 build 阶段前 `tdd_mode` 必须已选择');
-      expect(zhHotfix).toContain('立即使用 Skill 工具加载 `comet-design` skill');
-      expect(zhTweak).toContain('立即使用 Skill 工具加载 `comet-design` skill');
+      expect(zhSpecDrive).toContain('`tdd_mode`');
+      expect(zhSpecDrive).toContain('full workflow 离开 build 阶段前 `tdd_mode` 必须已选择');
+      expect(zhHotfix).toContain('立即使用 Skill 工具加载 `specdrive-design` skill');
+      expect(zhTweak).toContain('立即使用 Skill 工具加载 `specdrive-design` skill');
       expect(zhVerify).toContain(
-        '用户选择 B 后，运行 `"$COMET_BASH" "$COMET_STATE" transition <change-name> verify-fail`，然后调用 `/comet-build`',
+        '用户选择 B 后，运行 `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <change-name> verify-fail`，然后调用 `/specdrive-build`',
       );
 
       // CRITICAL: implementation-time crashes must enter systematic debugging and keep tests in the current change.
@@ -423,84 +431,84 @@ describe('skills', () => {
 
       // CRITICAL: user-confirmation gates must not hardcode a platform-specific tool name.
       expect(
-        [zhComet, zhDesign, zhBuild, zhVerify, zhArchive, zhHotfix, zhTweak].join('\n'),
+        [zhSpecDrive, zhDesign, zhBuild, zhVerify, zhArchive, zhHotfix, zhTweak].join('\n'),
       ).not.toContain('AskUserQuestion');
-      expect(zhComet).toContain(
+      expect(zhSpecDrive).toContain(
         '若当前平台没有结构化提问工具，则必须在对话中提出明确选项并停止流程',
       );
-      expect(zhComet).toContain('`auto_transition`');
-      expect(zhComet).toContain('不影响 phase 推进');
-      expect(zhCometRule).toContain(
+      expect(zhSpecDrive).toContain('`auto_transition`');
+      expect(zhSpecDrive).toContain('不影响 phase 推进');
+      expect(zhSpecDriveRule).toContain(
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
-      expect(zhCometRule).toContain('active compaction gate');
+      expect(zhSpecDriveRule).toContain('active compaction gate');
       for (const [content] of [
-        [zhOpen, '/comet-design'],
-        [zhDesign, '/comet-build'],
-        [zhBuild, '/comet-verify'],
-        [zhVerify, '/comet-archive'],
+        [zhOpen, '/specdrive-design'],
+        [zhDesign, '/specdrive-build'],
+        [zhBuild, '/specdrive-verify'],
+        [zhVerify, '/specdrive-archive'],
       ] as const) {
         expect(content).toContain('自动衔接下一阶段');
-        expect(content).toContain('"$COMET_BASH" "$COMET_STATE" next <change-name>');
+        expect(content).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <change-name>');
         expect(content).toContain('`NEXT: auto`');
         expect(content).toContain('`NEXT: manual`');
         expect(content).toContain('按 `HINT`');
       }
       expect(zhHotfix).toContain('自动衔接下一阶段');
-      expect(zhHotfix).toContain('"$COMET_BASH" "$COMET_STATE" next <name>');
+      expect(zhHotfix).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <name>');
       expect(zhHotfix).toContain('`NEXT: auto`');
       expect(zhHotfix).toContain(
-        '`phase: build` 返回 `comet-hotfix`，`verify` 返回 `comet-verify`，`archive` 返回 `comet-archive`',
+        '`phase: build` 返回 `specdrive-hotfix`，`verify` 返回 `specdrive-verify`，`archive` 返回 `specdrive-archive`',
       );
       expect(zhTweak).toContain('自动衔接下一阶段');
-      expect(zhTweak).toContain('"$COMET_BASH" "$COMET_STATE" next <name>');
+      expect(zhTweak).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <name>');
       expect(zhTweak).toContain('`NEXT: auto`');
       expect(zhTweak).toContain(
-        '`phase: build` 返回 `comet-tweak`，`verify` 返回 `comet-verify`，`archive` 返回 `comet-archive`',
+        '`phase: build` 返回 `specdrive-tweak`，`verify` 返回 `specdrive-verify`，`archive` 返回 `specdrive-archive`',
       );
     });
   });
 
-  describe('English Comet workflow safeguards', () => {
+  describe('English SpecDrive workflow safeguards', () => {
     it('matches the Chinese workflow decision-point requirements', async () => {
-      const enComet = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet', 'SKILL.md'),
+      const enSpecDrive = await fs.readFile(
+        path.resolve('assets', 'skills', 'specdrive', 'SKILL.md'),
         'utf-8',
       );
       const enOpen = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-open', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-open', 'SKILL.md'),
         'utf-8',
       );
       const enDesign = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-design', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-design', 'SKILL.md'),
         'utf-8',
       );
       const enBuild = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-build', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-build', 'SKILL.md'),
         'utf-8',
       );
       const enVerify = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-verify', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-verify', 'SKILL.md'),
         'utf-8',
       );
       const enArchive = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-archive', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-archive', 'SKILL.md'),
         'utf-8',
       );
       const enHotfix = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-hotfix', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-hotfix', 'SKILL.md'),
         'utf-8',
       );
       const enTweak = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-tweak', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-tweak', 'SKILL.md'),
         'utf-8',
       );
-      const enCometRule = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet', 'rules', 'comet-phase-guard.md'),
+      const enSpecDriveRule = await fs.readFile(
+        path.resolve('assets', 'skills', 'specdrive', 'rules', 'specdrive-phase-guard.md'),
         'utf-8',
       );
 
-      expect(enComet).toContain('Decision points are blocking points');
+      expect(enSpecDrive).toContain('Decision points are blocking points');
       expect(enOpen).toContain(
         '### 1b. Requirements Clarification Completion Confirmation (Blocking Point)',
       );
@@ -508,7 +516,7 @@ describe('skills', () => {
         'Must not create proposal.md, design.md, or tasks.md before the user confirms requirements clarification is complete',
       );
       expect(enOpen).toContain(
-        'Full `/comet` workflow must not use the Skill tool to load the `openspec-propose` skill',
+        'Full `/specdrive` workflow must not use the Skill tool to load the `openspec-propose` skill',
       );
       expect(enOpen).toContain(
         'After the skill loads, follow its guidance to create the change skeleton, but override its "STOP and wait for user direction" behavior when a confirmed clarification summary from Step 1b is already available in the conversation context',
@@ -547,37 +555,37 @@ describe('skills', () => {
       );
       expect(enArchive).toContain('### 1. Final Archive Confirmation (Blocking Point)');
       expect(enArchive).toContain(
-        'Must not run `"$COMET_BASH" "$COMET_ARCHIVE" "<change-name>"` before user confirmation',
+        'Must not run `"$SPECDRIVE_BASH" "$SPECDRIVE_ARCHIVE" "<change-name>"` before user confirmation',
       );
       expect(enArchive).toContain('Confirm archive');
       expect(enArchive).toContain('Needs adjustment or re-verification');
       expect(enArchive).toContain('Do not archive yet');
       expect(enArchive).toContain(
-        '`"$COMET_BASH" "$COMET_STATE" transition <change-name> archive-reopen`',
+        '`"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <change-name> archive-reopen`',
       );
       expect(enVerify).toContain('Must not automatically archive just because verification passed');
       expect(enHotfix).toContain(
         "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
       );
-      expect(enHotfix).toContain('Do not directly enter `/comet-design`');
+      expect(enHotfix).toContain('Do not directly enter `/specdrive-design`');
       expect(enTweak).toContain(
         "must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
       );
-      expect(enTweak).toContain('Do not directly enter `/comet-design`');
-      expect(enComet).toContain(
+      expect(enTweak).toContain('Do not directly enter `/specdrive-design`');
+      expect(enSpecDrive).toContain(
         '`verify_result: fail` → Enter verification failure decision blocking point',
       );
-      expect(enComet).not.toContain(
-        '`verify_result: fail` → `"$COMET_BASH" "$COMET_STATE" transition <name> verify-fail` then `/comet-build`',
+      expect(enSpecDrive).not.toContain(
+        '`verify_result: fail` → `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <name> verify-fail` then `/specdrive-build`',
       );
 
       expect(enHotfix).toContain('handle per "Upgrade Conditions" section');
       expect(enTweak).toContain('handle per upgrade conditions blocking confirmation');
       expect(enHotfix).toContain(
-        'verify phase (comet-verify) verification-failure and branch-handling decisions',
+        'verify phase (specdrive-verify) verification-failure and branch-handling decisions',
       );
       expect(enTweak).toContain(
-        'verify phase (comet-verify) verification-failure and branch-handling decisions',
+        'verify phase (specdrive-verify) verification-failure and branch-handling decisions',
       );
       expect(enHotfix).toContain('Final archive confirmation');
       expect(enTweak).toContain('Final archive confirmation');
@@ -585,9 +593,11 @@ describe('skills', () => {
       expect(enVerify).toContain(
         "must use the current platform's available user input/confirmation mechanism as a single-select question to pause and wait for the user to choose the handling method",
       );
-      expect(enComet).toContain('first check `build_pause`, `plan`, `build_mode`, and `isolation`');
-      expect(enComet).toContain('`build_pause: plan-ready` and the plan file exists');
-      expect(enComet).toContain(
+      expect(enSpecDrive).toContain(
+        'first check `build_pause`, `plan`, `build_mode`, and `isolation`',
+      );
+      expect(enSpecDrive).toContain('`build_pause: plan-ready` and the plan file exists');
+      expect(enSpecDrive).toContain(
         '`build_pause` is not an execution method and must not be written to `build_mode`',
       );
       expect(enBuild).toContain('Provide Plan-Ready Pause Point');
@@ -616,7 +626,7 @@ describe('skills', () => {
       );
       expect(enHotfix).toContain('6 quick checks, including lightweight code review');
       expect(enHotfix).toContain(
-        'workspace isolation and execution-method selection when tasks exceed 3 and transfer to `/comet-build`',
+        'workspace isolation and execution-method selection when tasks exceed 3 and transfer to `/specdrive-build`',
       );
       expect(enBuild).toContain(
         "Must use the current platform's available user input/confirmation mechanism to pause and wait for the user to explicitly confirm",
@@ -627,14 +637,14 @@ describe('skills', () => {
       expect(enVerify).toContain(
         'Implementation matches `openspec/changes/<name>/design.md` high-level design decisions',
       );
-      expect(enBuild).toContain('create independent change through `/comet-open`');
+      expect(enBuild).toContain('create independent change through `/specdrive-open`');
       expect(enBuild).not.toContain('create independent change through `/opsx:new`');
       expect(enOpen).toContain('### 1a. PRD Split Preflight (Blocking Point)');
       expect(enOpen).toContain('Create multiple OpenSpec changes');
       expect(enOpen).toContain('Keep everything as one change');
       expect(enOpen).toContain('Adjust the split plan before continuing');
       expect(enOpen).toContain(
-        'Every accepted split item must be created as an independent change through `/comet-open`',
+        'Every accepted split item must be created as an independent change through `/specdrive-open`',
       );
       expect(enOpen).not.toContain(
         'Every accepted split item must be created as an independent change through `/opsx:new`',
@@ -642,19 +652,19 @@ describe('skills', () => {
       expect(enOpen).toContain('confirmed split item');
       expect(enOpen).toContain('skip the PRD split preflight');
       expect(enOpen).toContain(
-        'In batch split mode, a single split item must not auto-advance to `/comet-design` after completing the open phase',
+        'In batch split mode, a single split item must not auto-advance to `/specdrive-design` after completing the open phase',
       );
       expect(enOpen).toContain(
         'After splitting is complete, must pause and ask the user which change to start',
       );
       expect(enOpen).toContain('On resume, first check already-created active changes');
-      expect(enComet).toContain(
+      expect(enSpecDrive).toContain(
         'Build phase scope expansion requiring redesign or new change split',
       );
-      expect(enComet).toContain(
+      expect(enSpecDrive).toContain(
         'Archive phase final confirmation before running the archive script',
       );
-      expect(enComet).toContain(
+      expect(enSpecDrive).toContain(
         'Open phase large PRD requiring confirmation to split into multiple changes',
       );
       expect(enVerify).toContain('Option A is a verify phase allowed artifact');
@@ -666,18 +676,22 @@ describe('skills', () => {
         'must use Skill tool to load the Superpowers `brainstorming` skill',
       );
       expect(enDesign).toContain(
-        'The script reads the change `.comet.yaml` `context_compression` snapshot',
+        'The script reads the change `.specdrive.yaml` `context_compression` snapshot',
       );
       expect(enDesign).toContain('Default `context_compression: off` generates');
       expect(enDesign).toContain('If context_compression is beta, use:');
-      expect(enDesign).toContain('openspec/changes/<name>/.comet/handoff/spec-context.md');
+      expect(enDesign).toContain('openspec/changes/<name>/.specdrive/handoff/spec-context.md');
       expect(enDesign).toContain('In beta mode, `spec-context.json` must be structurally valid');
       expect(enDesign).toContain('incrementally update `brainstorm-summary.md`');
       expect(enDesign).toContain('### 1e. Active Context Compaction Gate');
-      expect(enHotfix).toContain('Immediately use the Skill tool to load the `comet-design` skill');
-      expect(enTweak).toContain('Immediately use the Skill tool to load the `comet-design` skill');
+      expect(enHotfix).toContain(
+        'Immediately use the Skill tool to load the `specdrive-design` skill',
+      );
+      expect(enTweak).toContain(
+        'Immediately use the Skill tool to load the `specdrive-design` skill',
+      );
       expect(enVerify).toContain(
-        'After user selects B, run `"$COMET_BASH" "$COMET_STATE" transition <change-name> verify-fail`, then invoke `/comet-build`',
+        'After user selects B, run `"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" transition <change-name> verify-fail`, then invoke `/specdrive-build`',
       );
 
       expect(enBuild).toContain(
@@ -700,55 +714,55 @@ describe('skills', () => {
       );
 
       expect(
-        [enComet, enOpen, enDesign, enBuild, enVerify, enArchive, enHotfix, enTweak].join('\n'),
+        [enSpecDrive, enOpen, enDesign, enBuild, enVerify, enArchive, enHotfix, enTweak].join('\n'),
       ).not.toContain('AskUserQuestion');
-      expect(enComet).toContain(
+      expect(enSpecDrive).toContain(
         'If the current platform has no structured question tool, ask clear options in the conversation and stop the workflow',
       );
-      expect(enComet).toContain('`auto_transition`');
-      expect(enComet).toContain('does not block phase updates');
-      expect(enCometRule).toContain(
+      expect(enSpecDrive).toContain('`auto_transition`');
+      expect(enSpecDrive).toContain('does not block phase updates');
+      expect(enSpecDriveRule).toContain(
         'brainstorming in progress: incrementally update brainstorm-summary.md',
       );
-      expect(enCometRule).toContain('active compaction gate');
+      expect(enSpecDriveRule).toContain('active compaction gate');
       for (const [content] of [
-        [enOpen, '/comet-design'],
-        [enDesign, '/comet-build'],
-        [enBuild, '/comet-verify'],
-        [enVerify, '/comet-archive'],
+        [enOpen, '/specdrive-design'],
+        [enDesign, '/specdrive-build'],
+        [enBuild, '/specdrive-verify'],
+        [enVerify, '/specdrive-archive'],
       ] as const) {
         expect(content).toContain('Automatic Handoff to Next Phase');
-        expect(content).toContain('"$COMET_BASH" "$COMET_STATE" next <change-name>');
+        expect(content).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <change-name>');
         expect(content).toContain('`NEXT: auto`');
         expect(content).toContain('`NEXT: manual`');
         expect(content).toContain('run `/<SKILL>` manually');
       }
       expect(enHotfix).toContain('Automatic Handoff to Next Phase');
-      expect(enHotfix).toContain('"$COMET_BASH" "$COMET_STATE" next <name>');
+      expect(enHotfix).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <name>');
       expect(enHotfix).toContain('`NEXT: auto`');
       expect(enHotfix).toContain(
-        '`phase: build` returns `comet-hotfix`, `verify` returns `comet-verify`, `archive` returns `comet-archive`',
+        '`phase: build` returns `specdrive-hotfix`, `verify` returns `specdrive-verify`, `archive` returns `specdrive-archive`',
       );
       expect(enTweak).toContain('Automatic Handoff to Next Phase');
-      expect(enTweak).toContain('"$COMET_BASH" "$COMET_STATE" next <name>');
+      expect(enTweak).toContain('"$SPECDRIVE_BASH" "$SPECDRIVE_STATE" next <name>');
       expect(enTweak).toContain('`NEXT: auto`');
       expect(enTweak).toContain(
-        '`phase: build` returns `comet-tweak`, `verify` returns `comet-verify`, `archive` returns `comet-archive`',
+        '`phase: build` returns `specdrive-tweak`, `verify` returns `specdrive-verify`, `archive` returns `specdrive-archive`',
       );
     });
   });
 
-  describe('Comet output language safeguards', () => {
+  describe('SpecDrive output language safeguards', () => {
     it('requires OpenSpec and Superpowers outputs to follow the user request language', async () => {
       const skillNames = [
-        'comet',
-        'comet-open',
-        'comet-design',
-        'comet-build',
-        'comet-verify',
-        'comet-archive',
-        'comet-hotfix',
-        'comet-tweak',
+        'specdrive',
+        'specdrive-open',
+        'specdrive-design',
+        'specdrive-build',
+        'specdrive-verify',
+        'specdrive-archive',
+        'specdrive-hotfix',
+        'specdrive-tweak',
       ] as const;
 
       const readSkills = async (languageDir: 'skills' | 'skills-zh') =>
@@ -767,68 +781,72 @@ describe('skills', () => {
       const zhSkills = await readSkills('skills-zh');
       const enSkills = await readSkills('skills');
 
-      expect(zhSkills.comet).toContain('输出语言规则');
-      expect(zhSkills.comet).toContain('以触发本次工作流的用户请求语言作为默认输出语言');
-      expect(zhSkills['comet-open']).toContain(
+      expect(zhSkills.specdrive).toContain('输出语言规则');
+      expect(zhSkills.specdrive).toContain('以触发本次工作流的用户请求语言作为默认输出语言');
+      expect(zhSkills['specdrive-open']).toContain(
         '传递给 OpenSpec 的所有提问和产物要求都必须包含输出语言约束',
       );
-      expect(zhSkills['comet-design']).toContain('Language: 使用触发本次工作流的用户请求语言输出');
-      expect(zhSkills['comet-build']).toContain(
+      expect(zhSkills['specdrive-design']).toContain(
+        'Language: 使用触发本次工作流的用户请求语言输出',
+      );
+      expect(zhSkills['specdrive-build']).toContain(
         '计划文件和执行反馈必须使用触发本次工作流的用户请求语言',
       );
-      expect(zhSkills['comet-build']).toContain('ARGUMENTS 必须包含与 Step 1 相同的 Language 约束');
-      expect(zhSkills['comet-verify']).toContain(
+      expect(zhSkills['specdrive-build']).toContain(
+        'ARGUMENTS 必须包含与 Step 1 相同的 Language 约束',
+      );
+      expect(zhSkills['specdrive-verify']).toContain(
         '验证报告和分支处理说明必须使用触发本次工作流的用户请求语言',
       );
-      expect(zhSkills['comet-archive']).toContain(
+      expect(zhSkills['specdrive-archive']).toContain(
         '归档摘要和生命周期闭环说明必须使用触发本次工作流的用户请求语言',
       );
-      expect(zhSkills['comet-hotfix']).toContain(
+      expect(zhSkills['specdrive-hotfix']).toContain(
         '精简版 OpenSpec 产物必须使用触发本次工作流的用户请求语言',
       );
-      expect(zhSkills['comet-tweak']).toContain(
+      expect(zhSkills['specdrive-tweak']).toContain(
         '精简版 OpenSpec 产物必须使用触发本次工作流的用户请求语言',
       );
 
-      expect(enSkills.comet).toContain('Output Language Rule');
-      expect(enSkills.comet).toContain(
+      expect(enSkills.specdrive).toContain('Output Language Rule');
+      expect(enSkills.specdrive).toContain(
         'Use the language of the user request that triggered this workflow as the default output language',
       );
-      expect(enSkills['comet-open']).toContain(
+      expect(enSkills['specdrive-open']).toContain(
         'Every prompt and artifact request passed to OpenSpec must include the output-language constraint',
       );
-      expect(enSkills['comet-design']).toContain(
+      expect(enSkills['specdrive-design']).toContain(
         'Language: Use the language of the user request that triggered this workflow',
       );
-      expect(enSkills['comet-build']).toContain(
+      expect(enSkills['specdrive-build']).toContain(
         'Plan files and execution feedback must use the language of the user request that triggered this workflow',
       );
-      expect(enSkills['comet-build']).toContain(
+      expect(enSkills['specdrive-build']).toContain(
         'ARGUMENTS must include the same Language constraint as Step 1',
       );
-      expect(enSkills['comet-verify']).toContain(
+      expect(enSkills['specdrive-verify']).toContain(
         'Verification reports and branch-handling notes must use the language of the user request that triggered this workflow',
       );
-      expect(enSkills['comet-archive']).toContain(
+      expect(enSkills['specdrive-archive']).toContain(
         'Archive summaries and lifecycle closure notes must use the language of the user request that triggered this workflow',
       );
-      expect(enSkills['comet-hotfix']).toContain(
+      expect(enSkills['specdrive-hotfix']).toContain(
         'Streamlined OpenSpec artifacts must use the language of the user request that triggered this workflow',
       );
-      expect(enSkills['comet-tweak']).toContain(
+      expect(enSkills['specdrive-tweak']).toContain(
         'Streamlined OpenSpec artifacts must use the language of the user request that triggered this workflow',
       );
     });
   });
 
-  describe('Comet build subagent persistence safeguards', () => {
+  describe('SpecDrive build subagent persistence safeguards', () => {
     it('requires subagent prompts to persist task completion in durable task files', async () => {
       const zhBuild = await fs.readFile(
-        path.resolve('assets', 'skills-zh', 'comet-build', 'SKILL.md'),
+        path.resolve('assets', 'skills-zh', 'specdrive-build', 'SKILL.md'),
         'utf-8',
       );
       const enBuild = await fs.readFile(
-        path.resolve('assets', 'skills', 'comet-build', 'SKILL.md'),
+        path.resolve('assets', 'skills', 'specdrive-build', 'SKILL.md'),
         'utf-8',
       );
 
@@ -858,10 +876,10 @@ describe('skills', () => {
     });
   });
 
-  describe('Comet script discovery helper', () => {
+  describe('SpecDrive script discovery helper', () => {
     it('ships a shared script locator helper', async () => {
       const manifest = await readManifest();
-      expect(manifest.skills).toContain('comet/scripts/comet-env.sh');
+      expect(manifest.skills).toContain('specdrive/scripts/specdrive-env.sh');
     });
 
     it('keeps platform search roots out of English and Chinese skill prose', async () => {
@@ -869,7 +887,7 @@ describe('skills', () => {
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'comet/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {
@@ -878,13 +896,14 @@ describe('skills', () => {
             path.resolve('assets', languageDir, skillPath),
             'utf-8',
           );
-          if (!content.includes('COMET_STATE') && !content.includes('COMET_GUARD')) continue;
+          if (!content.includes('SPECDRIVE_STATE') && !content.includes('SPECDRIVE_GUARD'))
+            continue;
 
-          expect(content, `${languageDir}/${skillPath} should use comet-env.sh`).toContain(
-            'comet-env.sh',
+          expect(content, `${languageDir}/${skillPath} should use specdrive-env.sh`).toContain(
+            'specdrive-env.sh',
           );
-          expect(content, `${languageDir}/${skillPath} should source COMET_ENV`).toContain(
-            '. "$COMET_ENV"',
+          expect(content, `${languageDir}/${skillPath} should source SPECDRIVE_ENV`).toContain(
+            '. "$SPECDRIVE_ENV"',
           );
           expect(
             content,
@@ -895,18 +914,18 @@ describe('skills', () => {
             `${languageDir}/${skillPath} should not quote the HOME skill glob`,
           ).not.toContain('"$HOME/.*/skills"');
           expect(content, `${languageDir}/${skillPath} should not inline roots`).not.toContain(
-            'COMET_SEARCH_ROOTS=',
+            'SPECDRIVE_SEARCH_ROOTS=',
           );
         }
       }
     });
 
-    it('uses COMET_BASH in shipped Comet command examples', async () => {
+    it('uses SPECDRIVE_BASH in shipped SpecDrive command examples', async () => {
       const manifest = await readManifest();
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'comet/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {
@@ -918,8 +937,8 @@ describe('skills', () => {
 
           expect(
             content,
-            `${languageDir}/${skillPath} should avoid raw bash for Comet scripts`,
-          ).not.toMatch(/(^|[` \t])bash[ \t]+"?\$COMET_/m);
+            `${languageDir}/${skillPath} should avoid raw bash for SpecDrive scripts`,
+          ).not.toMatch(/(^|[` \t])bash[ \t]+"?\$SPECDRIVE_/m);
         }
       }
     });
@@ -931,7 +950,7 @@ describe('skills', () => {
       const skillPaths = manifest.skills.filter(
         (skillPath) =>
           skillPath.endsWith('SKILL.md') &&
-          (skillPath === 'comet/SKILL.md' || skillPath.startsWith('comet-')),
+          (skillPath === 'specdrive/SKILL.md' || skillPath.startsWith('specdrive-')),
       );
 
       for (const languageDir of ['skills', 'skills-zh']) {

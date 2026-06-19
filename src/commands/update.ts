@@ -14,12 +14,12 @@ import {
   getManifestSkills,
 } from '../core/skills.js';
 import { PLATFORMS, getPlatformSkillsDir, type Platform } from '../core/platforms.js';
-import { installCodegraph, filterSupportedPlatforms } from '../core/codegraph.js';
+import { installGitnexus, filterSupportedPlatforms } from '../core/gitnexus.js';
 import type { InstallScope } from '../core/types.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../../package.json');
-const PACKAGE_NAME = '@rpamis/comet';
+const PACKAGE_NAME = '@hottaiger/specdrive';
 
 interface UpdateOptions {
   json?: boolean;
@@ -53,6 +53,10 @@ function getScopedBaseDir(
   return scope === 'global' ? globalBaseDir : projectPath;
 }
 
+function isInstalledSpecdriveSkillEntry(entry: string): boolean {
+  return entry.startsWith('specdrive') || entry.startsWith('comet');
+}
+
 async function hasLocalCometSkills(
   baseDir: string,
   platform: Platform,
@@ -62,7 +66,7 @@ async function hasLocalCometSkills(
   if (!(await fileExists(skillsDir))) return false;
 
   const entries = await readDir(skillsDir);
-  return entries.some((entry) => entry.startsWith('comet'));
+  return entries.some(isInstalledSpecdriveSkillEntry);
 }
 
 async function detectInstalledCometLanguage(
@@ -73,7 +77,7 @@ async function detectInstalledCometLanguage(
   const skillsDir = path.join(baseDir, getPlatformSkillsDir(platform, scope), 'skills');
   if (!(await fileExists(skillsDir))) return 'en';
 
-  const entries = (await readDir(skillsDir)).filter((entry) => entry.startsWith('comet'));
+  const entries = (await readDir(skillsDir)).filter(isInstalledSpecdriveSkillEntry);
 
   for (const entry of entries) {
     const skillPath = path.join(skillsDir, entry, 'SKILL.md');
@@ -123,7 +127,7 @@ async function detectCometPackageScope(
   projectPath: string,
   packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'),
 ): Promise<InstallScope> {
-  const localPackageRoot = path.join(projectPath, 'node_modules', '@rpamis', 'comet');
+  const localPackageRoot = path.join(projectPath, 'node_modules', '@hottaiger', 'specdrive');
   if (isSameOrInside(packageRoot, localPackageRoot)) return 'project';
 
   const packageJsonPath = path.join(projectPath, 'package.json');
@@ -187,7 +191,7 @@ export async function updateCommand(
   const projectPath = path.resolve(targetPath);
   const log = options.json ? () => undefined : console.log;
 
-  log(`\n  Comet Update v${version}\n`);
+  log(`\n  SpecDrive Update v${version}\n`);
 
   const packageScope = options.scope ?? (await detectCometPackageScope(projectPath));
   let npmStatus: 'updated' | 'failed' | 'skipped' = 'skipped';
@@ -228,11 +232,11 @@ export async function updateCommand(
       );
       return;
     }
-    log('\n  No platforms with comet skills installed. Run `comet init` first.\n');
+    log('\n  No platforms with SpecDrive skills installed. Run `specdrive init` first.\n');
     return;
   }
 
-  log(`\n  Updating comet skills on ${targets.length} installed target(s):`);
+  log(`\n  Updating SpecDrive skills on ${targets.length} installed target(s):`);
   for (const target of targets) {
     const language = options.language ?? target.language;
     const scopeLabel = target.scope === 'global' ? 'global' : `project (${projectPath})`;
@@ -283,10 +287,10 @@ export async function updateCommand(
       );
       totalRulesCopied += ruleCopied;
       if (ruleCopied > 0) {
-        log(`  Comet rules -> ${target.platform.name}: ${ruleCopied} rule(s) updated`);
+        log(`  SpecDrive rules -> ${target.platform.name}: ${ruleCopied} rule(s) updated`);
       }
     } catch (err) {
-      log(`  Comet rules -> ${target.platform.name}: failed (${(err as Error).message})`);
+      log(`  SpecDrive rules -> ${target.platform.name}: failed (${(err as Error).message})`);
     }
 
     // Install hooks for platforms that support them
@@ -299,37 +303,37 @@ export async function updateCommand(
         );
         if (installed) {
           totalHooksInstalled++;
-          log(`  Comet hooks -> ${target.platform.name}: phase guard hook updated`);
+          log(`  SpecDrive hooks -> ${target.platform.name}: phase guard hook updated`);
         } else if (reason) {
-          log(`  Comet hooks -> ${target.platform.name}: skipped (${reason})`);
+          log(`  SpecDrive hooks -> ${target.platform.name}: skipped (${reason})`);
         }
       } catch (err) {
-        log(`  Comet hooks -> ${target.platform.name}: failed (${(err as Error).message})`);
+        log(`  SpecDrive hooks -> ${target.platform.name}: failed (${(err as Error).message})`);
       }
     }
   }
 
-  // CodeGraph optional step
-  let codegraphStatus: 'installed' | 'failed' | 'skipped' = 'skipped';
+  // GitNexus optional step
+  let gitnexusStatus: 'installed' | 'failed' | 'skipped' = 'skipped';
   const detectedPlatformIds = [...new Set(targets.map((t) => t.platform.id))];
-  const { supported: cgSupported } = filterSupportedPlatforms(detectedPlatformIds);
+  const { supported: gnSupported } = filterSupportedPlatforms(detectedPlatformIds);
   const primaryScope = targets[0]?.scope ?? 'project';
 
-  if (cgSupported.length > 0 && !options.json) {
-    const shouldInstallCodegraph = await select({
-      message: 'Install/update CodeGraph for semantic code intelligence?',
+  if (gnSupported.length > 0 && !options.json) {
+    const shouldInstallGitnexus = await select({
+      message: 'Install/update GitNexus for code intelligence and MCP?',
       choices: [
-        { name: 'Yes (recommended — saves ~16% cost · cuts ~58% tool calls)', value: true },
+        { name: 'Yes (recommended — knowledge graph + MCP server for AI agents)', value: true },
         { name: 'No', value: false },
       ],
     });
 
-    if (shouldInstallCodegraph) {
-      log('\n  Installing CodeGraph...');
-      codegraphStatus = await installCodegraph(projectPath, detectedPlatformIds, primaryScope);
-      log(`  CodeGraph: ${codegraphStatus}`);
+    if (shouldInstallGitnexus) {
+      log('\n  Installing GitNexus...');
+      gitnexusStatus = await installGitnexus(projectPath, detectedPlatformIds, primaryScope);
+      log(`  GitNexus: ${gitnexusStatus}`);
     } else {
-      log('\n  CodeGraph: skipped');
+      log('\n  GitNexus: skipped');
     }
   }
 
@@ -348,7 +352,7 @@ export async function updateCommand(
           },
           rules: { totalCopied: totalRulesCopied },
           hooks: { totalInstalled: totalHooksInstalled },
-          codegraph: codegraphStatus,
+          gitnexus: gitnexusStatus,
         },
         null,
         2,
@@ -362,7 +366,7 @@ export async function updateCommand(
   log(`\n  Summary:`);
   log(`    npm: ${npmStatus}${options.skipNpm ? '' : ` (${packageScope})`}`);
   log(`    skills: ${targets.length} target(s), ${totalCopied} files updated`);
-  log(`    codegraph: ${codegraphStatus}`);
+  log(`    gitnexus: ${gitnexusStatus}`);
   log(`    scope: ${scopes}`);
   log(`    language: ${languages}`);
   log(`\n  Update complete.\n`);

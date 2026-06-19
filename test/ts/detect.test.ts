@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -23,7 +23,7 @@ describe('detect', () => {
   beforeEach(async () => {
     tmpDir = path.join(
       os.tmpdir(),
-      `comet-detect-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `specdrive-detect-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tmpDir, { recursive: true });
   });
@@ -93,8 +93,37 @@ describe('detect', () => {
     });
 
     it('returns empty set when no platforms detected', async () => {
+      const fakeHome = path.join(tmpDir, 'empty-home');
+      await fs.mkdir(fakeHome, { recursive: true });
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
       const detected = await detectPlatforms(tmpDir);
+
       expect(detected.size).toBe(0);
+      homedirSpy.mockRestore();
+    });
+
+    it('detects cursor from global ~/.cursor when project has no .cursor', async () => {
+      const fakeHome = path.join(tmpDir, 'home');
+      await fs.mkdir(path.join(fakeHome, '.cursor'), { recursive: true });
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
+      const detected = await detectPlatforms(tmpDir);
+
+      expect(detected.has('cursor')).toBe(true);
+      homedirSpy.mockRestore();
+    });
+
+    it('prefers project .cursor over global detection', async () => {
+      const fakeHome = path.join(tmpDir, 'home-global');
+      await fs.mkdir(path.join(fakeHome, '.cursor'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.cursor'));
+      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(fakeHome);
+
+      const detected = await detectPlatforms(tmpDir);
+
+      expect(detected.has('cursor')).toBe(true);
+      homedirSpy.mockRestore();
     });
 
     it('detects Antigravity from the project skills directory', async () => {
@@ -125,34 +154,38 @@ describe('detect', () => {
       expect(await hasSkills(tmpDir, mockPlatform, 'superpowers')).toBe(true);
     });
 
-    it('detects comet skills', async () => {
-      await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'comet'), { recursive: true });
-      expect(await hasSkills(tmpDir, mockPlatform, 'comet')).toBe(true);
+    it('detects specdrive skills', async () => {
+      await fs.mkdir(path.join(tmpDir, '.claude', 'skills', 'specdrive'), { recursive: true });
+      expect(await hasSkills(tmpDir, mockPlatform, 'specdrive')).toBe(true);
     });
 
-    it('treats OpenCode Comet skills without slash commands as incomplete', async () => {
+    it('treats OpenCode SpecDrive skills without slash commands as incomplete', async () => {
       const opencode = PLATFORMS.find((platform) => platform.id === 'opencode');
       expect(opencode).toBeDefined();
       if (!opencode) return;
 
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'comet'), { recursive: true });
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'comet-open'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), {
+        recursive: true,
+      });
 
-      expect(await hasSkills(tmpDir, opencode, 'comet')).toBe(false);
+      expect(await hasSkills(tmpDir, opencode, 'specdrive')).toBe(false);
     });
 
-    it('detects OpenCode Comet skills when matching slash commands exist', async () => {
+    it('detects OpenCode SpecDrive skills when matching slash commands exist', async () => {
       const opencode = PLATFORMS.find((platform) => platform.id === 'opencode');
       expect(opencode).toBeDefined();
       if (!opencode) return;
 
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'comet'), { recursive: true });
-      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'comet-open'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive'), { recursive: true });
+      await fs.mkdir(path.join(tmpDir, '.opencode', 'skills', 'specdrive-open'), {
+        recursive: true,
+      });
       await fs.mkdir(path.join(tmpDir, '.opencode', 'commands'), { recursive: true });
-      await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'comet.md'), '');
-      await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'comet-open.md'), '');
+      await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'specdrive.md'), '');
+      await fs.writeFile(path.join(tmpDir, '.opencode', 'commands', 'specdrive-open.md'), '');
 
-      expect(await hasSkills(tmpDir, opencode, 'comet')).toBe(true);
+      expect(await hasSkills(tmpDir, opencode, 'specdrive')).toBe(true);
     });
 
     it('detects Antigravity global skills in the Gemini Antigravity directory', async () => {
@@ -160,26 +193,26 @@ describe('detect', () => {
       expect(antigravity).toBeDefined();
       if (!antigravity) return;
 
-      await fs.mkdir(path.join(tmpDir, '.gemini', 'antigravity', 'skills', 'comet'), {
+      await fs.mkdir(path.join(tmpDir, '.gemini', 'antigravity', 'skills', 'specdrive'), {
         recursive: true,
       });
 
-      expect(await hasSkills(tmpDir, antigravity, 'comet', [], 'global')).toBe(true);
+      expect(await hasSkills(tmpDir, antigravity, 'specdrive', [], 'global')).toBe(true);
     });
 
     it('returns false for missing skills', async () => {
       await fs.mkdir(path.join(tmpDir, '.claude', 'skills'), { recursive: true });
-      expect(await hasSkills(tmpDir, mockPlatform, 'comet')).toBe(false);
+      expect(await hasSkills(tmpDir, mockPlatform, 'specdrive')).toBe(false);
     });
 
     it('returns false when skills directory does not exist', async () => {
-      expect(await hasSkills(tmpDir, mockPlatform, 'comet')).toBe(false);
+      expect(await hasSkills(tmpDir, mockPlatform, 'specdrive')).toBe(false);
     });
 
     it('returns false when a platform directory exists without a skills directory', async () => {
       await fs.mkdir(path.join(tmpDir, '.claude'), { recursive: true });
 
-      expect(await hasSkills(tmpDir, mockPlatform, 'comet')).toBe(false);
+      expect(await hasSkills(tmpDir, mockPlatform, 'specdrive')).toBe(false);
     });
 
     it('detects plugin-installed superpowers for claude platform', async () => {
